@@ -1,0 +1,18 @@
+
+
+<form method="POST">
+    {% csrf_token %}
+    {{ q_form }}
+
+    </br>
+    </br>
+    <b>Input your answer here!</b>
+
+    {{ ans_form }}
+    </br>
+    </br>
+    <b>Input wrong answers here!</b>
+    </br>
+    {{ mc_form }}
+    <input type="submit" value="Submit">
+</form>

@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    
+    <head>
+	<title>Quest home</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/admin_home_style.css' %}">
+
+    </head>
+
+    <body>
+	<h1>Title</h1>
+
+	<p>Welcome Admin to the quests!</p>
+	<p>You have ___ points!</p>
+         
+    <form method='POST'>
+    {% csrf_token %}
+    {{ quest_form }}
+    <button type='submit'>Submit</button>
+    </form>
+
+
+    {% for quest in quests %}
+    <br>
+    <form method='POST' action='/quest/admin_quest_page/{{quest.quest_name}}'>
+        {% csrf_token %}
+        <button type='submit'>{{quest.quest_name}}</button>
+        <!-- <button type='submit' name = admin_quest_page value = {{quest.quest_name}}>{{quest.quest_name}}</button> -->
+    </form>
+
+
+    {% endfor %}
+
+    
+
+        <!-- Have this link to choose_question_form  -->
+
+        <!--  Make the "admin_quest_view" (when they are choosing what type of question to add) also show all the questions that the 
+        admin has created for that quest -->
+
+        <!-- Once the questions and answers have been set, link this back to the admin home page and give them the
+            option to see their new quest page so they can see how it looks -->
+
+        <!-- Give the creator the ability to delte quests and questions they made in their respective locations (give pop up asking if they are sure) as well as undo a delete -->
+
+    
+    <!-- Here show links to every single quest, which will link to the individual quest page of each -->
+
+    
+
+	
+    </body>
+    
+</html>

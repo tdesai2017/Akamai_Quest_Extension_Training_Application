@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+
+    <head>
+        
+        <title> {{ current_quest.quest_name }} </title>
+        
+    </head>
+    <body>
+
+        <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/admin_quest_page_style.css' %}">
+        <h1> {{ current_quest.quest_name }} </h1>
+
+        <div class="description">
+            <h3>{{ current_quest.quest_description }}</h3>
+        </div>  
+        <br>
+        <br>
+
+        {% for question, wrong_answers in format.items %}
+            <div class='question'>
+                <p>{{ question.question_text }}</p>
+                {{ fr_input_form }}
+            </div>
+            <br>
+            <br>
+        {% endfor %}
+        
+        <form id ='free_response' action='/quest/fr-create-form/{{current_quest.quest_name}}' method = 'GET'></form>
+        <form id ='multiple_choice' action='/quest/mc-create-form/{{current_quest.quest_name}}' method = 'GET'></form>
+        <form id='home' action = '/quest/admin_home' method='GET'></form>
+        
+        <button form = 'home' type = submit>Home</button>
+
+        <h3>Choose what kind of question you want to make!</h3>
+        <button form = 'free_response' type = submit>Free Response</button>
+        <button form = 'multiple_choice' type = submit>Multiple Choice</button>
+
+    </body>
+</html>

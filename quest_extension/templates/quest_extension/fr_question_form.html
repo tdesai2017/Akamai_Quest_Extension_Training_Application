@@ -1,0 +1,12 @@
+
+<form method="POST">
+    {% csrf_token %}
+    {{ q_form }}
+
+    </br>
+    </br>
+    <b>Input your answer here!</b>
+
+    {{ ans_form }}
+    <input type="submit" value="Submit">
+</form>

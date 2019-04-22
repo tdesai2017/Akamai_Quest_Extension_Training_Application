@@ -39,7 +39,7 @@ class User(models.Model):
    user_manager_ldap = models.CharField(max_length=45)
    user_director_ldap = models.CharField(max_length=45)
    user_points = models.IntegerField()
-   exempt = models.IntegerField()
+   exempt = models.BooleanField(default=False)
 
    
 class CorrectAnswer(models.Model):

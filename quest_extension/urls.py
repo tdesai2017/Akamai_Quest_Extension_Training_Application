@@ -13,4 +13,6 @@ urlpatterns = [
     #path('home', views.quest_home, name='home'),
     path('admin_home', views.admin_home),
     path('admin_quest_page/<name>', views.admin_quest_page),
+    path('user_home/<ldap>', views.user_home),
+    path('user_quest_page/<ldap>/<name>', views.user_quest_page),
 ]

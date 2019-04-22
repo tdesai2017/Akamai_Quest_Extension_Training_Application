@@ -34,6 +34,7 @@ def create_fr_question(request, name):
             #quest_name = request.GET.urlencode().split('=')[1]
             quest = Quest.objects.get(quest_name=name)
             bbb = question_form.save(commit=False)
+            bbb.question_type = 'FR'
             
             if not bbb.question_text[len(bbb.question_text)-1] == '?':
                 bbb.question_text += '?'
@@ -49,7 +50,7 @@ def create_fr_question(request, name):
             
             return HttpResponseRedirect('/quest/admin_quest_page/' + name)
     else:
-        form = QuestionForm(initial={'type': 'FR'})
+        form = QuestionForm()
         ans_form = CorrectAnswerForm()
     return render(request, 'quest_extension/fr_question_form.html', {'q_form' : form,
                                                          'ans_form' : ans_form})
@@ -143,4 +144,25 @@ def admin_quest_page(request, name):
     context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form}
     return render(request, 'quest_extension/admin_quest_page.html', context)
 
+def user_home(request, ldap):
+
+    user = User.objects.get(user_ldap= ldap)
+    quests = Quest.objects.all()
+    quest_form = QuestForm()
+    context = {'quests':quests, 'quest_form': quest_form, 'user': user}
+    return render(request, 'quest_extension/user_home.html', context)
     
+
+def user_quest_page(request, ldap, name):
+
+    current_quest = Quest.objects.get(quest_name = name)
+    list_of_questions = Question.objects.filter(quest = current_quest)
+    fr_input_form = TakeInFreeResponseForm
+
+    format = {}
+    for question in list_of_questions:
+        wrong_answers = IncorrectAnswer.objects.filter(question = question)
+        format[question] = wrong_answers
+
+    context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form, 'ldap': ldap}
+    return render(request, 'quest_extension/user_quest_page.html', context)

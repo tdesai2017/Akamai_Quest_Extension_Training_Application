@@ -26,7 +26,15 @@
                    <form method = "POST">
                         {% csrf_token %}
                         {{ fr_input_form }}
-                        <button type= 'submit'>Submit</button>
+                        <button type= 'submit' name='FR_response_id' value = '{{ question.id }}'>Submit</button>
+                    </form>
+                {% endif %}
+
+                {% if question.question_type == 'MC' %}
+                   <form method = "POST">
+                        {% csrf_token %}
+                        {{ mc_input_form }}
+                        <button type= 'submit' name='FR_response_id' value = '{{ question.id }}'>Submit</button>
                     </form>
                 {% endif %}
             

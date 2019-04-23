@@ -5,7 +5,7 @@ from . import models
 class QuestForm(forms.ModelForm):
     class Meta:
         model = models.Quest
-        fields = ['quest_name', 'quest_description', 'quest_points_earned']
+        fields = ['quest_name', 'quest_description', 'quest_points_earned', 'quest_path_number']
 
 
 class QuestionForm(forms.ModelForm):
@@ -41,3 +41,30 @@ class WrongAnswerForm(forms.Form):
 
 class TakeInFreeResponseForm(forms.Form):
     answer = forms.CharField()
+
+FAVORITE_COLORS_CHOICES = (
+    ('blue', 'Blue'),
+    ('green', 'Green'),
+    ('black', 'Black'),
+)
+
+# class TakeInMultipleChoiceForm(forms.Form):
+#     answer = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=(FAVORITE_COLORS_CHOICES))
+
+
+# BIRTH_YEAR_CHOICES = ('1980', '1981', '1982')
+# FAVORITE_COLORS_CHOICES = (
+#     ('blue', 'Blue'),
+#     ('green', 'Green'),
+#     ('black', 'Black'),
+# )
+
+# class TakeInMultipleChoiceForm(forms.Form):
+#     birth_year = forms.DateField(widget=forms.SelectDateWidget(years=BIRTH_YEAR_CHOICES))
+#     favorite_colors = forms.MultipleChoiceField(
+#         required=False,
+#         widget=forms.CheckboxSelectMultiple,
+#         choices=FAVORITE_COLORS_CHOICES,
+#     )
+
+

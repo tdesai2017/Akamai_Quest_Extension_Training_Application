@@ -26,6 +26,12 @@
                     {{ fr_input_form }}
                     <button type= 'submit'>Submit</button>
                 {% endif %}
+
+                {% if question.question_type == 'MC' %}
+                     {{ mc_input_form }}
+                     <button type= 'submit'>Submit</button>
+                {% endif %}
+
             
             <br>
             <br>

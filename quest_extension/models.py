@@ -13,6 +13,8 @@ class Quest(models.Model):
     quest_points_earned = models.IntegerField()
     deleted = models.BooleanField(default=False)
     time_modified = models.DateTimeField(auto_now=True)
+    #Path number determines the order that you want quests to be accessed
+    quest_path_number = models.IntegerField(unique=True)
 
    
 class Question(models.Model):
@@ -31,7 +33,8 @@ class IncorrectAnswer(models.Model):
 
   
 class User(models.Model):
-   current_quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
+    #Figure out if this on cascade is correct
+   current_quest = models.ForeignKey(Quest, on_delete=models.SET_NULL, null=True)
    user_ldap = models.CharField(max_length=45)
    user_first_name = models.CharField(max_length=45)
    user_last_name = models.CharField(max_length=45)

@@ -90,7 +90,7 @@ def create_mc_question(request, name):
     else:
         question_form = QuestionForm(initial={'type': 'MC',})
         ans_form = CorrectAnswerForm()
-        mc_form = WrongAnswersForm()
+        mc_form = WrongAnswerForm()
     return render(request, 'quest_extension/mc_question_form.html', {'q_form' : question_form,
                                                                      'ans_form' : ans_form,
                                                                      'mc_form' : mc_form})
@@ -148,21 +148,42 @@ def user_home(request, ldap):
 
     user = User.objects.get(user_ldap= ldap)
     quests = Quest.objects.all()
-    quest_form = QuestForm()
-    context = {'quests':quests, 'quest_form': quest_form, 'user': user}
+    context = {'quests':quests, 'user': user}
     return render(request, 'quest_extension/user_home.html', context)
     
 
 def user_quest_page(request, ldap, name):
 
+    if request.method == 'POST':
+        #When do I check here whether the form is valid
+        post_request = request.POST
+        user_answer = post_request['answer']
+        current_question = Question.objects.get(id = post_request['FR_response_id'])
+        correct_answers = CorrectAnswer.objects.filter(question = current_question)
+        
+        correct_answers_texts = []
+        for answer in correct_answers:
+            correct_answers_texts.append(answer.answer_text)
+
+        if user_answer in correct_answers_texts:
+            print("You are correct")
+            return HttpResponseRedirect('/quest/user_home/' + ldap )
+
+        print(user_answer, correct_answers_texts)
+        print('You are wrong')
+        return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + name)
+
+
     current_quest = Quest.objects.get(quest_name = name)
     list_of_questions = Question.objects.filter(quest = current_quest)
-    fr_input_form = TakeInFreeResponseForm
+    fr_input_form = TakeInFreeResponseForm()
+    mc_input_form = TakeInMultipleChoiceForm()
+
 
     format = {}
     for question in list_of_questions:
         wrong_answers = IncorrectAnswer.objects.filter(question = question)
         format[question] = wrong_answers
 
-    context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form, 'ldap': ldap}
+    context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form, 'mc_input_form': mc_input_form, 'ldap': ldap}
     return render(request, 'quest_extension/user_quest_page.html', context)

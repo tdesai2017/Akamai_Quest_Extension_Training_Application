@@ -42,16 +42,16 @@ class WrongAnswerForm(forms.Form):
 class TakeInFreeResponseForm(forms.Form):
     answer = forms.CharField()
 
-FAVORITE_COLORS_CHOICES = (
-    ('blue', 'Blue'),
-    ('green', 'Green'),
-    ('black', 'Black'),
-)
+# FAVORITE_COLORS_CHOICES = (
+#     ('blue', 'Blue'),
+#     ('green', 'Green'),
+#     ('black', 'Black'),
+# )
 
 # class TakeInMultipleChoiceForm(forms.Form):
 #     answer = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=(FAVORITE_COLORS_CHOICES))
 
-
+# Straight from https://docs.djangoproject.com/en/2.2/ref/forms/widgets/
 # BIRTH_YEAR_CHOICES = ('1980', '1981', '1982')
 # FAVORITE_COLORS_CHOICES = (
 #     ('blue', 'Blue'),

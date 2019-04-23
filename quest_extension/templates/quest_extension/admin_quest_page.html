@@ -17,7 +17,7 @@
         <br>
         <br>
 
-        {% for question, wrong_answers in format.items %}
+        {% for question, answers in format.items %}
             <div class='question'>
                 <p>{{ question.question_text }}</p>
 
@@ -28,8 +28,11 @@
                 {% endif %}
 
                 {% if question.question_type == 'MC' %}
-                     {{ mc_input_form }}
-                     <button type= 'submit'>Submit</button>
+                    {% for a in answers %}
+                        <input type="checkbox" name="vehicle1" value="Bike">{{ a.incorrect_answer_text }}{{ a.answer_text }}<br>
+                    {% endfor %}
+                    <br>
+                    <button type= 'submit'>Submit</button>
                 {% endif %}
 
             

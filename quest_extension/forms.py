@@ -19,7 +19,7 @@ class IncorrectAnswerForm(forms.ModelForm):
     """A form for wrong answers"""
     class Meta:
         model = models.IncorrectAnswer
-        fields = ['question', 'incorrect_answer_text']
+        fields = ['question', 'answer_text']
 
 
 class UserForm(forms.ModelForm):
@@ -36,7 +36,7 @@ class CorrectAnswerForm(forms.ModelForm):
 
 
 class WrongAnswerForm(forms.Form):
-    incorrect_answer_text = forms.CharField(widget=forms.Textarea)
+    wrong_answer_text = forms.CharField(widget=forms.Textarea)
 
 
 class TakeInFreeResponseForm(forms.Form):

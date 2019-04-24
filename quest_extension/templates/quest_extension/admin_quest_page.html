@@ -29,7 +29,7 @@
 
                 {% if question.question_type == 'MC' %}
                     {% for a in answers %}
-                        <input type="checkbox" name="vehicle1" value="Bike">{{ a.incorrect_answer_text }}{{ a.answer_text }}<br>
+                        <input type="checkbox" name="mc__input" value="{{ a.answer_text }}">{{ a.answer_text }}<br>
                     {% endfor %}
                     <br>
                     <button type= 'submit'>Submit</button>

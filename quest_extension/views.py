@@ -66,11 +66,9 @@ def create_mc_question(request, name):
         if question_form.is_valid() and ans_form.is_valid() and wrong_ans_form.is_valid():
             quest = Quest.objects.get(quest_name=name)
             bbb = question_form.save(commit=False)
+            bbb.question_type = 'MC'
 
-            # if not bbb.question_text[len(bbb.question_text)-1] == '?':
-            #     bbb.question_text += '?'
-
-            #text = form.cleaned_data['question_text']
+            
             bbb.quest = quest
             bbb.save()
             question_id = bbb.id
@@ -79,16 +77,17 @@ def create_mc_question(request, name):
             ccc.question = Question.objects.get(id=question_id)
             ccc.save()
 
-            list_of_wrong_answers = wrong_ans_form.cleaned_data['incorrect_answer_text'].split('\n')
+            list_of_wrong_answers = wrong_ans_form.cleaned_data['wrong_answer_text'].split('\n')
 
             for wrong_answer in list_of_wrong_answers:
-                ddd = IncorrectAnswer(question=Question.objects.get(id=question_id), incorrect_answer_text=wrong_answer)
+                wrong_answer.rstrip("\n\r")
+                ddd = IncorrectAnswer(question=Question.objects.get(id=question_id), answer_text= wrong_answer)
                 ddd.save()
 
             
             return HttpResponseRedirect('/quest/admin_quest_page/' + name)
     else:
-        question_form = QuestionForm(initial={'type': 'MC',})
+        question_form = QuestionForm()
         ans_form = CorrectAnswerForm()
         mc_form = WrongAnswerForm()
     return render(request, 'quest_extension/mc_question_form.html', {'q_form' : question_form,
@@ -180,6 +179,24 @@ def user_quest_page(request, ldap, name):
 
             print('You are wrong')
             return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + name)
+        
+        if 'MC_response_id' in post_request:
+            user_answer = post_request['answer']
+            current_question = Question.objects.get(id = post_request['MC_response_id'])
+            correct_answers = CorrectAnswer.objects.filter(question = current_question)
+
+            correct_answers_texts = []
+            for answer in correct_answers:
+                correct_answers_texts.append(answer.answer_text)
+
+            if user_answer in correct_answers_texts:
+                print("You are correct")
+                return HttpResponseRedirect('/quest/user_home/' + ldap )
+
+            print('You are wrong')
+            return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + name)
+
+
 
 
     current_quest = Quest.objects.get(quest_name = name)

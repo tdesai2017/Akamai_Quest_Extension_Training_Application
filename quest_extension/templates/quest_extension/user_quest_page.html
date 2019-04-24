@@ -35,10 +35,10 @@
                         {% csrf_token %}
                         {% for a in answers %}
                         <!-- Make both incorrect and correct answers have the same filed called answer_text so that it can easily be passed as a value -->
-                            <input type="checkbox" name="answer" value="Bike">{{ a.incorrect_answer_text }}{{ a.answer_text }}<br>
+                            <input type="checkbox" name="answer" value="{{ a.answer_text }}">{{ a.answer_text }}<br>
                         {% endfor %}
                         <br>
-                        <button type= 'submit'>Submit</button>
+                        <button type= 'submit' name= 'MC_response_id' value= '{{ question.id }}'>Submit</button>
                     </form>
                 {% endif %}
 

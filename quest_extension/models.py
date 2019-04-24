@@ -26,7 +26,7 @@ class Question(models.Model):
 
 class IncorrectAnswer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    incorrect_answer_text = models.CharField(max_length=1000)
+    answer_text = models.CharField(max_length=1000)
     deleted = models.BooleanField(default=False)
     time_modified = models.DateTimeField(auto_now=True)
 

@@ -25,9 +25,10 @@
 
     {% for quest in quests %}
     <br>
-    <form method='GET' action='/quest/user_quest_page/{{ user.user_ldap }}/{{quest.quest_name}}'>
-        <button type='submit'>{{quest.quest_name}}</button>
-        <!-- <button type='submit' name = admin_quest_page value = {{quest.quest_name}}>{{quest.quest_name}}</button> -->
+    <!-- Figure out how to validate users_current quest in javascript -->
+    <form method='POST'>
+        {% csrf_token %}
+        <button type='submit' name= 'quest_path_number' value = '{{ quest.quest_path_number }}'>{{quest.quest_name}}</button>
     </form>
 
 

@@ -29,11 +29,14 @@
 
                 {% if question.question_type == 'MC' %}
                     {% for a in answers %}
-                        <input type="checkbox" name="mc__input" value="{{ a.answer_text }}">{{ a.answer_text }}<br>
+                        <input type="checkbox" name="mc__input" value="{{ a.answer_text }}"> {{ a.answer_text }}<br>
                     {% endfor %}
                     <br>
                     <button type= 'submit'>Submit</button>
                 {% endif %}
+                <br>
+                <a href= '/quest/admin_edit_question/{{ question.id }}'>(Edit)</a>
+
 
             
             <br>

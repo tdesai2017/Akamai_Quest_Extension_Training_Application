@@ -35,8 +35,12 @@ class CorrectAnswerForm(forms.ModelForm):
         fields = ['answer_text']
 
 
+class RightAnswerForm(forms.Form):
+    correct_choices = forms.CharField(widget=forms.Textarea)
+
 class WrongAnswerForm(forms.Form):
-    wrong_answer_text = forms.CharField(widget=forms.Textarea)
+    incorrect_choices = forms.CharField(widget=forms.Textarea)
+
 
 
 class TakeInFreeResponseForm(forms.Form):

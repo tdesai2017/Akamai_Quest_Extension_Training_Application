@@ -7,8 +7,8 @@
         
     </head>
     <body>
-        <form id = 'free_response' action='/quest/fr-create-form/{{current_quest.quest_name}}' method = 'GET'></form>
-        <form id = 'multiple_choice' action='/quest/mc-create-form/{{current_quest.quest_name}}' method = 'GET'></form>
+        <form id = 'free_response' action='/quest/fr-create-form/{{current_quest.id}}' method = 'GET'></form>
+        <form id = 'multiple_choice' action='/quest/mc-create-form/{{current_quest.id}}' method = 'GET'></form>
         <form id = 'undo_delete' method = 'POST'> {% csrf_token %} </form>
         <link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_quest_page_style.css' %}">
         <h1> {{ current_quest.quest_name }} </h1>
@@ -22,7 +22,7 @@
         <button form = 'multiple_choice' type = submit>Multiple Choice</button>
         <br>
         <br>
-        <button form = 'undo_delete' type = submit name='undo' value='current_quest.quest_name'> Undo Delete</button>
+        <button form = 'undo_delete' type = submit name='undo' value='current_quest.id'> Undo Delete</button>
         <br>
         <br>
 
@@ -57,7 +57,7 @@
         {% endfor %}
         
         
-        <form id='home' action = '/quest/admin_home' method='GET'></form>
+        <form id='home' action = '/quest/admin_home/{{current_project_id}}' method='GET'></form>
         
         <button form = 'home' type = submit>Home</button>
 

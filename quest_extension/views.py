@@ -20,20 +20,22 @@ def quest_create(request):
         # form was submitted
         form = QuestForm(request.POST)
         if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/quest/admin_quest_page/' + request.POST['quest_name'])
+            temp = form.save(commit=False)
+            quest_id = temp.id
+            temp.save()
+            return HttpResponseRedirect('/quest/admin_quest_page/' + str(quest_id))
     else:
         form = QuestForm()
     return render(request, 'quest_extension/test.html', {'form': form})
 
 
-def create_fr_question(request, name):
+def create_fr_question(request, quest_id):
     if request.method  == 'POST':
         #for was busmitted
         question_form = QuestionForm(request.POST)
         ans_form = CorrectAnswerForm(request.POST)
         if question_form.is_valid() and ans_form.is_valid():
-            quest = Quest.objects.get(quest_name=name)
+            quest = Quest.objects.get(id=quest_id)
             bbb = question_form.save(commit=False)
             bbb.question_type = 'FR'
             
@@ -49,7 +51,7 @@ def create_fr_question(request, name):
             ccc.question = Question.objects.get(id=question_id)
             ccc.save()
             
-            return HttpResponseRedirect('/quest/admin_quest_page/' + name)
+            return HttpResponseRedirect('/quest/admin_quest_page/' + quest_id)
     else:
         form = QuestionForm()
         ans_form = CorrectAnswerForm()
@@ -57,7 +59,7 @@ def create_fr_question(request, name):
                                                          'ans_form' : ans_form})
 
 
-def create_mc_question(request, name):
+def create_mc_question(request, quest_id):
     if request.method  == 'POST':
         #for was submitted
         question_form = QuestionForm(request.POST)
@@ -65,7 +67,7 @@ def create_mc_question(request, name):
         wrong_answer_form = WrongAnswerForm(request.POST)
         
         if question_form.is_valid() and answer_form.is_valid() and wrong_answer_form.is_valid():
-            quest = Quest.objects.get(quest_name=name)
+            quest = Quest.objects.get(id=quest_id)
             bbb = question_form.save(commit=False)
             bbb.question_type = 'MC'
             bbb.quest = quest
@@ -89,7 +91,7 @@ def create_mc_question(request, name):
                 ddd = IncorrectAnswer(question=Question.objects.get(id=question_id), answer_text= wrong_answer)
                 ddd.save()
 
-            return HttpResponseRedirect('/quest/admin_quest_page/' + name)
+            return HttpResponseRedirect('/quest/admin_quest_page/' + quest_id)
     else:
         question_form = QuestionForm()
         answer_form = RightAnswerForm()
@@ -99,24 +101,32 @@ def create_mc_question(request, name):
                                                                      'wrong_answer_form' : wrong_answer_form})
 
 
-def admin_home(request):
-
-
+def admin_home(request, project_id): 
+    current_project = Project.objects.get(id = project_id)
     if request.method == 'POST':
         post_request = request.POST
         quest_form = QuestForm(post_request)
-        if 'quest_description' in request.POST and 'quest_points_earned' in request.POST and 'quest_name' in request.POST:
+        #Two quests cannot have the same path and paths must be greater than 0
+        all_quests_in_current_project = Quest.objects.filter(project = current_project)
+        all_paths_in_current_project = [quest.quest_path_number for quest in all_quests_in_current_project]
+        if 'new_quest' in post_request and int(post_request['quest_path_number']) > 0 and int(post_request['quest_path_number']) not in all_paths_in_current_project:
             if quest_form.is_valid():
-                quest_form.save()
-                return HttpResponseRedirect('/quest/admin_quest_page/' + post_request['quest_name'])
+                temp = quest_form.save(commit=False)
+                temp.project = current_project
+                temp.save()
+                quest_id = temp.id
 
-    quests = Quest.objects.all()
+                
+                return HttpResponseRedirect('/quest/admin_quest_page/' + str(quest_id))
+
+    quests = Quest.objects.filter(project = current_project)
     quest_form = QuestForm()
     context = {'quests':quests, 'quest_form': quest_form}
     return render(request, 'quest_extension/admin_home.html', context)
 
-def admin_quest_page(request, name):
-    current_quest = Quest.objects.get(quest_name = name)
+def admin_quest_page(request, quest_id):
+    current_quest = Quest.objects.get(id = quest_id)
+    current_project_id = current_quest.project.id
 
 
     if request.method == 'POST':
@@ -126,15 +136,14 @@ def admin_quest_page(request, name):
             print (post_request)
             current_question.deleted = True
             current_question.save()
-            
-            return HttpResponseRedirect('/quest/admin_quest_page/' + current_question.quest.quest_name)
+            return HttpResponseRedirect('/quest/admin_quest_page/' + str(current_question.quest.id))
 
         if 'undo' in post_request.keys():
             if Question.objects.filter(quest = current_quest, deleted = True):
                 object_to_reappear = Question.objects.filter(quest = current_quest, deleted = True).latest('time_modified')
                 object_to_reappear.deleted = False
                 object_to_reappear.save()
-            return HttpResponseRedirect(name)
+            return HttpResponseRedirect(quest_id)
 
 
     list_of_questions = Question.objects.filter(quest = current_quest, deleted = False)
@@ -158,11 +167,10 @@ def admin_quest_page(request, name):
         #Combines wrong answers with correct answer
         format[question] = all_answers 
 
-    context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form}
+    context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form, 'current_project_id': current_project_id}
     return render(request, 'quest_extension/admin_quest_page.html', context)
 
-def user_home(request, ldap):
-    
+def user_home(request, ldap, project_id):    
     user = User.objects.get(user_ldap= ldap)
 
     # Figure out how we can replace this with Javascript
@@ -175,17 +183,20 @@ def user_home(request, ldap):
         if str(user.current_quest.quest_path_number) == str(post_request['quest_path_number']):
 
             current_quest = Quest.objects.get(quest_path_number = post_request['quest_path_number'])
-            return HttpResponseRedirect('/quest/user_quest_page/' + user.user_ldap + "/" + current_quest.quest_name)
+            return HttpResponseRedirect('/quest/user_quest_page/' + user.user_ldap + "/" + str(current_quest.id))
 
         else:
-            return HttpResponseRedirect('/quest/user_home/' + ldap)
+            return HttpResponseRedirect('/quest/user_home/' + ldap + '/' + str(project_id))
 
     quests = Quest.objects.all()
     context = {'quests':quests, 'user': user}
     return render(request, 'quest_extension/user_home.html', context)
     
 
-def user_quest_page(request, ldap, name):
+def user_quest_page(request, ldap, quest_id):
+    current_quest = Quest.objects.get(id = quest_id)
+    current_project_id = current_quest.project.id
+
 
     if request.method == 'POST':
         #When do I check here whether the form is valid
@@ -201,10 +212,10 @@ def user_quest_page(request, ldap, name):
 
             if user_answer in correct_answers_texts:
                 print("You are correct")
-                return HttpResponseRedirect('/quest/user_home/' + ldap )
+                return HttpResponseRedirect('/quest/user_home/' + ldap + '/' + str(current_project_id))
 
             print('You are wrong')
-            return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + name)
+            return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
         
         if 'MC_response_id' in post_request:
             user_answer = post_request.getlist('answer')
@@ -229,12 +240,11 @@ def user_quest_page(request, ldap, name):
                 return HttpResponseRedirect('/quest/user_home/' + ldap )
 
             print('You are wrong')
-            return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + name)
+            return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
 
 
 
 
-    current_quest = Quest.objects.get(quest_name = name)
     list_of_questions = Question.objects.filter(quest = current_quest, deleted=False)
     fr_input_form = TakeInFreeResponseForm()
 
@@ -254,7 +264,8 @@ def user_quest_page(request, ldap, name):
         #Combines wrong answers with correct answer
         format[question] = all_answers 
 
-    context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form, 'ldap': ldap}
+    context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form, 'ldap': ldap, 
+    'current_project_id': current_project_id}
     return render(request, 'quest_extension/user_quest_page.html', context)
 
 

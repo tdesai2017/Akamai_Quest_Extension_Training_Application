@@ -22,15 +22,14 @@
     <form method='POST'>
     {% csrf_token %}
     {{ quest_form }}
-    <button type='submit'>Submit</button>
+    <button type='submit' name= 'new_quest'>Submit</button>
     </form>
 
 
     {% for quest in quests %}
     <br>
-    <form method='GET' action='/quest/admin_quest_page/{{quest.quest_name}}'>
+    <form method='GET' action='/quest/admin_quest_page/{{quest.id}}'>
         <button type='submit'>{{quest.quest_name}} ({{quest.quest_path_number }})</button>
-        <!-- <button type='submit' name = admin_quest_page value = {{quest.quest_name}}>{{quest.quest_name}}</button> -->
     </form>
 
 

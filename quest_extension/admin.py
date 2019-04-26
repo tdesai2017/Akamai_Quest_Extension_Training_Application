@@ -8,4 +8,6 @@ admin.site.register(CorrectAnswer)
 admin.site.register(Quest)
 admin.site.register(Question)
 admin.site.register(IncorrectAnswer)
+admin.site.register(Project)
+
 

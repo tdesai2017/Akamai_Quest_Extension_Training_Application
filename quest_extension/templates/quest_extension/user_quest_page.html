@@ -46,7 +46,7 @@
             <br>
         {% endfor %}
         
-        <form id='home' action = '/quest/user_home/{{ ldap }}' method='GET'></form>
+        <form id='home' action = '/quest/user_home/{{ ldap }}/{{current_project_id}}' method='GET'></form>
         
         <button form = 'home' type = submit>Home</button>
 

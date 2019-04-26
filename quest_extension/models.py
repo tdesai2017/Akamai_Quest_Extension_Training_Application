@@ -4,17 +4,19 @@ from datetime import datetime
 #CASCADE means that the row will be deleted too if the ForeignKey gets deleted.
 
 
-
-
+class Project(models.Model):
+    project_name = models.CharField(max_length=1000)
+    project_description = models.CharField(max_length=1000)
 
 class Quest(models.Model):
-    quest_name = models.CharField(unique=True, max_length=250)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    quest_name = models.CharField(max_length=250)
     quest_description = models.CharField(max_length=1000, blank=True, null=True)
     quest_points_earned = models.IntegerField()
     deleted = models.BooleanField(default=False)
     time_modified = models.DateTimeField(auto_now=True)
     #Path number determines the order that you want quests to be accessed
-    quest_path_number = models.IntegerField(unique=True)
+    quest_path_number = models.IntegerField()
 
    
 class Question(models.Model):
@@ -58,4 +60,3 @@ class CompletedQuest(models.Model):
    points_earned = models.IntegerField()
    date_completed = models.DateTimeField()
 
-   

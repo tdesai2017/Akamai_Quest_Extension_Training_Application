@@ -7,6 +7,8 @@
         
     </head>
     <body>
+        <form id ='free_response' action='/quest/fr-create-form/{{current_quest.quest_name}}' method = 'GET'></form>
+        <form id ='multiple_choice' action='/quest/mc-create-form/{{current_quest.quest_name}}' method = 'GET'></form>
 
         <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/admin_quest_page_style.css' %}">
         <h1> {{ current_quest.quest_name }} </h1>
@@ -14,6 +16,10 @@
         <div class="description">
             <h2>{{ current_quest.quest_description }}</h2>
         </div>  
+
+        <h3>Choose what kind of question you want to make!</h3>
+        <button form = 'free_response' type = submit>Free Response</button>
+        <button form = 'multiple_choice' type = submit>Multiple Choice</button>
         <br>
         <br>
 
@@ -43,15 +49,12 @@
             <br>
         {% endfor %}
         
-        <form id ='free_response' action='/quest/fr-create-form/{{current_quest.quest_name}}' method = 'GET'></form>
-        <form id ='multiple_choice' action='/quest/mc-create-form/{{current_quest.quest_name}}' method = 'GET'></form>
+        
         <form id='home' action = '/quest/admin_home' method='GET'></form>
         
         <button form = 'home' type = submit>Home</button>
 
-        <h3>Choose what kind of question you want to make!</h3>
-        <button form = 'free_response' type = submit>Free Response</button>
-        <button form = 'multiple_choice' type = submit>Multiple Choice</button>
+        
 
     </body>
 </html>

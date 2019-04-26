@@ -74,18 +74,18 @@ def create_mc_question(request, name):
 
             list_of_correct_answers = answer_form.cleaned_data['correct_choices'].split('\n')
 
+
             for correct_answer in list_of_correct_answers:
-                #Stripping is not working
-                correct_answer.strip()
+                correct_answer = str(correct_answer).strip()
                 ccc = CorrectAnswer(question=Question.objects.get(id=question_id), answer_text= correct_answer)
                 ccc.save()
+            
 
 
             list_of_wrong_answers = wrong_answer_form.cleaned_data['incorrect_choices'].split('\n')
 
             for wrong_answer in list_of_wrong_answers:
-                #Stripping is not working
-                wrong_answer.strip()
+                wrong_answer = str(wrong_answer).strip()
                 ddd = IncorrectAnswer(question=Question.objects.get(id=question_id), answer_text= wrong_answer)
                 ddd.save()
 

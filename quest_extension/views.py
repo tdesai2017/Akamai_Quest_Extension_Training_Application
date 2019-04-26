@@ -237,7 +237,7 @@ def user_quest_page(request, ldap, quest_id):
             #Even if we need to select multiple answers to get the correct repsponse, this will now work
             if user_answer == correct_answers_texts:
                 print("You are correct")
-                return HttpResponseRedirect('/quest/user_home/' + ldap )
+                return HttpResponseRedirect('/quest/user_home/' + ldap + '/' + str(current_project_id) )
 
             print('You are wrong')
             return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)

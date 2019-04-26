@@ -106,7 +106,6 @@ def admin_home(request):
         post_request = request.POST
         quest_form = QuestForm(post_request)
         if 'quest_description' in request.POST and 'quest_points_earned' in request.POST and 'quest_name' in request.POST:
-           #make sure to make quest_name unique
             if quest_form.is_valid():
                 quest_form.save()
                 return HttpResponseRedirect('/quest/admin_quest_page/' + post_request['quest_name'])
@@ -117,9 +116,28 @@ def admin_home(request):
     return render(request, 'quest_extension/admin_home.html', context)
 
 def admin_quest_page(request, name):
-
     current_quest = Quest.objects.get(quest_name = name)
-    list_of_questions = Question.objects.filter(quest = current_quest)
+
+
+    if request.method == 'POST':
+        post_request = request.POST
+        if 'deleted' in post_request.keys():
+            current_question = Question.objects.get(id = post_request['deleted'])
+            print (post_request)
+            current_question.deleted = True
+            current_question.save()
+            
+            return HttpResponseRedirect('/quest/admin_quest_page/' + current_question.quest.quest_name)
+
+        if 'undo' in post_request.keys():
+            if Question.objects.filter(quest = current_quest, deleted = True):
+                object_to_reappear = Question.objects.filter(quest = current_quest, deleted = True).latest('time_modified')
+                object_to_reappear.deleted = False
+                object_to_reappear.save()
+            return HttpResponseRedirect(name)
+
+
+    list_of_questions = Question.objects.filter(quest = current_quest, deleted = False)
     fr_input_form = TakeInFreeResponseForm
 
     format = {}
@@ -217,9 +235,8 @@ def user_quest_page(request, ldap, name):
 
 
     current_quest = Quest.objects.get(quest_name = name)
-    list_of_questions = Question.objects.filter(quest = current_quest)
+    list_of_questions = Question.objects.filter(quest = current_quest, deleted=False)
     fr_input_form = TakeInFreeResponseForm()
-
 
     format = {}
     for question in list_of_questions:
@@ -242,5 +259,9 @@ def user_quest_page(request, ldap, name):
 
 
 def admin_edit_question(request, question_id):
+    current_question = Question.objects.get(id = question_id)
+    
+    
+    context = {'current_question': current_question}
+    return render(request, 'quest_extension/admin_edit_question.html', context)
 
-    return HttpResponse("loopyschroopy")

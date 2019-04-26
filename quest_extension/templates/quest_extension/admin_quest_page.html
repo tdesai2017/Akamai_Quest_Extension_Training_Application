@@ -7,10 +7,10 @@
         
     </head>
     <body>
-        <form id ='free_response' action='/quest/fr-create-form/{{current_quest.quest_name}}' method = 'GET'></form>
-        <form id ='multiple_choice' action='/quest/mc-create-form/{{current_quest.quest_name}}' method = 'GET'></form>
-
-        <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/admin_quest_page_style.css' %}">
+        <form id = 'free_response' action='/quest/fr-create-form/{{current_quest.quest_name}}' method = 'GET'></form>
+        <form id = 'multiple_choice' action='/quest/mc-create-form/{{current_quest.quest_name}}' method = 'GET'></form>
+        <form id = 'undo_delete' method = 'POST'> {% csrf_token %} </form>
+        <link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_quest_page_style.css' %}">
         <h1> {{ current_quest.quest_name }} </h1>
 
         <div class="description">
@@ -20,6 +20,9 @@
         <h3>Choose what kind of question you want to make!</h3>
         <button form = 'free_response' type = submit>Free Response</button>
         <button form = 'multiple_choice' type = submit>Multiple Choice</button>
+        <br>
+        <br>
+        <button form = 'undo_delete' type = submit name='undo' value='current_quest.quest_name'> Undo Delete</button>
         <br>
         <br>
 
@@ -42,6 +45,10 @@
                 {% endif %}
                 <br>
                 <a href= '/quest/admin_edit_question/{{ question.id }}'>(Edit)</a>
+                <form method= 'POST'>
+                        {% csrf_token %}
+                        <button type='submit' name = 'deleted' value = '{{question.id}}'>Delete Question</button>
+                </form>
 
 
             

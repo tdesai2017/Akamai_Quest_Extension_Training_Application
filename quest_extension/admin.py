@@ -9,5 +9,5 @@ admin.site.register(Quest)
 admin.site.register(Question)
 admin.site.register(IncorrectAnswer)
 admin.site.register(Project)
-
-
+admin.site.register(CorrectlyAnsweredQuestion)
+admin.site.register(CurrentQuest)

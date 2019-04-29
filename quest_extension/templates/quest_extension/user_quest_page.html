@@ -8,7 +8,7 @@
     </head>
     <body>
 
-        <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/admin_quest_page_style.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_quest_page_style.css' %}">
         <h1> {{ current_quest.quest_name }} </h1>
 
         <div class="description">
@@ -17,29 +17,58 @@
         <br>
         <br>
 
-        {% for question, answers in format.items %}
+        {% for question, answers, correct_answers in format_2 %}
             <div class='question'>
                 <p>{{ question.question_text }}</p>
 
             </div>
                 {% if question.question_type ==  'FR' %}
-                   <form method = "POST">
-                        {% csrf_token %}
-                        {{ fr_input_form }}
-                        <button type= 'submit' name='FR_response_id' value = '{{ question.id }}'>Submit</button>
-                    </form>
+
+
+                    {% if question.id not in have_correct_answer %}
+                         <form method = "POST">
+                            {% csrf_token %}
+                            {{ fr_input_form }}
+                             <button type= 'submit' name='FR_response_id' value = '{{ question.id }}'>Submit</button>
+                        </form>
+                    {% endif %}
+
+
+                    {% if question.id in have_correct_answer %}
+                    <div class= 'correct_answer_was_chosen'>
+                        Answer: 
+                        {% for answer in correct_answers %} 
+                            {{ answer.answer_text }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+
                 {% endif %}
 
                 {% if question.question_type == 'MC' %}
-                    <form method = "POST">
-                        {% csrf_token %}
-                        {% for a in answers %}
-                        <!-- Make both incorrect and correct answers have the same filed called answer_text so that it can easily be passed as a value -->
-                            <input type="checkbox" name="answer" value="{{ a.answer_text }}">{{ a.answer_text }}<br>
-                        {% endfor %}
-                        <br>
-                        <button type= 'submit' name= 'MC_response_id' value= '{{ question.id }}'>Submit</button>
-                    </form>
+                     {% if question.id not in have_correct_answer %}
+
+                        <form method = "POST">
+                            {% csrf_token %}
+                            {% for a in answers %}
+                            <!-- Make both incorrect and correct answers have the same filed called answer_text so that it can easily be passed as a value -->
+                                <input type="checkbox" name="answer" value="{{ a.answer_text }}">{{ a.answer_text }}<br>
+                            {% endfor %}
+                            <br>
+                            <button type= 'submit' name= 'MC_response_id' value= '{{ question.id }}'>Submit</button>
+                        </form>
+                    {% endif %}
+                        
+                    {% if question.id in have_correct_answer %}
+                        <div class= 'correct_answer_was_chosen' >
+                            Answer: 
+                            {% for answer in correct_answers %} 
+                                {{ answer.answer_text }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+    
                 {% endif %}
 
             <br>

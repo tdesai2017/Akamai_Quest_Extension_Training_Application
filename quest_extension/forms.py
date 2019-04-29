@@ -34,6 +34,11 @@ class CorrectAnswerForm(forms.ModelForm):
         model = models.CorrectAnswer
         fields = ['answer_text']
 
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = models.Project
+        fields = ['project_name', 'project_description']
+
 
 class RightAnswerForm(forms.Form):
     correct_choices = forms.CharField(widget=forms.Textarea)
@@ -45,6 +50,8 @@ class WrongAnswerForm(forms.Form):
 
 class TakeInFreeResponseForm(forms.Form):
     answer = forms.CharField()
+
+
 
 # FAVORITE_COLORS_CHOICES = (
 #     ('blue', 'Blue'),

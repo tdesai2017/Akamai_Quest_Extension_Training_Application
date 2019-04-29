@@ -16,5 +16,6 @@ urlpatterns = [
     path('user_home/<ldap>/<project_id>', views.user_home),
     path('user_quest_page/<ldap>/<quest_id>', views.user_quest_page),
     path('admin_edit_question/<question_id>', views.admin_edit_question),
+    path('admin_project_page', views.admin_project_page)
 
 ]

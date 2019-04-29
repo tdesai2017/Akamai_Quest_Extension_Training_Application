@@ -60,3 +60,14 @@ class CompletedQuest(models.Model):
    points_earned = models.IntegerField()
    date_completed = models.DateTimeField()
 
+class CorrectlyAnsweredQuestion (models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class CurrentQuest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    current_quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
+
+
+

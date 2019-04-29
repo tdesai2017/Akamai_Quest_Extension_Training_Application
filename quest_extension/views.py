@@ -121,7 +121,7 @@ def admin_home(request, project_id):
 
     quests = Quest.objects.filter(project = current_project)
     quest_form = QuestForm()
-    context = {'quests':quests, 'quest_form': quest_form}
+    context = {'quests':quests, 'quest_form': quest_form, 'current_project': current_project}
     return render(request, 'quest_extension/admin_home.html', context)
 
 def admin_quest_page(request, quest_id):
@@ -172,6 +172,7 @@ def admin_quest_page(request, quest_id):
 
 def user_home(request, ldap, project_id):    
     user = User.objects.get(user_ldap= ldap)
+    current_project = Project.objects.get(id = project_id)
 
     # Figure out how we can replace this with Javascript
     if request.method == 'POST':
@@ -180,22 +181,46 @@ def user_home(request, ldap, project_id):
         # For some reason event though both evalued to the same number, 
         # they were always compared to be not equal to each other
         # That's why I am converting them both to strings
-        if str(user.current_quest.quest_path_number) == str(post_request['quest_path_number']):
-
-            current_quest = Quest.objects.get(quest_path_number = post_request['quest_path_number'])
-            return HttpResponseRedirect('/quest/user_quest_page/' + user.user_ldap + "/" + str(current_quest.id))
+        users_current_quest_path_num = str(CurrentQuest.objects.get(user = user, project = current_project).current_quest.quest_path_number)
+        if str(users_current_quest_path_num) >= str(post_request['quest_path_number']):
+            quest_clicked_on = Quest.objects.get(quest_path_number = post_request['quest_path_number'], project = current_project)
+            return HttpResponseRedirect('/quest/user_quest_page/' + user.user_ldap + "/" + str(quest_clicked_on.id))
 
         else:
             return HttpResponseRedirect('/quest/user_home/' + ldap + '/' + str(project_id))
 
-    quests = Quest.objects.all()
-    context = {'quests':quests, 'user': user}
+    quests = Quest.objects.filter(project = current_project)
+    context = {'quests':quests, 'user': user, 'current_project': current_project}
     return render(request, 'quest_extension/user_home.html', context)
     
+#Checks whether you can go to the next question once you sumbit a new answer
+def go_to_next_quest(current_quest, current_user, current_project):
+    num_questions_in_quest = len(Question.objects.filter(quest = current_quest, deleted = False))
+    all_questions_in_quest = [question for question in Question.objects.filter(quest = current_quest, deleted = False)]
+    count_of_correctly_answered_questions = 0
+    for question in all_questions_in_quest:
+        if (CorrectlyAnsweredQuestion.objects.filter(question = question, user = current_user)):
+            count_of_correctly_answered_questions += 1
+            
+    print(count_of_correctly_answered_questions, num_questions_in_quest)
+
+    if (count_of_correctly_answered_questions == num_questions_in_quest):
+        current_quest_num = CurrentQuest.objects.get(user = current_user, project = current_project).current_quest.quest_path_number
+        users_current_quest_object = CurrentQuest.objects.get(user = current_user, project = current_project)
+        #If next quest exists
+        if (Quest.objects.filter(quest_path_number = current_quest_num + 1, project = current_project)):
+            next_quest = Quest.objects.get(quest_path_number = current_quest_num + 1, project = current_project)
+            print("I Am Here")
+            users_current_quest_object.current_quest = next_quest
+            users_current_quest_object.save()
+
+
 
 def user_quest_page(request, ldap, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
     current_project_id = current_quest.project.id
+    current_project = current_quest.project
+    current_user = User.objects.get(user_ldap = ldap)
 
 
     if request.method == 'POST':
@@ -212,7 +237,14 @@ def user_quest_page(request, ldap, quest_id):
 
             if user_answer in correct_answers_texts:
                 print("You are correct")
-                return HttpResponseRedirect('/quest/user_home/' + ldap + '/' + str(current_project_id))
+                correctly_answered_question = CorrectlyAnsweredQuestion()
+                #Adds a new correctly answer question
+                correctly_answered_question.question = current_question
+                correctly_answered_question.user = User.objects.get(user_ldap = ldap)
+                correctly_answered_question.save()
+                go_to_next_quest(current_quest, current_user, current_project)
+
+                return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
 
             print('You are wrong')
             return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
@@ -229,43 +261,60 @@ def user_quest_page(request, ldap, quest_id):
             user_answer.sort()
             correct_answers_texts.sort()
 
-
-            print(user_answer) 
-            print (correct_answers_texts)
-            
-
             #Even if we need to select multiple answers to get the correct repsponse, this will now work
             if user_answer == correct_answers_texts:
-                print("You are correct")
-                return HttpResponseRedirect('/quest/user_home/' + ldap + '/' + str(current_project_id) )
+                correctly_answered_question = CorrectlyAnsweredQuestion()
+                #Adds a new correctly answer question
+                correctly_answered_question.question = current_question
+                correctly_answered_question.user = User.objects.get(user_ldap = ldap)
+                correctly_answered_question.save()
+                go_to_next_quest(current_quest, current_user, current_project)
+                return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
 
             print('You are wrong')
             return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
 
-
-
-
     list_of_questions = Question.objects.filter(quest = current_quest, deleted=False)
     fr_input_form = TakeInFreeResponseForm()
+    have_correct_answer = [i.question.id for i in CorrectlyAnsweredQuestion.objects.filter(user = current_user)]
 
-    format = {}
+
+    #format = {}
+    format_2 = []
     for question in list_of_questions:
         correct_answer = CorrectAnswer.objects.filter(question = question)
         wrong_answers = IncorrectAnswer.objects.filter(question = question)
         all_answers = []
+        correct_answer_2 = []
+
+        format_2_tuple = (question, all_answers, correct_answer)
 
         for answer in wrong_answers:
             all_answers.append(answer)
 
         for answer in correct_answer:
             all_answers.append(answer)
+            correct_answer_2.append(answer)
+        
 
         shuffle(all_answers)
         #Combines wrong answers with correct answer
-        format[question] = all_answers 
+        #format[question] = all_answers
+        format_2.append(format_2_tuple)
 
-    context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form, 'ldap': ldap, 
-    'current_project_id': current_project_id}
+    #Checks whether you can move onto the next quest, only happens when you give a post request for
+    #the next answer
+    
+
+
+    context = {'current_quest': current_quest, 
+            'format': format, 
+            'fr_input_form': fr_input_form, 
+            'ldap': ldap, 
+            'current_project_id': current_project_id, 
+            'have_correct_answer': have_correct_answer,
+            'format_2': format_2}
+
     return render(request, 'quest_extension/user_quest_page.html', context)
 
 
@@ -276,3 +325,20 @@ def admin_edit_question(request, question_id):
     context = {'current_question': current_question}
     return render(request, 'quest_extension/admin_edit_question.html', context)
 
+def admin_project_page(request):
+
+    if request.method == 'POST':
+        # form was submitted
+        project_form = ProjectForm(request.POST)
+        if project_form.is_valid():
+            temp = project_form.save(commit=False)
+            temp.save()
+            project_id = temp.id
+
+            return HttpResponseRedirect('/quest/admin_home/' + str(project_id))
+    else:
+        project_form = ProjectForm()
+        list_of_projects = Project.objects.all()
+
+    context = {'project_form': project_form, 'list_of_projects': list_of_projects}
+    return render(request, 'quest_extension/admin_project_page.html', context)

@@ -14,36 +14,26 @@
     </head>
 
     <body>
-        
-    <h1>{{ current_project.project_name}}</h1>
-    <p> {{ current_project.project_description }}</p>
+	<h1>All Projects!</h1>
 
-	<p>Welcome Admin to the Quests!</p>
-    <p>You have ___ points!</p>
-        
-    <form id='back_to_projects' action = '/quest/admin_project_page' method='GET'></form>
-        
-    <button form = 'back_to_projects' type = submit>Back to Projects Page</button>
-
-    <br>
-    <br>
+	<p>Welcome Admin to the different Projects!</p>
          
     <form method='POST'>
     {% csrf_token %}
-    {{ quest_form }}
-    <button type='submit' name= 'new_quest'>Submit</button>
+    {{ project_form }}
+    <button type='submit' name= 'new_project'>Submit</button>
     </form>
 
 
-    {% for quest in quests %}
+    {% for project in list_of_projects %}
     <br>
-    <form method='GET' action='/quest/admin_quest_page/{{quest.id}}'>
-        <button type='submit'>{{quest.quest_name}} ({{quest.quest_path_number }})</button>
+    <form method='GET' action='/quest/admin_home/{{project.id}}'>
+        <button type='submit'>{{project.project_name}}</button>
     </form>
 
 
     {% endfor %}
-    
+	
     </body>
     
 </html>

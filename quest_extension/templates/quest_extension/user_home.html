@@ -2,9 +2,6 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<meta name="I am Here">
-
-    
     <head>
 	<title>Quest home</title>
 	<meta charset="utf-8">
@@ -17,7 +14,8 @@
     </head>
 
     <body>
-	<h1>Project Title</h1>
+    <h1>{{ current_project.project_name}}</h1>
+    <p> {{ current_project.project_description }}</p>
 
 	<p>Welcome {{ user.user_first_name }} to the Quests!</p>
 	<p>You have {{ user.user_points }} points!</p>

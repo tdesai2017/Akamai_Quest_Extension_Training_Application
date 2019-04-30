@@ -115,8 +115,18 @@ def admin_home(request, project_id):
                 temp.project = current_project
                 temp.save()
                 quest_id = temp.id
+                all_users_without_current_quests = UserProject.objects.filter(project = current_project, current_quest= None)
+                #If a user has no current quest for a certain project since the admin never created a quest with path 1 until
+                #now, the user's current quest will be updated here to the inputted quest with id = 1
+                if int(post_request['quest_path_number']) == 1 and len(all_users_without_current_quests) > 0:
+                    print('Yes we made it here at least', len(all_users_without_current_quests))
+                    for userproject in all_users_without_current_quests:
+                        userproject.current_quest = temp
+                        userproject.save()
 
-                
+                    
+
+
                 return HttpResponseRedirect('/quest/admin_quest_page/' + str(quest_id))
 
     quests = Quest.objects.filter(project = current_project)
@@ -283,7 +293,6 @@ def user_quest_page(request, ldap, quest_id):
     have_correct_answer = [i.question.id for i in CorrectlyAnsweredQuestion.objects.filter(user = current_user)]
 
 
-    #format = {}
     format_2 = []
     for question in list_of_questions:
         correct_answer = CorrectAnswer.objects.filter(question = question)
@@ -303,14 +312,11 @@ def user_quest_page(request, ldap, quest_id):
 
         shuffle(all_answers)
         #Combines wrong answers with correct answer
-        #format[question] = all_answers
         format_2.append(format_2_tuple)
 
     #Checks whether you can move onto the next quest, only happens when you give a post request for
     #the next answer
     
-
-
     context = {'current_quest': current_quest, 
             'format': format, 
             'fr_input_form': fr_input_form, 
@@ -359,7 +365,10 @@ def user_project_page(request, ldap):
             new_user_project.user = User.objects.get(user_ldap = ldap)
             new_user_project.project = project_requested
             #Every Project Must have at least one quest upon creation -> Find a way to ensure this
-            new_user_project.current_quest = Quest.objects.get(project = project_requested, quest_path_number = 1)
+            if len(Quest.objects.filter(project = project_requested, quest_path_number = 1)) == 1:
+                new_user_project.current_quest = Quest.objects.get(project = project_requested, quest_path_number = 1)
+            else:
+                new_user_project.current_quest = None
             new_user_project.save() 
         return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 

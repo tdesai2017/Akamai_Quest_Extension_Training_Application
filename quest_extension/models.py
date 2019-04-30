@@ -67,7 +67,7 @@ class UserProject(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     #Fix what happens if a single quest gets deleted
-    current_quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
+    current_quest = models.ForeignKey(Quest, on_delete=models.CASCADE, null=True)
     points = models.IntegerField(default = 0)
 
 

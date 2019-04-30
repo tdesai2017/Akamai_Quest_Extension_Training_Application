@@ -43,7 +43,7 @@ class User(models.Model):
    user_email = models.CharField(max_length=45)
    user_manager_ldap = models.CharField(max_length=45)
    user_director_ldap = models.CharField(max_length=45)
-   exempt = models.BooleanField(default=False)
+   #exempt = models.BooleanField(default=False) (This should go in User_project)
 
    
 class CorrectAnswer(models.Model):
@@ -66,6 +66,7 @@ class CorrectlyAnsweredQuestion (models.Model):
 class UserProject(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    #Fix what happens if a single quest gets deleted
     current_quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
     points = models.IntegerField(default = 0)
 

@@ -351,21 +351,17 @@ def user_project_page(request, ldap):
 
     if request.method == 'POST':
         post_request = request.POST
-        print(post_request)
         inputted_random_phrase = post_request['random_phrase']
         project_requested = Project.objects.get(id = post_request['project_id'])
+        
         if inputted_random_phrase == project_requested.project_random_phrase:
             new_user_project = UserProject()
             new_user_project.user = User.objects.get(user_ldap = ldap)
             new_user_project.project = project_requested
-            #Ever Project Must have at least one quest
+            #Every Project Must have at least one quest upon creation -> Find a way to ensure this
             new_user_project.current_quest = Quest.objects.get(project = project_requested, quest_path_number = 1)
             new_user_project.save() 
-
-
-        
-
-
+        return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 
     current_user = User.objects.get(user_ldap = ldap)
     user_projects = [user_project.project for user_project in UserProject.objects.filter(user = current_user)]
@@ -377,4 +373,24 @@ def user_project_page(request, ldap):
       'all_other_projects': all_other_projects,
       'add_new_project_form': add_new_project_form}
     return render(request, 'quest_extension/user_project_page.html', context)
- 
+
+def new_user(request):
+
+    if request.method == 'POST':
+        user_form = UserForm(request.POST)
+        if user_form.is_valid():
+            temp = user_form.save(commit=False)
+            user_ldap = temp.user_ldap
+            #I feel like this is really slow and want to figure out a faster way, since right now
+            #This will have to iterate through every person -> figure out a way to make this faster
+            if user_ldap not in [user.user_ldap for user in User.objects.all()]:
+                temp.save()
+                return HttpResponseRedirect('/quest/user_project_page/' + user_ldap)
+
+    user_form = UserForm()
+    context = {'user_form': user_form}
+    return render(request, 'quest_extension/new_user.html', context)
+
+            
+
+

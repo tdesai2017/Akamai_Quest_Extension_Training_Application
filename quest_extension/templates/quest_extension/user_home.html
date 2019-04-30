@@ -18,7 +18,7 @@
     <p> {{ current_project.project_description }}</p>
 
 	<p>Welcome {{ user.user_first_name }} to the Quests!</p>
-	<p>You have {{ current_user_project_object.points }} points!</p>
+    <p>You have {{ current_user_project_object.points }} points!</p>
          
 
     {% for quest in quests %}
@@ -31,6 +31,8 @@
 
 
     {% endfor %}
+    <br>
+    <a href = '/quest/user_project_page/{{user.user_ldap}}'>Back to Project Page</a>
     </body>
     
 </html>

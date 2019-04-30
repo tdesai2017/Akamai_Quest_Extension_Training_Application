@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    
+    <head>
+	<title>Quest home</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_project_page_style.css' %}">
+
+    </head>
+
+    <body>
+	<h1>All Projects!</h1>
+
+	<p>Welcome {{ current_user.user_first_name }} to the different Projects!</p>
+         
+    <h3> My Projects </h3>
+
+    {% for project in user_projects %}
+
+        <form method='GET', action = '/quest/user_home/{{ current_user.user_ldap }}/{{ project.id }}'>
+                <button type='submit'>{{project.project_name}}</button>
+        </form>
+        
+    {% endfor %}
+
+    <h3> All Other Projects </h3>
+
+    {% for project in all_other_projects %}
+
+        <!-- <form method='GET', action = '/quest/user_home/{{ current_user.user_ldap }}/{{ project.id }}'> -->
+                <form id = 'add_new_project' method='POST'>
+                    {% csrf_token %}
+                    <button type ='submit' name = 'project_id' value = '{{project.id}}'>{{project.project_name}}</button>
+                    {{ add_new_project_form }}
+                </form>
+                <br>
+
+        <!-- </form> -->
+        
+    {% endfor %}
+
+	
+    </body>
+    
+</html>

@@ -18,7 +18,7 @@
     <p> {{ current_project.project_description }}</p>
 
 	<p>Welcome {{ user.user_first_name }} to the Quests!</p>
-	<p>You have {{ user.user_points }} points!</p>
+	<p>You have {{ current_user_project_object.points }} points!</p>
          
 
     {% for quest in quests %}

@@ -173,6 +173,7 @@ def admin_quest_page(request, quest_id):
 def user_home(request, ldap, project_id):    
     user = User.objects.get(user_ldap= ldap)
     current_project = Project.objects.get(id = project_id)
+    current_user_project_object = UserProject.objects.get(user = user, project = current_project)
 
     # Figure out how we can replace this with Javascript
     if request.method == 'POST':
@@ -181,7 +182,7 @@ def user_home(request, ldap, project_id):
         # For some reason event though both evalued to the same number, 
         # they were always compared to be not equal to each other
         # That's why I am converting them both to strings
-        users_current_quest_path_num = str(CurrentQuest.objects.get(user = user, project = current_project).current_quest.quest_path_number)
+        users_current_quest_path_num = str(UserProject.objects.get(user = user, project = current_project).current_quest.quest_path_number)
         if str(users_current_quest_path_num) >= str(post_request['quest_path_number']):
             quest_clicked_on = Quest.objects.get(quest_path_number = post_request['quest_path_number'], project = current_project)
             return HttpResponseRedirect('/quest/user_quest_page/' + user.user_ldap + "/" + str(quest_clicked_on.id))
@@ -190,7 +191,7 @@ def user_home(request, ldap, project_id):
             return HttpResponseRedirect('/quest/user_home/' + ldap + '/' + str(project_id))
 
     quests = Quest.objects.filter(project = current_project)
-    context = {'quests':quests, 'user': user, 'current_project': current_project}
+    context = {'quests':quests, 'user': user, 'current_project': current_project, 'current_user_project_object': current_user_project_object}
     return render(request, 'quest_extension/user_home.html', context)
     
 #Checks whether you can go to the next question once you sumbit a new answer
@@ -205,16 +206,19 @@ def go_to_next_quest(current_quest, current_user, current_project):
     print(count_of_correctly_answered_questions, num_questions_in_quest)
 
     if (count_of_correctly_answered_questions == num_questions_in_quest):
-        current_quest_num = CurrentQuest.objects.get(user = current_user, project = current_project).current_quest.quest_path_number
-        users_current_quest_object = CurrentQuest.objects.get(user = current_user, project = current_project)
+        users_user_project_object = UserProject.objects.get(user = current_user, project = current_project)
+        #adds points for the completed quest to the user
+        users_user_project_object.points += current_quest.quest_points_earned
+        users_user_project_object.save()
+        print("Edli's points are:" + str (users_user_project_object.points))
+        current_quest_num = current_quest.quest_path_number
         #If next quest exists
         if (Quest.objects.filter(quest_path_number = current_quest_num + 1, project = current_project)):
             next_quest = Quest.objects.get(quest_path_number = current_quest_num + 1, project = current_project)
             print("I Am Here")
-            users_current_quest_object.current_quest = next_quest
-            users_current_quest_object.save()
-
-
+            users_user_project_object.current_quest = next_quest
+            users_user_project_object.save()
+            
 
 def user_quest_page(request, ldap, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
@@ -342,3 +346,35 @@ def admin_project_page(request):
 
     context = {'project_form': project_form, 'list_of_projects': list_of_projects}
     return render(request, 'quest_extension/admin_project_page.html', context)
+
+def user_project_page(request, ldap):
+
+    if request.method == 'POST':
+        post_request = request.POST
+        print(post_request)
+        inputted_random_phrase = post_request['random_phrase']
+        project_requested = Project.objects.get(id = post_request['project_id'])
+        if inputted_random_phrase == project_requested.project_random_phrase:
+            new_user_project = UserProject()
+            new_user_project.user = User.objects.get(user_ldap = ldap)
+            new_user_project.project = project_requested
+            #Ever Project Must have at least one quest
+            new_user_project.current_quest = Quest.objects.get(project = project_requested, quest_path_number = 1)
+            new_user_project.save() 
+
+
+        
+
+
+
+    current_user = User.objects.get(user_ldap = ldap)
+    user_projects = [user_project.project for user_project in UserProject.objects.filter(user = current_user)]
+    user_project_ids = [project.id for project in user_projects]
+    all_other_projects = [project for project in Project.objects.all() if project.id not in user_project_ids]
+    add_new_project_form = AddNewProjectForm()
+    context = {'current_user': current_user,
+     'user_projects': user_projects,
+      'all_other_projects': all_other_projects,
+      'add_new_project_form': add_new_project_form}
+    return render(request, 'quest_extension/user_project_page.html', context)
+ 

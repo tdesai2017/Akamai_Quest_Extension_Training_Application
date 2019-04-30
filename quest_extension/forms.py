@@ -26,7 +26,7 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = models.User
         fields = ['user_ldap', 'user_first_name', 'user_last_name', 'user_email', 'user_manager_ldap', 
-                  'user_director_ldap', 'user_points', 'exempt']
+                  'user_director_ldap', 'exempt']
 
 
 class CorrectAnswerForm(forms.ModelForm):
@@ -37,7 +37,7 @@ class CorrectAnswerForm(forms.ModelForm):
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = models.Project
-        fields = ['project_name', 'project_description']
+        fields = ['project_name', 'project_description', 'project_random_phrase']
 
 
 class RightAnswerForm(forms.Form):
@@ -50,6 +50,9 @@ class WrongAnswerForm(forms.Form):
 
 class TakeInFreeResponseForm(forms.Form):
     answer = forms.CharField()
+
+class AddNewProjectForm(forms.Form):
+    random_phrase = forms.CharField()
 
 
 

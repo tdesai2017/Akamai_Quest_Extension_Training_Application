@@ -16,13 +16,16 @@
         <div class="description">
             <h2>{{ current_quest.quest_description }}</h2>
         </div>  
+    
+        <div class= 'admin_buttons'>
+            <h3>Choose what kind of question you want to make!</h3>
+            <button form = 'free_response' type = submit>Free Response</button>
+            <button form = 'multiple_choice' type = submit>Multiple Choice</button>
+            <br>
+            <br>
+            <button form = 'undo_delete' type = submit name='undo' value='current_quest.id'> Undo Delete</button>
+        </div>
 
-        <h3>Choose what kind of question you want to make!</h3>
-        <button form = 'free_response' type = submit>Free Response</button>
-        <button form = 'multiple_choice' type = submit>Multiple Choice</button>
-        <br>
-        <br>
-        <button form = 'undo_delete' type = submit name='undo' value='current_quest.id'> Undo Delete</button>
         <br>
         <br>
 
@@ -44,11 +47,18 @@
                     <button type= 'submit'>Submit</button>
                 {% endif %}
                 <br>
-                <a href= '/quest/admin_edit_question/{{ question.id }}'>(Edit)</a>
-                <form method= 'POST'>
-                        {% csrf_token %}
-                        <button type='submit' name = 'deleted' value = '{{question.id}}'>Delete Question</button>
-                </form>
+                <br>
+                
+                <div class= 'admin_buttons'>
+                    <form method= 'GET', action= '/quest/admin_edit_question/{{ question.id }}'>
+                            <button type='submit' name = 'deleted' value = '{{question.id}}'>Edit</button>
+                    </form>
+
+                    <form method= 'POST'>
+                            {% csrf_token %}
+                            <button type='submit' name = 'deleted' value = '{{question.id}}'>Delete Question</button>
+                    </form>
+                </div>
 
 
             

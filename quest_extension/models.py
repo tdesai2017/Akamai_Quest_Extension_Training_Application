@@ -7,6 +7,7 @@ from datetime import datetime
 class Project(models.Model):
     project_name = models.CharField(max_length=1000)
     project_description = models.CharField(max_length=1000)
+    project_random_phrase = models.CharField(max_length = 255)
 
 class Quest(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -36,14 +37,12 @@ class IncorrectAnswer(models.Model):
   
 class User(models.Model):
     #Figure out if this on cascade is correct
-   current_quest = models.ForeignKey(Quest, on_delete=models.SET_NULL, null=True)
    user_ldap = models.CharField(max_length=45)
    user_first_name = models.CharField(max_length=45)
    user_last_name = models.CharField(max_length=45)
    user_email = models.CharField(max_length=45)
    user_manager_ldap = models.CharField(max_length=45)
    user_director_ldap = models.CharField(max_length=45)
-   user_points = models.IntegerField()
    exempt = models.BooleanField(default=False)
 
    
@@ -64,10 +63,13 @@ class CorrectlyAnsweredQuestion (models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-class CurrentQuest(models.Model):
+class UserProject(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     current_quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
+    points = models.IntegerField(default = 0)
+
+
 
 
 

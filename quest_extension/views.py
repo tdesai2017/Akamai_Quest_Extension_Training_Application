@@ -129,7 +129,7 @@ def admin_home(request, project_id):
 
                 return HttpResponseRedirect('/quest/admin_quest_page/' + str(quest_id))
 
-    quests = Quest.objects.filter(project = current_project)
+    quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
     quest_form = QuestForm()
     context = {'quests':quests, 'quest_form': quest_form, 'current_project': current_project}
     return render(request, 'quest_extension/admin_home.html', context)
@@ -200,7 +200,7 @@ def user_home(request, ldap, project_id):
         else:
             return HttpResponseRedirect('/quest/user_home/' + ldap + '/' + str(project_id))
 
-    quests = Quest.objects.filter(project = current_project)
+    quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
     context = {'quests':quests, 'user': user, 'current_project': current_project, 'current_user_project_object': current_user_project_object}
     return render(request, 'quest_extension/user_home.html', context)
     

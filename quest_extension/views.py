@@ -2,10 +2,11 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from quest_extension.models import *
 from .forms import *
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.utils.text import slugify
 from django.utils.http import urlencode
 from random import shuffle
+
 
 
 
@@ -354,6 +355,8 @@ def admin_project_page(request):
     return render(request, 'quest_extension/admin_project_page.html', context)
 
 def user_project_page(request, ldap):
+    if (request.session['current_user_ldap'] != ldap):
+        return HttpResponseRedirect('/quest/user_login')
 
     if request.method == 'POST':
         post_request = request.POST
@@ -384,7 +387,6 @@ def user_project_page(request, ldap):
     return render(request, 'quest_extension/user_project_page.html', context)
 
 def new_user(request):
-
     if request.method == 'POST':
         user_form = UserForm(request.POST)
         if user_form.is_valid():
@@ -399,6 +401,22 @@ def new_user(request):
     user_form = UserForm()
     context = {'user_form': user_form}
     return render(request, 'quest_extension/new_user.html', context)
+
+def user_login (request):
+    if request.method == 'POST':
+        post_request = request.POST
+        print (post_request)
+        request.session['current_user_ldap'] = post_request['ldap']
+        return HttpResponseRedirect('/quest/user_project_page/' + request.session['current_user_ldap'])
+    
+    if request.session['current_user_ldap']:
+        print(request.session)
+        print(request.session['current_user_ldap'])
+    
+    return render(request, 'quest_extension/user_login.html')
+
+
+        # Keep this in mind: SESSION_EXPIRE_AT_BROWSER_CLOSE
 
             
 

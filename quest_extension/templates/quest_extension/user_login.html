@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <Title> Example Login </Title>
+</head>
+<body>
+    
+    <form method='POST'>
+        {% csrf_token %}
+        Login (Ldap): <input type="text" name='ldap'>
+        <button type="submit">Submit</button>
+    </form>
+
+</body>
+</html>

@@ -18,7 +18,8 @@ urlpatterns = [
     path('admin_edit_question/<question_id>', views.admin_edit_question),
     path('admin_project_page', views.admin_project_page),
     path('user_project_page/<ldap>', views.user_project_page),
-    path('new_user', views.new_user)
+    path('new_user', views.new_user),
+    path('user_login', views.user_login)
 
 
 ]

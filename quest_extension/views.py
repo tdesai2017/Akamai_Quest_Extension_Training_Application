@@ -10,26 +10,61 @@ from random import shuffle
 
 
 
-def home(request):
-    return render(request, 'quest_extension/home.html')
-# Create your views here.
+# def home(request):
+#     return render(request, 'quest_extension/home.html')
+# # Create your views here.
 
-def quest_create(request):
-    """creates a quest"""
+# def quest_create(request):
+#     """creates a quest"""
     
-    if request.method == 'POST':
-        # form was submitted
-        form = QuestForm(request.POST)
-        if form.is_valid():
-            temp = form.save(commit=False)
-            quest_id = temp.id
-            temp.save()
-            return HttpResponseRedirect('/quest/admin_quest_page/' + str(quest_id))
-    else:
-        form = QuestForm()
-    return render(request, 'quest_extension/test.html', {'form': form})
+#     if request.method == 'POST':
+#         # form was submitted
+#         form = QuestForm(request.POST)
+#         if form.is_valid():
+#             temp = form.save(commit=False)
+#             quest_id = temp.id
+#             temp.save()
+#             return HttpResponseRedirect('/quest/admin_quest_page/' + str(quest_id))
+#     else:
+#         form = QuestForm()
+#     return render(request, 'quest_extension/test.html', {'form': form})
+
+#Functions
+
+#Verifies that you are only trying to access the content for the ldap that you are logged in for
+def validate_user_access(session_ldap, current_ldap):
+    return (session_ldap == current_ldap)
+        
+    
+
+#Checks whether you can go to the next question once you sumbit a new answer
+def go_to_next_quest(current_quest, current_user, current_project):
+    num_questions_in_quest = len(Question.objects.filter(quest = current_quest, deleted = False))
+    all_questions_in_quest = [question for question in Question.objects.filter(quest = current_quest, deleted = False)]
+    count_of_correctly_answered_questions = 0
+    for question in all_questions_in_quest:
+        if (CorrectlyAnsweredQuestion.objects.filter(question = question, user = current_user)):
+            count_of_correctly_answered_questions += 1
+            
+    print(count_of_correctly_answered_questions, num_questions_in_quest)
+
+    if (count_of_correctly_answered_questions == num_questions_in_quest):
+        users_user_project_object = UserProject.objects.get(user = current_user, project = current_project)
+        #adds points for the completed quest to the user
+        users_user_project_object.points += current_quest.quest_points_earned
+        users_user_project_object.save()
+        print("Edli's points are:" + str (users_user_project_object.points))
+        current_quest_num = current_quest.quest_path_number
+        #If next quest exists
+        if (Quest.objects.filter(quest_path_number = current_quest_num + 1, project = current_project)):
+            next_quest = Quest.objects.get(quest_path_number = current_quest_num + 1, project = current_project)
+            print("I Am Here")
+            users_user_project_object.current_quest = next_quest
+            users_user_project_object.save()
+            
 
 
+#Views
 def create_fr_question(request, quest_id):
     if request.method  == 'POST':
         #for was busmitted
@@ -181,7 +216,9 @@ def admin_quest_page(request, quest_id):
     context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form, 'current_project_id': current_project_id}
     return render(request, 'quest_extension/admin_quest_page.html', context)
 
-def user_home(request, ldap, project_id):    
+def user_home(request, ldap, project_id):  
+    if not validate_user_access(request.session['current_user_ldap'], ldap):
+        return HttpResponseRedirect('/quest/user_login')
     user = User.objects.get(user_ldap= ldap)
     current_project = Project.objects.get(id = project_id)
     current_user_project_object = UserProject.objects.get(user = user, project = current_project)
@@ -205,33 +242,11 @@ def user_home(request, ldap, project_id):
     context = {'quests':quests, 'user': user, 'current_project': current_project, 'current_user_project_object': current_user_project_object}
     return render(request, 'quest_extension/user_home.html', context)
     
-#Checks whether you can go to the next question once you sumbit a new answer
-def go_to_next_quest(current_quest, current_user, current_project):
-    num_questions_in_quest = len(Question.objects.filter(quest = current_quest, deleted = False))
-    all_questions_in_quest = [question for question in Question.objects.filter(quest = current_quest, deleted = False)]
-    count_of_correctly_answered_questions = 0
-    for question in all_questions_in_quest:
-        if (CorrectlyAnsweredQuestion.objects.filter(question = question, user = current_user)):
-            count_of_correctly_answered_questions += 1
-            
-    print(count_of_correctly_answered_questions, num_questions_in_quest)
-
-    if (count_of_correctly_answered_questions == num_questions_in_quest):
-        users_user_project_object = UserProject.objects.get(user = current_user, project = current_project)
-        #adds points for the completed quest to the user
-        users_user_project_object.points += current_quest.quest_points_earned
-        users_user_project_object.save()
-        print("Edli's points are:" + str (users_user_project_object.points))
-        current_quest_num = current_quest.quest_path_number
-        #If next quest exists
-        if (Quest.objects.filter(quest_path_number = current_quest_num + 1, project = current_project)):
-            next_quest = Quest.objects.get(quest_path_number = current_quest_num + 1, project = current_project)
-            print("I Am Here")
-            users_user_project_object.current_quest = next_quest
-            users_user_project_object.save()
-            
 
 def user_quest_page(request, ldap, quest_id):
+    if not validate_user_access(request.session['current_user_ldap'], ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
     current_quest = Quest.objects.get(id = quest_id)
     current_project_id = current_quest.project.id
     current_project = current_quest.project
@@ -355,7 +370,7 @@ def admin_project_page(request):
     return render(request, 'quest_extension/admin_project_page.html', context)
 
 def user_project_page(request, ldap):
-    if (request.session['current_user_ldap'] != ldap):
+    if not validate_user_access(request.session['current_user_ldap'], ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     if request.method == 'POST':
@@ -409,14 +424,17 @@ def user_login (request):
         request.session['current_user_ldap'] = post_request['ldap']
         return HttpResponseRedirect('/quest/user_project_page/' + request.session['current_user_ldap'])
     
-    if request.session['current_user_ldap']:
-        print(request.session)
-        print(request.session['current_user_ldap'])
+    
     
     return render(request, 'quest_extension/user_login.html')
 
 
         # Keep this in mind: SESSION_EXPIRE_AT_BROWSER_CLOSE
+
+
+
+
+
 
             
 

@@ -4,8 +4,8 @@ from django.conf.urls import url
 
 
 urlpatterns = [
-    path('', views.home, name='quest-home'),
-    path('quest-create-form', views.quest_create, name='quest_form'),
+    #path('', views.home, name='quest-home'),
+    #path('quest-create-form', views.quest_create, name='quest_form'),
     #path('choose-mc-or-fr/<name>', views.choose_question_type),
     path('mc-create-form/<quest_id>', views.create_mc_question),
     path('fr-create-form/<quest_id>', views.create_fr_question),

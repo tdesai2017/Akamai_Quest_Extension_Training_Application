@@ -370,31 +370,58 @@ def admin_project_page(request):
     return render(request, 'quest_extension/admin_project_page.html', context)
 
 def user_project_page(request, ldap):
-    if not validate_user_access(request.session['current_user_ldap'], ldap):
-        return HttpResponseRedirect('/quest/user_login')
-
-    if request.method == 'POST':
-        post_request = request.POST
-        inputted_random_phrase = post_request['random_phrase']
-        project_requested = Project.objects.get(id = post_request['project_id'])
-        
-        if inputted_random_phrase == project_requested.project_random_phrase:
-            new_user_project = UserProject()
-            new_user_project.user = User.objects.get(user_ldap = ldap)
-            new_user_project.project = project_requested
-            #Every Project Must have at least one quest upon creation -> Find a way to ensure this
-            if len(Quest.objects.filter(project = project_requested, quest_path_number = 1)) == 1:
-                new_user_project.current_quest = Quest.objects.get(project = project_requested, quest_path_number = 1)
-            else:
-                new_user_project.current_quest = None
-            new_user_project.save() 
-        return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 
     current_user = User.objects.get(user_ldap = ldap)
     user_projects = [user_project.project for user_project in UserProject.objects.filter(user = current_user)]
     user_project_ids = [project.id for project in user_projects]
     all_other_projects = [project for project in Project.objects.all() if project.id not in user_project_ids]
     add_new_project_form = AddNewProjectForm()
+
+    if not validate_user_access(request.session['current_user_ldap'], ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
+    if request.method == 'POST':
+        post_request = request.POST
+        if 'random_phrase' in post_request.keys():
+            inputted_random_phrase = post_request['random_phrase']
+            project_requested = Project.objects.get(id = post_request['project_id'])
+            
+            if inputted_random_phrase == project_requested.project_random_phrase:
+                new_user_project = UserProject()
+                new_user_project.user = User.objects.get(user_ldap = ldap)
+                new_user_project.project = project_requested
+
+                #Decides what quest the user will begin on
+                if len(Quest.objects.filter(project = project_requested, quest_path_number = 1)) == 1:
+                    new_user_project.current_quest = Quest.objects.get(project = project_requested, quest_path_number = 1)
+                else:
+                    new_user_project.current_quest = None
+                new_user_project.save() 
+            return HttpResponseRedirect('/quest/user_project_page/' + ldap)
+
+        if 'logout' in post_request.keys():
+            del request.session['current_user_ldap']
+            return HttpResponseRedirect('/quest/user_login')
+
+        if 'remove_project' in post_request.keys():
+
+            #We aren't actually deleting the project, don't worry
+            project_to_delete = Project.objects.get(id = post_request['remove_project'])
+
+            user_project_to_delete = UserProject.objects.get(user = current_user, project= project_to_delete)
+            user_project_to_delete.delete()
+            
+            
+            quests = Quest.objects.filter(project = project_to_delete)
+            questions = Question.objects.filter(quest__in= quests)
+            correctly_answered_questions = CorrectlyAnsweredQuestion.objects.filter(user = current_user, question__in = questions)
+            correctly_answered_questions.delete()
+
+
+            return HttpResponseRedirect('/quest/user_project_page/' + ldap)
+
+
+        
     context = {'current_user': current_user,
      'user_projects': user_projects,
       'all_other_projects': all_other_projects,
@@ -411,7 +438,7 @@ def new_user(request):
             #This will have to iterate through every person -> figure out a way to make this faster
             if user_ldap not in [user.user_ldap for user in User.objects.all()]:
                 temp.save()
-                return HttpResponseRedirect('/quest/user_project_page/' + user_ldap)
+                return HttpResponseRedirect('/quest/user_login')
 
     user_form = UserForm()
     context = {'user_form': user_form}
@@ -420,16 +447,18 @@ def new_user(request):
 def user_login (request):
     if request.method == 'POST':
         post_request = request.POST
+        ldap = post_request['ldap']
+        password = post_request['password']
         print (post_request)
-        request.session['current_user_ldap'] = post_request['ldap']
-        return HttpResponseRedirect('/quest/user_project_page/' + request.session['current_user_ldap'])
+        if User.objects.filter(user_ldap = ldap) and User.objects.get(user_ldap = ldap).user_password == password:   
+            request.session['current_user_ldap'] = post_request['ldap']
+            return HttpResponseRedirect('/quest/user_project_page/' + request.session['current_user_ldap'])
     
-    
-    
-    return render(request, 'quest_extension/user_login.html')
+    login_form = LoginForm()
+    context = {'login_form': login_form}
+    return render(request, 'quest_extension/user_login.html', context)
 
 
-        # Keep this in mind: SESSION_EXPIRE_AT_BROWSER_CLOSE
 
 
 

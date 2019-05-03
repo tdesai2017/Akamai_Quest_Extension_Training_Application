@@ -1,0 +1,22 @@
+#container {
+    width: 400px;
+    margin: 0 auto;
+}
+
+label, button {
+    display: block;
+    width: 10em;
+    float: left; /* makes the element act like inline block */
+    clear: left; /* clears any left floats so before so this should start on new line */
+    
+  }
+
+  label {
+    padding-bottom: 1em;
+
+  }
+  
+  input {
+    width: 10em;
+    float: left;
+  }

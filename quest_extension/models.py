@@ -43,6 +43,7 @@ class User(models.Model):
    user_email = models.CharField(max_length=45)
    user_manager_ldap = models.CharField(max_length=45)
    user_director_ldap = models.CharField(max_length=45)
+   user_password = models.CharField(max_length = 45)
    #exempt = models.BooleanField(default=False) (This should go in User_project)
 
    

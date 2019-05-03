@@ -2,6 +2,7 @@
 from django import forms
 from . import models
 
+
 class QuestForm(forms.ModelForm):
     class Meta:
         model = models.Quest
@@ -26,7 +27,14 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = models.User
         fields = ['user_ldap', 'user_first_name', 'user_last_name', 'user_email', 'user_manager_ldap', 
-                  'user_director_ldap']
+                  'user_director_ldap', 'user_password']
+        labels = {'user_ldap': 'LDAP',
+                  'user_first_name': 'First Name',
+                  'user_last_name': 'Last Name',
+                  'user_email': 'Email',
+                  'user_manager_ldap': 'Manager\'s LDAP', 
+                  'user_director_ldap': 'Director\'s LDAP', 
+                  'user_password': 'Password'}
 
 
 class CorrectAnswerForm(forms.ModelForm):
@@ -55,30 +63,6 @@ class AddNewProjectForm(forms.Form):
     random_phrase = forms.CharField()
 
 
-
-# FAVORITE_COLORS_CHOICES = (
-#     ('blue', 'Blue'),
-#     ('green', 'Green'),
-#     ('black', 'Black'),
-# )
-
-# class TakeInMultipleChoiceForm(forms.Form):
-#     answer = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=(FAVORITE_COLORS_CHOICES))
-
-# Straight from https://docs.djangoproject.com/en/2.2/ref/forms/widgets/
-# BIRTH_YEAR_CHOICES = ('1980', '1981', '1982')
-# FAVORITE_COLORS_CHOICES = (
-#     ('blue', 'Blue'),
-#     ('green', 'Green'),
-#     ('black', 'Black'),
-# )
-
-# class TakeInMultipleChoiceForm(forms.Form):
-#     birth_year = forms.DateField(widget=forms.SelectDateWidget(years=BIRTH_YEAR_CHOICES))
-#     favorite_colors = forms.MultipleChoiceField(
-#         required=False,
-#         widget=forms.CheckboxSelectMultiple,
-#         choices=FAVORITE_COLORS_CHOICES,
-#     )
-
-
+class LoginForm(forms.Form):
+    ldap = forms.CharField(max_length=45, label= 'LDAP')
+    password = forms.CharField(max_length=45)

@@ -1,13 +1,20 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/new_user_style.css' %}">
    <title> New User </title>
 </head>
 <body>
-    <form method='POST'>
-        {% csrf_token %}
-        {{ user_form }}
-        <button type= 'submit'> Submit </button>
-    </form>
+    <br>
+    <br>
+    <br>
+    <div id = 'container'>
+        <form method='POST' id = 'user_form'>
+            {% csrf_token %}
+            {{ user_form }}
+            <button form = 'user_form' type= 'submit'> Submit </button> 
+        </form>
+    </div>  
 </body>
 </html>

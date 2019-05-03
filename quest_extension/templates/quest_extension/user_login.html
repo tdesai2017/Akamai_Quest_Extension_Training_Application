@@ -1,15 +1,22 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_login_style.css' %}">
     <Title> Login </Title>
 </head>
+<br>
+<br>
+<br>
+<br>
 <body>
-    
-    <form method='POST'>
-        {% csrf_token %}
-        Login (Ldap): <input type="text" name='ldap'>
-        <button type="submit">Submit</button>
-    </form>
+    <div id= container>
+        <form method='POST'>
+            {% csrf_token %}
+            {{ login_form }}
+            <button type="submit">Submit</button>
+        </form>
+    </div>
 
 </body>
 </html>

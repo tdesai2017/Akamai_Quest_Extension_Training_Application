@@ -8,6 +8,7 @@ class Project(models.Model):
     project_name = models.CharField(max_length=1000)
     project_description = models.CharField(max_length=1000)
     project_random_phrase = models.CharField(max_length = 255)
+    project_editable = models.BooleanField()
 
 class Quest(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -70,6 +71,7 @@ class UserProject(models.Model):
     #Fix what happens if a single quest gets deleted
     current_quest = models.ForeignKey(Quest, on_delete=models.CASCADE, null=True)
     points = models.IntegerField(default = 0)
+    completed_project = models.BooleanField(default=False)
 
 
 

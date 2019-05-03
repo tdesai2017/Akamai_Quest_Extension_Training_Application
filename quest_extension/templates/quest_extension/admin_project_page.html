@@ -27,10 +27,22 @@
 
     {% for project in list_of_projects %}
     <br>
-    <form method='GET' action='/quest/admin_home/{{project.id}}'>
+    {% if project.project_editable %}
+
+    <form method='GET' action='/quest/admin_home_editable/{{project.id}}'>
         <button type='submit'>{{project.project_name}}</button>
+        *Project Editable: {{ project.project_editable }}
     </form>
 
+
+    {% else %}
+
+     <form method='GET' action='/quest/admin_home_view_only/{{project.id}}'>
+        <button type='submit'>{{project.project_name}}</button>
+        *Project Editable: {{ project.project_editable }}
+    </form>
+
+    {% endif %}
 
     {% endfor %}
 	

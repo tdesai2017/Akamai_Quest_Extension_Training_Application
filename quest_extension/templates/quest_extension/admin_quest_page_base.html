@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+
+    <head>
+        
+        <title> {{ current_quest.quest_name }} </title>
+        
+    </head>
+    <body>
+        {% block forms_and_undo %}
+        {% endblock %}
+
+        <link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_quest_page_style.css' %}">
+        <h1> {{ current_quest.quest_name }} </h1>
+
+        <div class="description">
+            <h2>{{ current_quest.quest_description }}</h2>
+        </div>  
+    
+        {% block fr_mc_undodelete %}
+        {% endblock %}
+
+        <br>
+        <br>
+
+        {% for question, answers in format.items %}
+            <div class='question'>
+                <p>{{ question.question_text }}</p>
+
+            </div>
+                {% if question.question_type ==  'FR' %}
+                    {{ fr_input_form }}
+                    <button type= 'submit'>Submit</button>
+                {% endif %}
+
+                {% if question.question_type == 'MC' %}
+                    {% for a in answers %}
+                        <input type="checkbox" name="mc__input" value="{{ a.answer_text }}"> {{ a.answer_text }}<br>
+                    {% endfor %}
+                    <br>
+                    <button type= 'submit'>Submit</button>
+                {% endif %}
+                <br>
+                <br>
+                
+            {% block edit_deletequestion %}
+            {% endblock %}
+
+
+            
+            <br>
+            <br>
+        {% endfor %}
+        
+        {% block home %}
+        {% endblock %}
+
+        
+
+    </body>
+</html>

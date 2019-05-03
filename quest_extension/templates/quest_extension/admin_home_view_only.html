@@ -1,0 +1,16 @@
+{% extends 'quest_extension/admin_home_base.html' %}
+
+
+
+{% block redirect_to_quest_page %}
+
+    {% for quest in quests %}
+        <br>
+        <form method='GET' action='/quest/admin_quest_page_view_only/{{quest.id}}'>
+            <button type='submit'>{{quest.quest_name}} ({{quest.quest_path_number }})</button>
+        </form>
+
+
+    {% endfor %}
+
+{% endblock %}

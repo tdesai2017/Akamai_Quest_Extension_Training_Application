@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from quest_extension.models import *
 from .forms import *
-from django.http import HttpResponseRedirect, HttpResponseNotFound
+from django.http import HttpResponseRedirect
 from django.utils.text import slugify
 from django.utils.http import urlencode
 from random import shuffle
@@ -61,13 +61,16 @@ def go_to_next_quest(current_quest, current_user, current_project):
             print("I Am Here")
             users_user_project_object.current_quest = next_quest
             users_user_project_object.save()
+        else:
+            users_user_project_object.completed_project = True
+            users_user_project_object.save()
             
 
 
 #Views
 def create_fr_question(request, quest_id):
     if request.method  == 'POST':
-        #for was busmitted
+        
         question_form = QuestionForm(request.POST)
         ans_form = CorrectAnswerForm(request.POST)
         if question_form.is_valid() and ans_form.is_valid():
@@ -87,7 +90,7 @@ def create_fr_question(request, quest_id):
             ccc.question = Question.objects.get(id=question_id)
             ccc.save()
             
-            return HttpResponseRedirect('/quest/admin_quest_page/' + quest_id)
+            return HttpResponseRedirect('/quest/admin_quest_page_editable/' + quest_id)
     else:
         form = QuestionForm()
         ans_form = CorrectAnswerForm()
@@ -127,7 +130,7 @@ def create_mc_question(request, quest_id):
                 ddd = IncorrectAnswer(question=Question.objects.get(id=question_id), answer_text= wrong_answer)
                 ddd.save()
 
-            return HttpResponseRedirect('/quest/admin_quest_page/' + quest_id)
+            return HttpResponseRedirect('/quest/admin_quest_page_editable/' + quest_id)
     else:
         question_form = QuestionForm()
         answer_form = RightAnswerForm()
@@ -137,7 +140,7 @@ def create_mc_question(request, quest_id):
                                                                      'wrong_answer_form' : wrong_answer_form})
 
 
-def admin_home(request, project_id): 
+def admin_home_editable(request, project_id): 
     current_project = Project.objects.get(id = project_id)
     if request.method == 'POST':
         post_request = request.POST
@@ -151,26 +154,40 @@ def admin_home(request, project_id):
                 temp.project = current_project
                 temp.save()
                 quest_id = temp.id
+
+                #The below part is unessary right now since admins cannot edit a proejct anymore after a user joins
+                #it, however, I will keep it for now to prevent bugs
+
+                # If a user has no current quest for a certain project since the admin never created a quest with path 1 until
+                # now, the user's current quest will be updated here to the inputted quest with id = 1
                 all_users_without_current_quests = UserProject.objects.filter(project = current_project, current_quest= None)
-                #If a user has no current quest for a certain project since the admin never created a quest with path 1 until
-                #now, the user's current quest will be updated here to the inputted quest with id = 1
                 if int(post_request['quest_path_number']) == 1 and len(all_users_without_current_quests) > 0:
                     print('Yes we made it here at least', len(all_users_without_current_quests))
                     for userproject in all_users_without_current_quests:
                         userproject.current_quest = temp
                         userproject.save()
 
-                    
+                
 
-
-                return HttpResponseRedirect('/quest/admin_quest_page/' + str(quest_id))
+                return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(quest_id))
 
     quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
     quest_form = QuestForm()
     context = {'quests':quests, 'quest_form': quest_form, 'current_project': current_project}
-    return render(request, 'quest_extension/admin_home.html', context)
+    return render(request, 'quest_extension/admin_home_editable.html', context)
 
-def admin_quest_page(request, quest_id):
+
+def admin_home_view_only(request, project_id): 
+    current_project = Project.objects.get(id = project_id)
+    quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
+    context = {'quests':quests, 'current_project': current_project}
+    return render(request, 'quest_extension/admin_home_view_only.html', context)
+
+
+
+
+
+def admin_quest_page_editable(request, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
     current_project_id = current_quest.project.id
 
@@ -182,7 +199,7 @@ def admin_quest_page(request, quest_id):
             print (post_request)
             current_question.deleted = True
             current_question.save()
-            return HttpResponseRedirect('/quest/admin_quest_page/' + str(current_question.quest.id))
+            return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(current_question.quest.id))
 
         if 'undo' in post_request.keys():
             if Question.objects.filter(quest = current_quest, deleted = True):
@@ -193,7 +210,7 @@ def admin_quest_page(request, quest_id):
 
 
     list_of_questions = Question.objects.filter(quest = current_quest, deleted = False)
-    fr_input_form = TakeInFreeResponseForm
+    fr_input_form = TakeInFreeResponseForm()
 
     format = {}
     for question in list_of_questions:
@@ -214,7 +231,36 @@ def admin_quest_page(request, quest_id):
         format[question] = all_answers 
 
     context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form, 'current_project_id': current_project_id}
-    return render(request, 'quest_extension/admin_quest_page.html', context)
+    return render(request, 'quest_extension/admin_quest_page_editable.html', context)
+
+
+def admin_quest_page_view_only(request, quest_id):
+    current_quest = Quest.objects.get(id = quest_id)
+    current_project_id = current_quest.project.id
+    list_of_questions = Question.objects.filter(quest = current_quest, deleted = False)
+    fr_input_form = TakeInFreeResponseForm()
+
+    format = {}
+    for question in list_of_questions:
+        correct_answer = CorrectAnswer.objects.filter(question = question)
+        wrong_answers = IncorrectAnswer.objects.filter(question = question)
+        #This was the only way I could find that would allows us to join two independent model types 
+        #(by converting them into lists and appending them)
+        all_answers = []
+
+        for answer in wrong_answers:
+            all_answers.append(answer)
+
+        for answer in correct_answer:
+            all_answers.append(answer)
+
+        shuffle(all_answers)
+        #Combines wrong answers with correct answer
+        format[question] = all_answers 
+
+    context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form, 'current_project_id': current_project_id}
+    return render(request, 'quest_extension/admin_quest_page_view_only.html', context)
+
 
 def user_home(request, ldap, project_id):  
     if not validate_user_access(request.session['current_user_ldap'], ldap):
@@ -358,10 +404,11 @@ def admin_project_page(request):
         project_form = ProjectForm(request.POST)
         if project_form.is_valid():
             temp = project_form.save(commit=False)
+            temp.project_editable = True
             temp.save()
             project_id = temp.id
 
-            return HttpResponseRedirect('/quest/admin_home/' + str(project_id))
+            return HttpResponseRedirect('/quest/admin_home_editable/' + str(project_id))
     else:
         project_form = ProjectForm()
         list_of_projects = Project.objects.all()
@@ -391,12 +438,16 @@ def user_project_page(request, ldap):
                 new_user_project.user = User.objects.get(user_ldap = ldap)
                 new_user_project.project = project_requested
 
-                #Decides what quest the user will begin on
+                #Decides what quest the user will begin on (not neccessary since now you can't edit a project after a user joins however - see other comment above)
                 if len(Quest.objects.filter(project = project_requested, quest_path_number = 1)) == 1:
                     new_user_project.current_quest = Quest.objects.get(project = project_requested, quest_path_number = 1)
                 else:
                     new_user_project.current_quest = None
                 new_user_project.save() 
+                #Since a user joined, the admin can no longer change the quest
+                project_requested.project_editable = False
+                project_requested.save()
+
             return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 
         if 'logout' in post_request.keys():
@@ -416,6 +467,11 @@ def user_project_page(request, ldap):
             questions = Question.objects.filter(quest__in= quests)
             correctly_answered_questions = CorrectlyAnsweredQuestion.objects.filter(user = current_user, question__in = questions)
             correctly_answered_questions.delete()
+            
+            #If no users are on this project anymore, you can once again edit the project
+            if len(UserProject.objects.filter(project = project_to_delete)) == 0:
+                project_to_delete.project_editable = True
+                project_to_delete.save()
 
 
             return HttpResponseRedirect('/quest/user_project_page/' + ldap)

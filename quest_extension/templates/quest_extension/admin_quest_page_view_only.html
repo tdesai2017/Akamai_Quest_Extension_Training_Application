@@ -1,0 +1,6 @@
+{% extends 'quest_extension/admin_quest_page_base.html' %}
+
+{% block home %}
+    <form id='home' action = '/quest/admin_home_view_only/{{current_project_id}}' method='GET'></form>
+    <button form = 'home' type = submit>Home</button>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'quest_extension/admin_quest_page_base.html' %}
+
+{% block forms_and_undo %}
+    <form id = 'free_response' action='/quest/fr-create-form/{{current_quest.id}}' method = 'GET'></form>
+    <form id = 'multiple_choice' action='/quest/mc-create-form/{{current_quest.id}}' method = 'GET'></form>
+    <form id = 'undo_delete' method = 'POST'> {% csrf_token %} </form>
+{% endblock %}
+
+{% block fr_mc_undodelete %}
+        <div class= 'admin_buttons'>
+            <h3>Choose what kind of question you want to make!</h3>
+            <button form = 'free_response' type = submit>Free Response</button>
+            <button form = 'multiple_choice' type = submit>Multiple Choice</button>
+            <br>
+            <br>
+            <button form = 'undo_delete' type = submit name='undo' value='current_quest.id'> Undo Delete</button>
+        </div>
+{% endblock %}
+
+{% block edit_deletequestion %}
+    <div class= 'admin_buttons'>
+        <form method= 'GET', action= '/quest/admin_edit_question/{{ question.id }}'>
+                <button type='submit' name = 'deleted' value = '{{question.id}}'>Edit</button>
+        </form>
+
+        <form method= 'POST'>
+                {% csrf_token %}
+                <button type='submit' name = 'deleted' value = '{{question.id}}'>Delete Question</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block home %}
+    <form id='home' action = '/quest/admin_home_editable/{{current_project_id}}' method='GET'></form>
+    <button form = 'home' type = submit>Home</button>
+{% endblock %}

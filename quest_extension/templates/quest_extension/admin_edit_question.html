@@ -1,13 +1,50 @@
+{% load static %}
 <!DOCTYPE html>
     <head>
        <title> Edit Question </title>
     </head>
     <body>
 
-        <!-- <form method= 'POST'>
-            {% csrf_token %}
-            <button type='submit' name = 'deleted' value = '{{current_question.id}}'>Delete Question</button>
-        </form> -->
+        {% if current_question.question_type == 'MC' %}
+
+        <form method="POST">
+                {% csrf_token %}
+                {{ question_text_form }}
+        
+                </br>
+                </br>
+                <b>Input your "correct answers" here!</b>
+                <br>
+                <br>
+                {{ mc_answer_form }}
+                </br>
+                </br>
+                <b>Input your "wrong answers" here!</b>
+                </br>
+                <br>
+                {{ mc_wrong_answer_form }}
+                <input type="submit" value="Submit">
+            </form>
+
+        {% endif %}
+
+        
+        {% if current_question.question_type == 'FR' %}
+
+        <form method="POST">
+                {% csrf_token %}
+                {{ question_text_form }}
+        
+                </br>
+                </br>
+                <b>Input your answer here!</b>
+        
+                {{ fr_answer_form }}
+                <input type="submit" value="Submit">
+        </form>
+
+        {% endif %}
+
        
     </body>
 </html>

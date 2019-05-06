@@ -43,13 +43,17 @@ class CorrectAnswerForm(forms.ModelForm):
         fields = ['answer_text']
 
 class ProjectForm(forms.ModelForm):
+    # project_description = forms.CharField(widget=forms.Textarea)
     class Meta:
         model = models.Project
         fields = ['project_name', 'project_description', 'project_random_phrase']
+        
+
 
 
 class RightAnswerForm(forms.Form):
     correct_choices = forms.CharField(widget=forms.Textarea)
+    #correct_choices = forms.CharField(max_length=128, widget=forms.Textarea(attrs={'placeholder': 'Please enter the title'}))
 
 class WrongAnswerForm(forms.Form):
     incorrect_choices = forms.CharField(widget=forms.Textarea)

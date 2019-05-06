@@ -6,30 +6,13 @@ from django.http import HttpResponseRedirect
 from django.utils.text import slugify
 from django.utils.http import urlencode
 from random import shuffle
+from django.core.validators import validate_email 
+from django.contrib import messages
 
 
 
 
-# def home(request):
-#     return render(request, 'quest_extension/home.html')
-# # Create your views here.
 
-# def quest_create(request):
-#     """creates a quest"""
-    
-#     if request.method == 'POST':
-#         # form was submitted
-#         form = QuestForm(request.POST)
-#         if form.is_valid():
-#             temp = form.save(commit=False)
-#             quest_id = temp.id
-#             temp.save()
-#             return HttpResponseRedirect('/quest/admin_quest_page/' + str(quest_id))
-#     else:
-#         form = QuestForm()
-#     return render(request, 'quest_extension/test.html', {'form': form})
-
-#Functions
 
 #Verifies that you are only trying to access the content for the ldap that you are logged in for
 def validate_user_access(session_ldap, current_ldap):
@@ -391,10 +374,20 @@ def user_quest_page(request, ldap, quest_id):
 
 
 def admin_edit_question(request, question_id):
+
+    question_text_form = QuestionForm()
+    mc_answer_form = RightAnswerForm()
+    mc_wrong_answer_form = WrongAnswerForm()
+    fr_answer_form = CorrectAnswerForm()
+    
+    
     current_question = Question.objects.get(id = question_id)
-    
-    
-    context = {'current_question': current_question}
+    print(current_question.question_type)
+    context = {'current_question': current_question,
+                'question_text_form': question_text_form,
+                'mc_answer_form': mc_answer_form,
+                'mc_wrong_answer_form': mc_wrong_answer_form,
+                'fr_answer_form': fr_answer_form}
     return render(request, 'quest_extension/admin_edit_question.html', context)
 
 def admin_project_page(request):
@@ -489,12 +482,29 @@ def new_user(request):
         user_form = UserForm(request.POST)
         if user_form.is_valid():
             temp = user_form.save(commit=False)
+            username = temp.user_email
             user_ldap = temp.user_ldap
             #I feel like this is really slow and want to figure out a faster way, since right now
             #This will have to iterate through every person -> figure out a way to make this faster
-            if user_ldap not in [user.user_ldap for user in User.objects.all()]:
+            try:
+                validate_email(username)
+                valid_email = True
+            except:
+                valid_email = False
+                print("This is an invalid email")
+                messages.success(request, 'Please input a valid email')
+
+            new_ldap = user_ldap not in [user.user_ldap for user in User.objects.all()]
+            
+
+            if valid_email and new_ldap:
                 temp.save()
                 return HttpResponseRedirect('/quest/user_login')
+            else:
+                messages.success(request, 'There is already an account associated with this LDAP')
+
+
+            
 
     user_form = UserForm()
     context = {'user_form': user_form}
@@ -506,16 +516,25 @@ def user_login (request):
         ldap = post_request['ldap']
         password = post_request['password']
         print (post_request)
-        if User.objects.filter(user_ldap = ldap) and User.objects.get(user_ldap = ldap).user_password == password:   
-            request.session['current_user_ldap'] = post_request['ldap']
-            return HttpResponseRedirect('/quest/user_project_page/' + request.session['current_user_ldap'])
+
+        if User.objects.filter(user_ldap = ldap):
+            #If incorrect password
+            if not User.objects.get(user_ldap = ldap).user_password == password:
+                messages.success(request, 'Invalid Password')
+            #If correct password for ldap
+            else: 
+                request.session['current_user_ldap'] = post_request['ldap']
+                return HttpResponseRedirect('/quest/user_project_page/' + request.session['current_user_ldap'])
+        #If LDAP is not associated with an account
+        else:
+            messages.success(request, 'There is no account associated with this LDAP')
+
+       
+
     
     login_form = LoginForm()
     context = {'login_form': login_form}
     return render(request, 'quest_extension/user_login.html', context)
-
-
-
 
 
 

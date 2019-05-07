@@ -9,6 +9,7 @@ class QuestForm(forms.ModelForm):
         fields = ['quest_name', 'quest_description', 'quest_points_earned', 'quest_path_number']
 
 
+#Records the name of a question
 class QuestionForm(forms.ModelForm):
     """A form for Free Response Questions to be made"""
     class Meta:
@@ -16,11 +17,6 @@ class QuestionForm(forms.ModelForm):
         fields = ['question_text']
 
 
-class IncorrectAnswerForm(forms.ModelForm):
-    """A form for wrong answers"""
-    class Meta:
-        model = models.IncorrectAnswer
-        fields = ['question', 'answer_text']
 
 
 class UserForm(forms.ModelForm):
@@ -37,6 +33,7 @@ class UserForm(forms.ModelForm):
                   'user_password': 'Password'}
 
 
+#For free response questions
 class CorrectAnswerForm(forms.ModelForm):
     class Meta:
         model = models.CorrectAnswer
@@ -50,7 +47,7 @@ class ProjectForm(forms.ModelForm):
         
 
 
-
+#For MC Questions
 class RightAnswerForm(forms.Form):
     correct_choices = forms.CharField(widget=forms.Textarea)
     #correct_choices = forms.CharField(max_length=128, widget=forms.Textarea(attrs={'placeholder': 'Please enter the title'}))
@@ -58,7 +55,7 @@ class RightAnswerForm(forms.Form):
 class WrongAnswerForm(forms.Form):
     incorrect_choices = forms.CharField(widget=forms.Textarea)
 
-
+#-------
 
 class TakeInFreeResponseForm(forms.Form):
     answer = forms.CharField()
@@ -70,3 +67,28 @@ class AddNewProjectForm(forms.Form):
 class LoginForm(forms.Form):
     ldap = forms.CharField(max_length=45, label= 'LDAP')
     password = forms.CharField(max_length=45)
+
+
+#For Editing FR Questions
+
+class EditQuestionForm(forms.ModelForm):
+    #question_text = forms.CharField(max_length=128, widget=forms.Textarea(attrs={'placeholder': 'Please enter the title'}))
+    class Meta:
+        model = models.Question
+        fields = ['question_text']
+
+
+class EditCorrectAnswerForm(forms.ModelForm):
+    class Meta:
+        model = models.CorrectAnswer
+        fields = ['answer_text']
+
+
+
+#For Editing MC Questions
+# class EditRightAnswerForm(forms.Form):
+#     correct_choices = forms.CharField(widget=forms.Textarea)
+#     #correct_choices = forms.CharField(max_length=128, widget=forms.Textarea(attrs={'placeholder': 'Please enter the title'}))
+
+# class EditWrongAnswerForm(forms.Form):
+#     incorrect_choices = forms.CharField(widget=forms.Textarea)

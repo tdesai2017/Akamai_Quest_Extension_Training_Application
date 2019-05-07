@@ -17,11 +17,23 @@
         </div>
 {% endblock %}
 
+<!-- Only works for FR questions right now -->
 {% block edit_deletequestion %}
     <div class= 'admin_buttons'>
-        <form method= 'GET', action= '/quest/admin_edit_question/{{ question.id }}'>
-                <button type='submit' name = 'deleted' value = '{{question.id}}'>Edit</button>
+
+        {% if question.question_type == 'FR' %}
+        <form method= 'POST', action= '/quest/admin_edit_fr_question/{{ question.id }}'>
+                {% csrf_token %}
+                <button type='submit' name = 'edit' value = '{{question.id}}'>Edit</button>
         </form>
+        {% endif %}
+
+        {% if question.question_type == 'MC' %}
+        <form method= 'POST', action= '/quest/admin_edit_mc_question/{{ question.id }}'>
+                {% csrf_token %}
+                <button type='submit' name = 'edit' value = '{{question.id}}'>Edit</button>
+        </form>
+        {% endif %}
 
         <form method= 'POST'>
                 {% csrf_token %}

@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+    <head>
+       <title> Edit Question </title>
+    </head>
+    <body>
+
+        <form method="POST">
+                {% csrf_token %}
+                {{ question_text_form }}
+        
+                </br>
+                </br>
+                <b>Input your answer here!</b>
+        
+                {{ fr_answer_form }}
+                <input type="submit" value="Submit">
+        </form>
+
+        <form method= 'GET' action='/quest/admin_quest_page_editable/{{current_question.quest.id}}'>
+            <button > Back </button>
+        </form>
+       
+    </body>
+</html>

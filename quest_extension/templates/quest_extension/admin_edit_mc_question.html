@@ -11,20 +11,20 @@
 
     <form method="POST">
         {% csrf_token %}
-        {{ q_form }}
+        {{ question_text_form }}
 
         </br>
         </br>
         <b>Input your "correct answers" here!</b>
         <br>
         <br>
-        {{ ans_form }}
+        {{ mc_correct_answer_form }}
         </br>
         </br>
         <b>Input your "wrong answers" here!</b>
         </br>
         <br>
-        {{ wrong_answer_form }}
+        {{ mc_wrong_answer_form }}
         <input type="submit" value="Submit">
     </form>
 

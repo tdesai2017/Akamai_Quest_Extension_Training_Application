@@ -8,10 +8,49 @@ from django.utils.http import urlencode
 from random import shuffle
 from django.core.validators import validate_email 
 from django.contrib import messages
+from datetime import datetime
+import copy
 
 
 
 
+
+
+def save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, timestamp=datetime.now()):
+
+    quest_id = str(quest_id)
+    quest = Quest.objects.get(id=quest_id)
+    bbb = question_form.save(commit=False)
+    bbb.question_type = 'MC'
+    bbb.quest = quest
+    bbb.save()
+    question_id = bbb.id
+    #This allows us to bypass the automatic date from auto_now
+    Question.objects.filter(id = question_id).update(time_modified = timestamp)
+    
+    current_question = Question.objects.get(id = question_id)
+    print(current_question.time_modified)
+    
+
+    list_of_correct_answers = answer_form.cleaned_data['correct_choices'].split('\n')
+
+
+    for correct_answer in list_of_correct_answers:
+        correct_answer = str(correct_answer).strip()
+        ccc = CorrectAnswer(question=Question.objects.get(id=question_id), answer_text= correct_answer)
+        ccc.save()
+    
+
+
+    list_of_wrong_answers = wrong_answer_form.cleaned_data['incorrect_choices'].split('\n')
+
+    for wrong_answer in list_of_wrong_answers:
+        wrong_answer = str(wrong_answer).strip()
+        ddd = IncorrectAnswer(question=Question.objects.get(id=question_id), answer_text= wrong_answer)
+        ddd.save()
+
+    print("I AM HERE")
+    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + quest_id)
 
 
 #Verifies that you are only trying to access the content for the ldap that you are logged in for
@@ -74,53 +113,28 @@ def create_fr_question(request, quest_id):
             ccc.save()
             
             return HttpResponseRedirect('/quest/admin_quest_page_editable/' + quest_id)
-    else:
-        form = QuestionForm()
-        ans_form = CorrectAnswerForm()
-    return render(request, 'quest_extension/fr_question_form.html', {'q_form' : form,
-                                                         'ans_form' : ans_form})
+    
+    form = QuestionForm()
+    ans_form = CorrectAnswerForm()
+    context = {'q_form' : form, 'ans_form' : ans_form, 'quest_id': quest_id}
+
+    return render(request, 'quest_extension/fr_question_form.html', context )
 
 
 def create_mc_question(request, quest_id):
     if request.method  == 'POST':
-        #for was submitted
         question_form = QuestionForm(request.POST)
         answer_form = RightAnswerForm(request.POST)
         wrong_answer_form = WrongAnswerForm(request.POST)
-        
         if question_form.is_valid() and answer_form.is_valid() and wrong_answer_form.is_valid():
-            quest = Quest.objects.get(id=quest_id)
-            bbb = question_form.save(commit=False)
-            bbb.question_type = 'MC'
-            bbb.quest = quest
-            bbb.save()
-            question_id = bbb.id
-
-            list_of_correct_answers = answer_form.cleaned_data['correct_choices'].split('\n')
-
-
-            for correct_answer in list_of_correct_answers:
-                correct_answer = str(correct_answer).strip()
-                ccc = CorrectAnswer(question=Question.objects.get(id=question_id), answer_text= correct_answer)
-                ccc.save()
-            
-
-
-            list_of_wrong_answers = wrong_answer_form.cleaned_data['incorrect_choices'].split('\n')
-
-            for wrong_answer in list_of_wrong_answers:
-                wrong_answer = str(wrong_answer).strip()
-                ddd = IncorrectAnswer(question=Question.objects.get(id=question_id), answer_text= wrong_answer)
-                ddd.save()
-
-            return HttpResponseRedirect('/quest/admin_quest_page_editable/' + quest_id)
-    else:
-        question_form = QuestionForm()
-        answer_form = RightAnswerForm()
-        wrong_answer_form = WrongAnswerForm()
-    return render(request, 'quest_extension/mc_question_form.html', {'q_form' : question_form,
-                                                                     'ans_form' : RightAnswerForm,
-                                                                     'wrong_answer_form' : wrong_answer_form})
+            return save_mc_question(question_form, answer_form, wrong_answer_form, quest_id)
+        
+    
+    question_form = QuestionForm()
+    answer_form = RightAnswerForm()
+    wrong_answer_form = WrongAnswerForm()
+    context = {'q_form' : question_form, 'ans_form' : RightAnswerForm, 'wrong_answer_form' : wrong_answer_form, 'quest_id': quest_id}
+    return render(request, 'quest_extension/mc_question_form.html', context)
 
 
 def admin_home_editable(request, project_id): 
@@ -177,22 +191,31 @@ def admin_quest_page_editable(request, quest_id):
 
     if request.method == 'POST':
         post_request = request.POST
+
         if 'deleted' in post_request.keys():
             current_question = Question.objects.get(id = post_request['deleted'])
             print (post_request)
+            #We want to not let the time_modified increase, so we save it here and assign it to the question after we save it
+            current_time_modified = copy.deepcopy(current_question.time_modified)
             current_question.deleted = True
             current_question.save()
+            Question.objects.filter(id = post_request['deleted']).update(time_modified = current_time_modified)
             return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(current_question.quest.id))
 
         if 'undo' in post_request.keys():
             if Question.objects.filter(quest = current_quest, deleted = True):
                 object_to_reappear = Question.objects.filter(quest = current_quest, deleted = True).latest('time_modified')
+                #We want to not let the time_modified increase, so we save it here and assign it to the question after we save it
+                object_to_reappear_id = object_to_reappear.id
+                current_time_modified = copy.deepcopy(object_to_reappear.time_modified)
                 object_to_reappear.deleted = False
                 object_to_reappear.save()
+                Question.objects.filter(id = object_to_reappear_id).update(time_modified = current_time_modified)
+
             return HttpResponseRedirect(quest_id)
 
 
-    list_of_questions = Question.objects.filter(quest = current_quest, deleted = False)
+    list_of_questions = Question.objects.filter(quest = current_quest, deleted=False).order_by('time_modified')
     fr_input_form = TakeInFreeResponseForm()
 
     format = {}
@@ -220,7 +243,7 @@ def admin_quest_page_editable(request, quest_id):
 def admin_quest_page_view_only(request, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
     current_project_id = current_quest.project.id
-    list_of_questions = Question.objects.filter(quest = current_quest, deleted = False)
+    list_of_questions = Question.objects.filter(quest = current_quest, deleted=False).order_by('time_modified')
     fr_input_form = TakeInFreeResponseForm()
 
     format = {}
@@ -296,6 +319,7 @@ def user_quest_page(request, ldap, quest_id):
 
             if user_answer in correct_answers_texts:
                 print("You are correct")
+                #Creates a new MODEL INSTANCE of CorrectlyAnswerQuestions
                 correctly_answered_question = CorrectlyAnsweredQuestion()
                 #Adds a new correctly answer question
                 correctly_answered_question.question = current_question
@@ -322,6 +346,7 @@ def user_quest_page(request, ldap, quest_id):
 
             #Even if we need to select multiple answers to get the correct repsponse, this will now work
             if user_answer == correct_answers_texts:
+            #Creates a new MODEL INSTANCE of CorrectlyAnswerQuestions
                 correctly_answered_question = CorrectlyAnsweredQuestion()
                 #Adds a new correctly answer question
                 correctly_answered_question.question = current_question
@@ -333,7 +358,7 @@ def user_quest_page(request, ldap, quest_id):
             print('You are wrong')
             return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
 
-    list_of_questions = Question.objects.filter(quest = current_quest, deleted=False)
+    list_of_questions = Question.objects.filter(quest = current_quest, deleted=False).order_by('time_modified')
     fr_input_form = TakeInFreeResponseForm()
     have_correct_answer = [i.question.id for i in CorrectlyAnsweredQuestion.objects.filter(user = current_user)]
 
@@ -373,22 +398,78 @@ def user_quest_page(request, ldap, quest_id):
     return render(request, 'quest_extension/user_quest_page.html', context)
 
 
-def admin_edit_question(request, question_id):
+def admin_edit_fr_question(request, question_id):
+    #question_text = forms.CharField(max_length=128, widget=forms.Textarea(attrs={'placeholder': 'Please enter the title'}))
 
-    question_text_form = QuestionForm()
-    mc_answer_form = RightAnswerForm()
-    mc_wrong_answer_form = WrongAnswerForm()
-    fr_answer_form = CorrectAnswerForm()
+    current_question = Question.objects.get(id = question_id)
+    current_questions_answers = CorrectAnswer.objects.filter(question = current_question)
+    question_text_form = EditQuestionForm(initial={'question_text': current_question.question_text})
+
+    all_answers = ""
+    for answer in current_questions_answers:
+        answer_text = answer.answer_text
+        all_answers += (answer_text + " ")
+
+    fr_answer_form = EditCorrectAnswerForm(initial={'answer_text': all_answers})
+
+    
+    print (all_answers)
+
+    if request.method == 'POST':
+        post_request = request.POST
+        print(post_request)
     
     
     current_question = Question.objects.get(id = question_id)
     print(current_question.question_type)
     context = {'current_question': current_question,
                 'question_text_form': question_text_form,
-                'mc_answer_form': mc_answer_form,
-                'mc_wrong_answer_form': mc_wrong_answer_form,
                 'fr_answer_form': fr_answer_form}
-    return render(request, 'quest_extension/admin_edit_question.html', context)
+    return render(request, 'quest_extension/admin_edit_fr_question.html', context)
+    
+    
+def admin_edit_mc_question(request, question_id):
+
+    current_question = Question.objects.get(id = question_id)
+    correct_answers = CorrectAnswer.objects.filter(question = current_question)
+    wrong_answers = IncorrectAnswer.objects.filter(question= current_question)
+    question_text_form = QuestionForm(initial={'question_text': current_question.question_text})
+    quest_id = current_question.quest.id
+
+    all_correct_answers = ""
+    for answer in correct_answers:
+        answer_text = answer.answer_text
+        all_correct_answers += (answer_text + "\n")
+
+    all_wrong_answers = ""
+    for answer in wrong_answers:
+        answer_text = answer.answer_text
+        all_wrong_answers += (answer_text + "\n")
+
+    mc_correct_answer_form = RightAnswerForm(initial={'correct_choices': all_correct_answers})
+    mc_wrong_answer_form = WrongAnswerForm(initial={'incorrect_choices': all_wrong_answers})
+
+    if request.method == 'POST':
+        question_form = QuestionForm(request.POST)
+        answer_form = RightAnswerForm(request.POST)
+        wrong_answer_form = WrongAnswerForm(request.POST)
+        if question_form.is_valid() and answer_form.is_valid() and wrong_answer_form.is_valid():
+            timestamp = copy.deepcopy(current_question.time_modified)
+            print(timestamp)
+            current_question.deleted = True
+            current_question.save()
+            return save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, timestamp)
+        
+    
+    
+    current_question = Question.objects.get(id = question_id)
+    print(current_question.question_type)
+    context = {'current_question': current_question,
+                'question_text_form': question_text_form,
+                'mc_correct_answer_form': mc_correct_answer_form,
+                'mc_wrong_answer_form': mc_wrong_answer_form,
+                'quest_id': quest_id}
+    return render(request, 'quest_extension/admin_edit_mc_question.html', context)
 
 def admin_project_page(request):
 

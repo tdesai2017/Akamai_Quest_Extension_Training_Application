@@ -9,7 +9,7 @@
     </head>
     <body>
 
-    <form method="POST">
+    <form method="POST" action= '/quest/save_edit_mc_question/{{current_question.id}}'>
         {% csrf_token %}
         {{ question_text_form }}
 

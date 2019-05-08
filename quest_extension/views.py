@@ -10,86 +10,18 @@ from django.core.validators import validate_email
 from django.contrib import messages
 from datetime import datetime
 import copy
-
-
-
-
-
-
-def save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, timestamp=datetime.now()):
-
-    quest_id = str(quest_id)
-    quest = Quest.objects.get(id=quest_id)
-    bbb = question_form.save(commit=False)
-    bbb.question_type = 'MC'
-    bbb.quest = quest
-    bbb.save()
-    question_id = bbb.id
-    #This allows us to bypass the automatic date from auto_now
-    Question.objects.filter(id = question_id).update(time_modified = timestamp)
-    
-    current_question = Question.objects.get(id = question_id)
-    print(current_question.time_modified)
-    
-
-    list_of_correct_answers = answer_form.cleaned_data['correct_choices'].split('\n')
-
-
-    for correct_answer in list_of_correct_answers:
-        correct_answer = str(correct_answer).strip()
-        ccc = CorrectAnswer(question=Question.objects.get(id=question_id), answer_text= correct_answer)
-        ccc.save()
-    
-
-
-    list_of_wrong_answers = wrong_answer_form.cleaned_data['incorrect_choices'].split('\n')
-
-    for wrong_answer in list_of_wrong_answers:
-        wrong_answer = str(wrong_answer).strip()
-        ddd = IncorrectAnswer(question=Question.objects.get(id=question_id), answer_text= wrong_answer)
-        ddd.save()
-
-    print("I AM HERE")
-    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + quest_id)
-
-
-#Verifies that you are only trying to access the content for the ldap that you are logged in for
-def validate_user_access(session_ldap, current_ldap):
-    return (session_ldap == current_ldap)
-        
-    
-
-#Checks whether you can go to the next question once you sumbit a new answer
-def go_to_next_quest(current_quest, current_user, current_project):
-    num_questions_in_quest = len(Question.objects.filter(quest = current_quest, deleted = False))
-    all_questions_in_quest = [question for question in Question.objects.filter(quest = current_quest, deleted = False)]
-    count_of_correctly_answered_questions = 0
-    for question in all_questions_in_quest:
-        if (CorrectlyAnsweredQuestion.objects.filter(question = question, user = current_user)):
-            count_of_correctly_answered_questions += 1
-            
-    print(count_of_correctly_answered_questions, num_questions_in_quest)
-
-    if (count_of_correctly_answered_questions == num_questions_in_quest):
-        users_user_project_object = UserProject.objects.get(user = current_user, project = current_project)
-        #adds points for the completed quest to the user
-        users_user_project_object.points += current_quest.quest_points_earned
-        users_user_project_object.save()
-        print("Edli's points are:" + str (users_user_project_object.points))
-        current_quest_num = current_quest.quest_path_number
-        #If next quest exists
-        if (Quest.objects.filter(quest_path_number = current_quest_num + 1, project = current_project)):
-            next_quest = Quest.objects.get(quest_path_number = current_quest_num + 1, project = current_project)
-            print("I Am Here")
-            users_user_project_object.current_quest = next_quest
-            users_user_project_object.save()
-        else:
-            users_user_project_object.completed_project = True
-            users_user_project_object.save()
-            
-
+from .logic import *
 
 #Views
+
+
+#create_fr_question
+def get_fr_question_form(request, quest_id):
+        form = QuestionForm()
+        ans_form = CorrectAnswerForm()
+        context = {'q_form' : form, 'ans_form' : ans_form, 'quest_id': quest_id}
+        return render(request, 'quest_extension/fr_question_form.html', context )
+
 def create_fr_question(request, quest_id):
     if request.method  == 'POST':
         
@@ -99,11 +31,7 @@ def create_fr_question(request, quest_id):
             quest = Quest.objects.get(id=quest_id)
             bbb = question_form.save(commit=False)
             bbb.question_type = 'FR'
-            
-            # if not bbb.question_text[len(bbb.question_text)-1] == '?':
-            #     bbb.question_text += '?'
-
-
+           
             bbb.quest = quest
             bbb.save()
             question_id = bbb.id
@@ -114,11 +42,19 @@ def create_fr_question(request, quest_id):
             
             return HttpResponseRedirect('/quest/admin_quest_page_editable/' + quest_id)
     
-    form = QuestionForm()
-    ans_form = CorrectAnswerForm()
-    context = {'q_form' : form, 'ans_form' : ans_form, 'quest_id': quest_id}
+    return HttpResponseRedirect('/quest/fr-create-form/' + str(quest_id))
+    
+    
+######################################
 
-    return render(request, 'quest_extension/fr_question_form.html', context )
+#create_mc_question
+def get_mc_question_form(request, quest_id):
+
+    question_form = QuestionForm()
+    answer_form = RightAnswerForm()
+    wrong_answer_form = WrongAnswerForm()
+    context = {'q_form' : question_form, 'ans_form' : answer_form, 'wrong_answer_form' : wrong_answer_form, 'quest_id': quest_id}
+    return render(request, 'quest_extension/mc_question_form.html', context)
 
 
 def create_mc_question(request, quest_id):
@@ -129,15 +65,21 @@ def create_mc_question(request, quest_id):
         if question_form.is_valid() and answer_form.is_valid() and wrong_answer_form.is_valid():
             return save_mc_question(question_form, answer_form, wrong_answer_form, quest_id)
         
-    
-    question_form = QuestionForm()
-    answer_form = RightAnswerForm()
-    wrong_answer_form = WrongAnswerForm()
-    context = {'q_form' : question_form, 'ans_form' : RightAnswerForm, 'wrong_answer_form' : wrong_answer_form, 'quest_id': quest_id}
-    return render(request, 'quest_extension/mc_question_form.html', context)
+    return HttpResponseRedirect('/quest/mc-create-form/' + str(quest_id))
 
 
-def admin_home_editable(request, project_id): 
+######################################
+
+#admin_home_editable
+
+def get_admin_home_editable(request, project_id): 
+    current_project = Project.objects.get(id = project_id)
+    quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
+    quest_form = QuestForm()
+    context = {'quests':quests, 'quest_form': quest_form, 'current_project': current_project}
+    return render(request, 'quest_extension/admin_home_editable.html', context)
+
+def save_new_quest(request, project_id): 
     current_project = Project.objects.get(id = project_id)
     if request.method == 'POST':
         post_request = request.POST
@@ -152,9 +94,6 @@ def admin_home_editable(request, project_id):
                 temp.save()
                 quest_id = temp.id
 
-                #The below part is unessary right now since admins cannot edit a proejct anymore after a user joins
-                #it, however, I will keep it for now to prevent bugs
-
                 # If a user has no current quest for a certain project since the admin never created a quest with path 1 until
                 # now, the user's current quest will be updated here to the inputted quest with id = 1
                 all_users_without_current_quests = UserProject.objects.filter(project = current_project, current_quest= None)
@@ -164,57 +103,25 @@ def admin_home_editable(request, project_id):
                         userproject.current_quest = temp
                         userproject.save()
 
-                
-
                 return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(quest_id))
 
-    quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
-    quest_form = QuestForm()
-    context = {'quests':quests, 'quest_form': quest_form, 'current_project': current_project}
-    return render(request, 'quest_extension/admin_home_editable.html', context)
+    return HttpResponseRedirect('/quest/admin_home_editable/' + str(project_id))
+
+######################################
 
 
-def admin_home_view_only(request, project_id): 
+def get_admin_home_view_only(request, project_id): 
     current_project = Project.objects.get(id = project_id)
     quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
     context = {'quests':quests, 'current_project': current_project}
     return render(request, 'quest_extension/admin_home_view_only.html', context)
 
+######################################
 
-
-
-
-def admin_quest_page_editable(request, quest_id):
+#admin_quest_page_editable
+def get_admin_quest_page_editable(request, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
     current_project_id = current_quest.project.id
-
-
-    if request.method == 'POST':
-        post_request = request.POST
-
-        if 'deleted' in post_request.keys():
-            current_question = Question.objects.get(id = post_request['deleted'])
-            print (post_request)
-            #We want to not let the time_modified increase, so we save it here and assign it to the question after we save it
-            current_time_modified = copy.deepcopy(current_question.time_modified)
-            current_question.deleted = True
-            current_question.save()
-            Question.objects.filter(id = post_request['deleted']).update(time_modified = current_time_modified)
-            return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(current_question.quest.id))
-
-        if 'undo' in post_request.keys():
-            if Question.objects.filter(quest = current_quest, deleted = True):
-                object_to_reappear = Question.objects.filter(quest = current_quest, deleted = True).latest('time_modified')
-                #We want to not let the time_modified increase, so we save it here and assign it to the question after we save it
-                object_to_reappear_id = object_to_reappear.id
-                current_time_modified = copy.deepcopy(object_to_reappear.time_modified)
-                object_to_reappear.deleted = False
-                object_to_reappear.save()
-                Question.objects.filter(id = object_to_reappear_id).update(time_modified = current_time_modified)
-
-            return HttpResponseRedirect(quest_id)
-
-
     list_of_questions = Question.objects.filter(quest = current_quest, deleted=False).order_by('time_modified')
     fr_input_form = TakeInFreeResponseForm()
 
@@ -240,7 +147,43 @@ def admin_quest_page_editable(request, quest_id):
     return render(request, 'quest_extension/admin_quest_page_editable.html', context)
 
 
-def admin_quest_page_view_only(request, quest_id):
+def delete_question(request, quest_id):
+
+    if request.method == 'POST':
+        post_request = request.POST
+        current_question = Question.objects.get(id = post_request['deleted'])
+        print (post_request)
+        #We want to not let the time_modified increase, so we save it here and assign it to the question after we save it
+        current_time_modified = copy.deepcopy(current_question.time_modified)
+        current_question.deleted = True
+        current_question.save()
+        Question.objects.filter(id = post_request['deleted']).update(time_modified = current_time_modified)
+        return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(current_question.quest.id))
+
+    return HttpResponseRedirect('/quest/admin_quest_page_editable' + str(quest_id))
+
+
+def undo_delete_question(request, quest_id):
+    current_quest = Quest.objects.get(id = quest_id)
+    if request.method == 'POST':        
+        if Question.objects.filter(quest = current_quest, deleted = True):
+            object_to_reappear = Question.objects.filter(quest = current_quest, deleted = True).latest('time_modified')
+            #We want to not let the time_modified increase, so we save it here and assign it to the question after we save it
+            object_to_reappear_id = object_to_reappear.id
+            current_time_modified = copy.deepcopy(object_to_reappear.time_modified)
+            object_to_reappear.deleted = False
+            object_to_reappear.save()
+            Question.objects.filter(id = object_to_reappear_id).update(time_modified = current_time_modified)
+
+            return HttpResponseRedirect(quest_id)
+
+    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(quest_id))
+
+
+######################################
+
+#admin_quest_page_view_only
+def get_admin_quest_page_view_only(request, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
     current_project_id = current_quest.project.id
     list_of_questions = Question.objects.filter(quest = current_quest, deleted=False).order_by('time_modified')
@@ -267,21 +210,31 @@ def admin_quest_page_view_only(request, quest_id):
     context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form, 'current_project_id': current_project_id}
     return render(request, 'quest_extension/admin_quest_page_view_only.html', context)
 
+######################################
 
-def user_home(request, ldap, project_id):  
+#user_home
+def get_user_home(request, ldap, project_id):
     if not validate_user_access(request.session['current_user_ldap'], ldap):
         return HttpResponseRedirect('/quest/user_login')
+
     user = User.objects.get(user_ldap= ldap)
     current_project = Project.objects.get(id = project_id)
     current_user_project_object = UserProject.objects.get(user = user, project = current_project)
+    quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
+    context = {'quests':quests, 'user': user, 'current_project': current_project, 'current_user_project_object': current_user_project_object}
+    return render(request, 'quest_extension/user_home.html', context)
 
-    # Figure out how we can replace this with Javascript
+
+
+
+def click_on_quest(request, ldap, project_id):  
+    user = User.objects.get(user_ldap= ldap)
+    current_project = Project.objects.get(id = project_id)
+
     if request.method == 'POST':
         post_request = request.POST
 
-        # For some reason event though both evalued to the same number, 
-        # they were always compared to be not equal to each other
-        # That's why I am converting them both to strings
+        #User can move to any quest = or less than current quest
         users_current_quest_path_num = str(UserProject.objects.get(user = user, project = current_project).current_quest.quest_path_number)
         if str(users_current_quest_path_num) >= str(post_request['quest_path_number']):
             quest_clicked_on = Quest.objects.get(quest_path_number = post_request['quest_path_number'], project = current_project)
@@ -290,73 +243,19 @@ def user_home(request, ldap, project_id):
         else:
             return HttpResponseRedirect('/quest/user_home/' + ldap + '/' + str(project_id))
 
-    quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
-    context = {'quests':quests, 'user': user, 'current_project': current_project, 'current_user_project_object': current_user_project_object}
-    return render(request, 'quest_extension/user_home.html', context)
-    
+    return HttpResponseRedirect('/quest/user_home' + ldap + str(project_id))
 
-def user_quest_page(request, ldap, quest_id):
+
+######################################
+
+#user_quest_page
+def get_user_quest_page(request, ldap, quest_id):
     if not validate_user_access(request.session['current_user_ldap'], ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_quest = Quest.objects.get(id = quest_id)
     current_project_id = current_quest.project.id
-    current_project = current_quest.project
     current_user = User.objects.get(user_ldap = ldap)
-
-
-    if request.method == 'POST':
-        #When do I check here whether the form is valid
-        post_request = request.POST
-        if 'FR_response_id' in post_request:
-            user_answer = post_request['answer']
-            current_question = Question.objects.get(id = post_request['FR_response_id'])
-            correct_answers = CorrectAnswer.objects.filter(question = current_question)
-            
-            correct_answers_texts = []
-            for answer in correct_answers:
-                correct_answers_texts.append(answer.answer_text)
-
-            if user_answer in correct_answers_texts:
-                print("You are correct")
-                #Creates a new MODEL INSTANCE of CorrectlyAnswerQuestions
-                correctly_answered_question = CorrectlyAnsweredQuestion()
-                #Adds a new correctly answer question
-                correctly_answered_question.question = current_question
-                correctly_answered_question.user = User.objects.get(user_ldap = ldap)
-                correctly_answered_question.save()
-                go_to_next_quest(current_quest, current_user, current_project)
-
-                return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
-
-            print('You are wrong')
-            return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
-        
-        if 'MC_response_id' in post_request:
-            user_answer = post_request.getlist('answer')
-            current_question = Question.objects.get(id = post_request['MC_response_id'])
-            correct_answers = CorrectAnswer.objects.filter(question = current_question)
-
-            correct_answers_texts = []
-            for answer in correct_answers:
-                correct_answers_texts.append(answer.answer_text)
-
-            user_answer.sort()
-            correct_answers_texts.sort()
-
-            #Even if we need to select multiple answers to get the correct repsponse, this will now work
-            if user_answer == correct_answers_texts:
-            #Creates a new MODEL INSTANCE of CorrectlyAnswerQuestions
-                correctly_answered_question = CorrectlyAnsweredQuestion()
-                #Adds a new correctly answer question
-                correctly_answered_question.question = current_question
-                correctly_answered_question.user = User.objects.get(user_ldap = ldap)
-                correctly_answered_question.save()
-                go_to_next_quest(current_quest, current_user, current_project)
-                return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
-
-            print('You are wrong')
-            return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
 
     list_of_questions = Question.objects.filter(quest = current_quest, deleted=False).order_by('time_modified')
     fr_input_form = TakeInFreeResponseForm()
@@ -384,9 +283,6 @@ def user_quest_page(request, ldap, quest_id):
         #Combines wrong answers with correct answer
         format_2.append(format_2_tuple)
 
-    #Checks whether you can move onto the next quest, only happens when you give a post request for
-    #the next answer
-    
     context = {'current_quest': current_quest, 
             'format': format, 
             'fr_input_form': fr_input_form, 
@@ -397,6 +293,85 @@ def user_quest_page(request, ldap, quest_id):
 
     return render(request, 'quest_extension/user_quest_page.html', context)
 
+def validate_fr_question_response(request, ldap, quest_id):
+
+    current_quest = Quest.objects.get(id = quest_id)
+    current_project = current_quest.project
+    current_user = User.objects.get(user_ldap = ldap)
+
+    if request.method == 'POST':
+        #When do I check here whether the form is valid
+        post_request = request.POST
+        user_answer = post_request['answer']
+        current_question = Question.objects.get(id = post_request['FR_response_id'])
+        correct_answers = CorrectAnswer.objects.filter(question = current_question)
+        
+        correct_answers_texts = []
+        for answer in correct_answers:
+            correct_answers_texts.append(answer.answer_text)
+
+        if user_answer in correct_answers_texts:
+            print("You are correct")
+            #Creates a new MODEL INSTANCE of CorrectlyAnswerQuestions
+            correctly_answered_question = CorrectlyAnsweredQuestion()
+            #Adds a new correctly answer question
+            correctly_answered_question.question = current_question
+            correctly_answered_question.user = User.objects.get(user_ldap = ldap)
+            correctly_answered_question.save()
+            go_to_next_quest(current_quest, current_user, current_project)
+
+            return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
+
+        print('You are wrong')
+        return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
+    
+    return HttpResponseRedirect('/quest/user_quest_page' + ldap + str(quest_id))
+
+
+def validate_mc_question_response(request, ldap, quest_id):
+
+    current_quest = Quest.objects.get(id = quest_id)
+    current_project = current_quest.project
+    current_user = User.objects.get(user_ldap = ldap)
+    
+
+    if request.method == 'POST':
+        #When do I check here whether the form is valid
+        post_request = request.POST
+        user_answer = post_request.getlist('answer')
+        current_question = Question.objects.get(id = post_request['MC_response_id'])
+        correct_answers = CorrectAnswer.objects.filter(question = current_question)
+
+
+        correct_answers_texts = []
+        for answer in correct_answers:
+            correct_answers_texts.append(answer.answer_text)
+
+        print (user_answer, correct_answers_texts)
+
+        user_answer.sort()
+        correct_answers_texts.sort()
+
+
+        #Even if we need to select multiple answers to get the correct response, this will now work
+        if user_answer == correct_answers_texts:
+        #Creates a new MODEL INSTANCE of CorrectlyAnswerQuestions
+            correctly_answered_question = CorrectlyAnsweredQuestion()
+            #Adds a new correctly answer question
+            correctly_answered_question.question = current_question
+            correctly_answered_question.user = User.objects.get(user_ldap = ldap)
+            correctly_answered_question.save()
+            go_to_next_quest(current_quest, current_user, current_project)
+            return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
+
+        print('You are wrong')
+        return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
+        
+    return HttpResponseRedirect('/quest/user_quest_page' + ldap + str(quest_id))
+
+
+######################################
+#Needs to be implemented
 
 def admin_edit_fr_question(request, question_id):
     #question_text = forms.CharField(max_length=128, widget=forms.Textarea(attrs={'placeholder': 'Please enter the title'}))
@@ -426,9 +401,12 @@ def admin_edit_fr_question(request, question_id):
                 'question_text_form': question_text_form,
                 'fr_answer_form': fr_answer_form}
     return render(request, 'quest_extension/admin_edit_fr_question.html', context)
-    
-    
-def admin_edit_mc_question(request, question_id):
+
+
+
+######################################
+#edit_mc_question
+def get_edit_mc_question(request, question_id):
 
     current_question = Question.objects.get(id = question_id)
     correct_answers = CorrectAnswer.objects.filter(question = current_question)
@@ -449,6 +427,18 @@ def admin_edit_mc_question(request, question_id):
     mc_correct_answer_form = RightAnswerForm(initial={'correct_choices': all_correct_answers})
     mc_wrong_answer_form = WrongAnswerForm(initial={'incorrect_choices': all_wrong_answers})
 
+    current_question = Question.objects.get(id = question_id)
+    print(current_question.question_type)
+    context = {'current_question': current_question,
+                'question_text_form': question_text_form,
+                'mc_correct_answer_form': mc_correct_answer_form,
+                'mc_wrong_answer_form': mc_wrong_answer_form,
+                'quest_id': quest_id}
+    return render(request, 'quest_extension/admin_edit_mc_question.html', context)
+    
+def save_edit_mc_question (request, question_id):
+    current_question = Question.objects.get(id = question_id)
+    quest_id = current_question.quest.id
     if request.method == 'POST':
         question_form = QuestionForm(request.POST)
         answer_form = RightAnswerForm(request.POST)
@@ -459,19 +449,20 @@ def admin_edit_mc_question(request, question_id):
             current_question.deleted = True
             current_question.save()
             return save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, timestamp)
-        
-    
-    
-    current_question = Question.objects.get(id = question_id)
-    print(current_question.question_type)
-    context = {'current_question': current_question,
-                'question_text_form': question_text_form,
-                'mc_correct_answer_form': mc_correct_answer_form,
-                'mc_wrong_answer_form': mc_wrong_answer_form,
-                'quest_id': quest_id}
-    return render(request, 'quest_extension/admin_edit_mc_question.html', context)
 
-def admin_project_page(request):
+    return HttpResponseRedirect('/quest/admin_edit_mc_question' + str(question_id))
+
+######################################
+#admin_project_page
+
+def get_admin_project_page(request):
+    project_form = ProjectForm()
+    list_of_projects = Project.objects.all()
+
+    context = {'project_form': project_form, 'list_of_projects': list_of_projects}
+    return render(request, 'quest_extension/admin_project_page.html', context)
+
+def add_new_project(request):
 
     if request.method == 'POST':
         # form was submitted
@@ -483,14 +474,15 @@ def admin_project_page(request):
             project_id = temp.id
 
             return HttpResponseRedirect('/quest/admin_home_editable/' + str(project_id))
-    else:
-        project_form = ProjectForm()
-        list_of_projects = Project.objects.all()
+    
+    return HttpResponseRedirect('/quest/admin_project_page')
+    
+######################################
+#user_project_page
+def get_user_project_page(request, ldap):
 
-    context = {'project_form': project_form, 'list_of_projects': list_of_projects}
-    return render(request, 'quest_extension/admin_project_page.html', context)
-
-def user_project_page(request, ldap):
+    if not validate_user_access(request.session['current_user_ldap'], ldap):
+        return HttpResponseRedirect('/quest/user_login')
 
     current_user = User.objects.get(user_ldap = ldap)
     user_projects = [user_project.project for user_project in UserProject.objects.filter(user = current_user)]
@@ -498,14 +490,32 @@ def user_project_page(request, ldap):
     all_other_projects = [project for project in Project.objects.all() if project.id not in user_project_ids]
     add_new_project_form = AddNewProjectForm()
 
-    if not validate_user_access(request.session['current_user_ldap'], ldap):
+    context = {'current_user': current_user,
+     'user_projects': user_projects,
+      'all_other_projects': all_other_projects,
+      'add_new_project_form': add_new_project_form}
+    return render(request, 'quest_extension/user_project_page.html', context)
+
+
+def user_logout(request, ldap):
+
+    if request.method == 'POST':
+        del request.session['current_user_ldap']
         return HttpResponseRedirect('/quest/user_login')
+
+    return HttpResponseRedirect('/quest/user_project_page' + ldap)
+
+
+def add_user_project_page(request, ldap):
 
     if request.method == 'POST':
         post_request = request.POST
         if 'random_phrase' in post_request.keys():
             inputted_random_phrase = post_request['random_phrase']
             project_requested = Project.objects.get(id = post_request['project_id'])
+
+
+            
             
             if inputted_random_phrase == project_requested.project_random_phrase:
                 new_user_project = UserProject()
@@ -523,42 +533,45 @@ def user_project_page(request, ldap):
                 project_requested.save()
 
             return HttpResponseRedirect('/quest/user_project_page/' + ldap)
+    
+    return HttpResponseRedirect('/quest/user_project_page' + ldap)
 
-        if 'logout' in post_request.keys():
-            del request.session['current_user_ldap']
-            return HttpResponseRedirect('/quest/user_login')
+def remove_user_project(request, ldap):
 
-        if 'remove_project' in post_request.keys():
+    current_user = User.objects.get(user_ldap = ldap)
+    
+    if request.method == 'POST':
+        post_request = request.POST
+        #We aren't actually deleting the project, don't worry
+        project_to_delete = Project.objects.get(id = post_request['remove_project'])
 
-            #We aren't actually deleting the project, don't worry
-            project_to_delete = Project.objects.get(id = post_request['remove_project'])
-
-            user_project_to_delete = UserProject.objects.get(user = current_user, project= project_to_delete)
-            user_project_to_delete.delete()
-            
-            
-            quests = Quest.objects.filter(project = project_to_delete)
-            questions = Question.objects.filter(quest__in= quests)
-            correctly_answered_questions = CorrectlyAnsweredQuestion.objects.filter(user = current_user, question__in = questions)
-            correctly_answered_questions.delete()
-            
-            #If no users are on this project anymore, you can once again edit the project
-            if len(UserProject.objects.filter(project = project_to_delete)) == 0:
-                project_to_delete.project_editable = True
-                project_to_delete.save()
-
-
-            return HttpResponseRedirect('/quest/user_project_page/' + ldap)
-
-
+        user_project_to_delete = UserProject.objects.get(user = current_user, project= project_to_delete)
+        user_project_to_delete.delete()
         
-    context = {'current_user': current_user,
-     'user_projects': user_projects,
-      'all_other_projects': all_other_projects,
-      'add_new_project_form': add_new_project_form}
-    return render(request, 'quest_extension/user_project_page.html', context)
+        quests = Quest.objects.filter(project = project_to_delete)
+        questions = Question.objects.filter(quest__in= quests)
+        correctly_answered_questions = CorrectlyAnsweredQuestion.objects.filter(user = current_user, question__in = questions)
+        correctly_answered_questions.delete()
+        
+        #If no users are on this project anymore, you can once again edit the project
+        if len(UserProject.objects.filter(project = project_to_delete)) == 0:
+            project_to_delete.project_editable = True
+            project_to_delete.save()
 
-def new_user(request):
+
+        return HttpResponseRedirect('/quest/user_project_page/' + ldap)
+    return HttpResponseRedirect('/quest/user_project_page' + ldap)
+
+######################################
+#new_user
+
+def get_new_user_page(request):
+
+    user_form = UserForm()
+    context = {'user_form': user_form}
+    return render(request, 'quest_extension/new_user.html', context)
+
+def add_new_user(request):
     if request.method == 'POST':
         user_form = UserForm(request.POST)
         if user_form.is_valid():
@@ -575,6 +588,7 @@ def new_user(request):
                 print("This is an invalid email")
                 messages.success(request, 'Please input a valid email')
 
+            #Use filter for this - django ORM
             new_ldap = user_ldap not in [user.user_ldap for user in User.objects.all()]
             
 
@@ -584,14 +598,18 @@ def new_user(request):
             else:
                 messages.success(request, 'There is already an account associated with this LDAP')
 
+    return HttpResponseRedirect('/quest/new_user')
 
-            
+######################################
+#user_login
 
-    user_form = UserForm()
-    context = {'user_form': user_form}
-    return render(request, 'quest_extension/new_user.html', context)
+def get_user_login(request):
 
-def user_login (request):
+    login_form = LoginForm()
+    context = {'login_form': login_form}
+    return render(request, 'quest_extension/user_login.html', context)
+
+def user_login_to_account(request):
     if request.method == 'POST':
         post_request = request.POST
         ldap = post_request['ldap']
@@ -609,13 +627,10 @@ def user_login (request):
         #If LDAP is not associated with an account
         else:
             messages.success(request, 'There is no account associated with this LDAP')
-
-       
-
     
-    login_form = LoginForm()
-    context = {'login_form': login_form}
-    return render(request, 'quest_extension/user_login.html', context)
+    return HttpResponseRedirect('/quest/user_login')
+    
+    
 
 
 

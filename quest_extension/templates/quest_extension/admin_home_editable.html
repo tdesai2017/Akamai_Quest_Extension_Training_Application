@@ -1,7 +1,7 @@
 {% extends 'quest_extension/admin_home_base.html' %}
 
 {% block quest_create_form %}
-    <form method='POST'>
+    <form method='POST' action='/quest/save_new_quest/{{current_project.id}}'>
         {% csrf_token %}
         {{ quest_form }}
         <button type='submit' name= 'new_quest'>Submit</button>

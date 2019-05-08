@@ -20,7 +20,7 @@
         <br>
 
     <div id= container>
-        <form method='POST'>
+        <form method='POST' action ='/quest/user_login_to_account'>
             {% csrf_token %}
             {{ login_form }}
             <button type="submit">Submit</button>

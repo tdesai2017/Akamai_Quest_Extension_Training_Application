@@ -26,7 +26,7 @@
 
 
                     {% if question.id not in have_correct_answer %}
-                         <form method = "POST">
+                         <form method = "POST" action = '/quest/validate_fr_question_response/{{ldap}}/{{current_quest.id}}'>
                             {% csrf_token %}
                             {{ fr_input_form }}
                              <button type= 'submit' name='FR_response_id' value = '{{ question.id }}'>Submit</button>
@@ -49,7 +49,7 @@
                 {% if question.question_type == 'MC' %}
                      {% if question.id not in have_correct_answer %}
 
-                        <form method = "POST">
+                        <form method = "POST" action = '/quest/validate_mc_question_response/{{ldap}}/{{current_quest.id}}'>
                             {% csrf_token %}
                             {% for a in answers %}
                             <!-- Make both incorrect and correct answers have the same filed called answer_text so that it can easily be passed as a value -->

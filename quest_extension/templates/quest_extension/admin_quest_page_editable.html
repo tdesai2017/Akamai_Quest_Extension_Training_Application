@@ -3,7 +3,7 @@
 {% block forms_and_undo %}
     <form id = 'free_response' action='/quest/fr-create-form/{{current_quest.id}}' method = 'GET'></form>
     <form id = 'multiple_choice' action='/quest/mc-create-form/{{current_quest.id}}' method = 'GET'></form>
-    <form id = 'undo_delete' method = 'POST'> {% csrf_token %} </form>
+    <form id = 'undo_delete' method = 'POST' action = '/quest/undo_delete_question/{{current_quest.id}}'> {% csrf_token %} </form>
 {% endblock %}
 
 {% block fr_mc_undodelete %}
@@ -22,20 +22,20 @@
     <div class= 'admin_buttons'>
 
         {% if question.question_type == 'FR' %}
-        <form method= 'POST', action= '/quest/admin_edit_fr_question/{{ question.id }}'>
+        <form method= 'GET', action= '/quest/admin_edit_fr_question/{{ question.id }}'>
                 {% csrf_token %}
                 <button type='submit' name = 'edit' value = '{{question.id}}'>Edit</button>
         </form>
         {% endif %}
 
         {% if question.question_type == 'MC' %}
-        <form method= 'POST', action= '/quest/admin_edit_mc_question/{{ question.id }}'>
+        <form method= 'GET', action= '/quest/admin_edit_mc_question/{{ question.id }}'>
                 {% csrf_token %}
                 <button type='submit' name = 'edit' value = '{{question.id}}'>Edit</button>
         </form>
         {% endif %}
 
-        <form method= 'POST'>
+        <form method= 'POST' action= '/quest/delete_question/{{current_quest.id}}'>
                 {% csrf_token %}
                 <button type='submit' name = 'deleted' value = '{{question.id}}'>Delete Question</button>
         </form>

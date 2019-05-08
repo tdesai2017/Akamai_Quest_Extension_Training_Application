@@ -18,7 +18,7 @@
 	<p>Welcome Admin to the different Projects!</p>
     
     <div id= 'container'>
-    <form method='POST' id="test">
+    <form method='POST' id="test" action = "/quest/add_new_project">
     {% csrf_token %}
     {{ project_form }}
     <br>

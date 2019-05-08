@@ -25,7 +25,7 @@
             </div>
         </form>
 
-        <form method='POST'>
+        <form method='POST' action = '/quest/remove_user_project/{{ current_user.user_ldap }}'>
             {% csrf_token %}
             <button onclick="return confirm('Are you sure you want to remove this project (All data submitted and all questions answered for this project will be deleted)?');" type = 'submit' name = 'remove_project' value = '{{ project.id }}'> Remove Project </button>
         </form>
@@ -39,7 +39,7 @@
 
     {% for project in all_other_projects %}
 
-        <form id = 'add_new_project' method='POST'>
+        <form id = 'add_new_project' method='POST' action = '/quest/add_user_project_page/{{ current_user.user_ldap }}'>
             {% csrf_token %}
             <button type ='submit' name = 'project_id' value = '{{project.id}}'>{{project.project_name}}</button>
             {{ add_new_project_form }}
@@ -48,7 +48,7 @@
         
     {% endfor %}
         <div id= 'logout'>
-          <form method='POST'>
+          <form method='POST' action = '/quest/user_logout/{{ current_user.user_ldap}}'>
                 {% csrf_token%}
                 <button type = 'submit', name = 'logout'>Logout</button>
             </form>

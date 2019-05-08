@@ -8,7 +8,7 @@
     </head>
     <body>
 
-        <form method="POST">
+        <form method="POST" action= '/quest/create_fr_question/{{quest_id}}'>
         {% csrf_token %}
         {{ q_form }}
 

@@ -10,6 +10,26 @@ from django.core.validators import validate_email
 from django.contrib import messages
 from datetime import datetime
 import copy
+
+#Saves a free response question to the backend
+def save_fr_question(question_form, answer_form, quest_id, timestamp=datetime.now()):
+    quest = Quest.objects.get(id=quest_id)
+    bbb = question_form.save(commit=False)
+    bbb.question_type = 'FR'
+    
+    bbb.quest = quest
+    bbb.save()
+    question_id = bbb.id
+    Question.objects.filter(id = question_id).update(time_modified = timestamp)
+    current_question = Question.objects.get(id = question_id)
+    print(current_question.time_modified)
+
+    ccc = answer_form.save(commit=False)
+    ccc.question = Question.objects.get(id=question_id)
+    ccc.save()
+    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(quest_id))
+
+
 #Saves a multiple choice question to the backend
 def save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, timestamp=datetime.now()):
 
@@ -34,8 +54,6 @@ def save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, ti
         correct_answer = str(correct_answer).strip()
         ccc = CorrectAnswer(question=Question.objects.get(id=question_id), answer_text= correct_answer)
         ccc.save()
-    
-
 
     list_of_wrong_answers = wrong_answer_form.cleaned_data['incorrect_choices'].split('\n')
 
@@ -44,7 +62,6 @@ def save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, ti
         ddd = IncorrectAnswer(question=Question.objects.get(id=question_id), answer_text= wrong_answer)
         ddd.save()
 
-    print("I AM HERE")
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + quest_id)
 
 

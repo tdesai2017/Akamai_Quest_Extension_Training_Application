@@ -1,8 +1,7 @@
 
 from django import forms
 from . import models
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import CustomUser
+
 
 
 class QuestForm(forms.ModelForm):
@@ -25,7 +24,7 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = models.User
         fields = ['user_ldap', 'user_first_name', 'user_last_name', 'user_email', 'user_manager_ldap', 
-                  'user_director_ldap', 'user_password']
+                  'user_director_ldap', 'user_password',]
         labels = {'user_ldap': 'LDAP',
                   'user_first_name': 'First Name',
                   'user_last_name': 'Last Name',
@@ -71,36 +70,4 @@ class LoginForm(forms.Form):
     password = forms.CharField(max_length=45)
 
 
-#For Editing FR Questions
 
-class EditQuestionForm(forms.ModelForm):
-    #question_text = forms.CharField(max_length=128, widget=forms.Textarea(attrs={'placeholder': 'Please enter the title'}))
-    class Meta:
-        model = models.Question
-        fields = ['question_text']
-
-
-class EditCorrectAnswerForm(forms.ModelForm):
-    class Meta:
-        model = models.CorrectAnswer
-        fields = ['answer_text']
-
-class CustomUserCreationForm(UserCreationForm):
-
-    class Meta(UserCreationForm):
-        model = CustomUser
-        fields = ('username', 'email')
-
-class CustomUserChangeForm(UserChangeForm):
-
-    class Meta:
-        model = CustomUser
-        fields = ('username', 'email')
-
-#For Editing MC Questions
-# class EditRightAnswerForm(forms.Form):
-#     correct_choices = forms.CharField(widget=forms.Textarea)
-#     #correct_choices = forms.CharField(max_length=128, widget=forms.Textarea(attrs={'placeholder': 'Please enter the title'}))
-
-# class EditWrongAnswerForm(forms.Form):
-#     incorrect_choices = forms.CharField(widget=forms.Textarea)

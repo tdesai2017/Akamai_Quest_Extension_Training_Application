@@ -16,30 +16,18 @@ from .logic import *
 
 
 def get_fr_question_form(request, quest_id):
-        form = QuestionForm()
-        ans_form = CorrectAnswerForm()
-        context = {'q_form' : form, 'ans_form' : ans_form, 'quest_id': quest_id}
+        question_form = QuestionForm()
+        answer_form = CorrectAnswerForm()
+        context = {'q_form' : question_form, 'ans_form' : answer_form, 'quest_id': quest_id}
         return render(request, 'quest_extension/fr_question_form.html', context )
 
 def create_fr_question(request, quest_id):
     if request.method  == 'POST':
         
         question_form = QuestionForm(request.POST)
-        ans_form = CorrectAnswerForm(request.POST)
-        if question_form.is_valid() and ans_form.is_valid():
-            quest = Quest.objects.get(id=quest_id)
-            bbb = question_form.save(commit=False)
-            bbb.question_type = 'FR'
-           
-            bbb.quest = quest
-            bbb.save()
-            question_id = bbb.id
-
-            ccc = ans_form.save(commit=False)
-            ccc.question = Question.objects.get(id=question_id)
-            ccc.save()
-            
-            return HttpResponseRedirect('/quest/admin_quest_page_editable/' + quest_id)
+        answer_form = CorrectAnswerForm(request.POST)
+        if question_form.is_valid() and answer_form.is_valid():
+            return save_fr_question(question_form, answer_form, quest_id)
     
     return HttpResponseRedirect('/quest/fr-create-form/' + str(quest_id))
     
@@ -364,26 +352,37 @@ def validate_mc_question_response(request, ldap, quest_id):
 ######################################
 
 def admin_edit_fr_question(request, question_id):
-    #question_text = forms.CharField(max_length=128, widget=forms.Textarea(attrs={'placeholder': 'Please enter the title'}))
 
     current_question = Question.objects.get(id = question_id)
     current_questions_answers = CorrectAnswer.objects.filter(question = current_question)
-    question_text_form = EditQuestionForm(initial={'question_text': current_question.question_text})
+    question_text_form = QuestionForm(initial={'question_text': current_question.question_text})
 
     all_answers = ""
     for answer in current_questions_answers:
         answer_text = answer.answer_text
         all_answers += (answer_text + " ")
 
-    fr_answer_form = EditCorrectAnswerForm(initial={'answer_text': all_answers})
+    fr_answer_form = CorrectAnswerForm(initial={'answer_text': all_answers})
 
     
     print (all_answers)
 
     if request.method == 'POST':
         post_request = request.POST
-        print(post_request)
-    
+        question_form = QuestionForm(request.POST)
+        answer_form = CorrectAnswerForm(request.POST)
+        quest_id = current_question.quest.id
+        if question_form.is_valid() and answer_form.is_valid():
+            timestamp = copy.deepcopy(current_question.time_modified)
+            print(timestamp)
+            current_question.deleted = True
+            current_question.save()
+            #If you want to undo the deletion of the previous version of the question, it will pop up back in
+            #it's original place
+            Question.objects.filter(id = question_id).update(time_modified = timestamp)
+            return save_fr_question(question_form, answer_form, quest_id, timestamp)
+
+
     
     current_question = Question.objects.get(id = question_id)
     print(current_question.question_type)
@@ -437,6 +436,9 @@ def save_edit_mc_question (request, question_id):
             print(timestamp)
             current_question.deleted = True
             current_question.save()
+            #If you want to undo the deletion of the previous version of the question, it will pop up back in
+            #it's original place
+            Question.objects.filter(id = question_id).update(time_modified = timestamp)
             return save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, timestamp)
 
     return HttpResponseRedirect('/quest/admin_edit_mc_question' + str(question_id))

@@ -1,6 +1,5 @@
 from django.db import models
 from datetime import datetime
-from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 #CASCADE means that the row will be deleted too if the ForeignKey gets deleted.
@@ -74,14 +73,4 @@ class UserProject(models.Model):
     current_quest = models.ForeignKey(Quest, on_delete=models.CASCADE, null=True)
     points = models.IntegerField(default = 0)
     completed_project = models.BooleanField(default=False)
-
-class CustomUser(AbstractUser):
-    # add additional fields in here
-
-    def __str__(self):
-        return self.email
-
-
-
-
 

@@ -6,8 +6,8 @@
 	<title>Quest home</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!-- <script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
-    <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script> -->
+	<script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
+    <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script>
     <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/admin_project_page_style.css' %}">
 
     </head>
@@ -18,16 +18,26 @@
 	<p>Welcome Admin to the different Projects!</p>
     
     <div id= 'container'>
-    <form method='POST' id="test" action = "/quest/add_new_project">
+    <!-- <form method='POST' id="test" action = "/quest/add_new_project">
     {% csrf_token %}
     {{ project_form }}
     <br>
     <button type = "submit">Submit </button>
-    <!-- <button type="submit" name = 'project_description'  onclick="nicEditors.findEditor('area').saveContent();">Submit</button> -->
+    </form> -->
+
+    <form method='POST' id = 'test_form' action = "/quest/add_new_project">
+        {% csrf_token %}
+        {{ project_form }}
+        <br>
+        Project Description: 
+
+        <div id = "the-container">
+            <div id = 'my-text-area'>
+                <textarea id="area1" name="project_description" form = 'test_form'></textarea>
+            </div>
+        </div>
+        <input type=submit name="submit" value="Send" onclick="nicEditors.findEditor('area1').saveContent();">
     </form>
-
-    <!-- <textarea name="comment" form="test">Enter text here...</textarea> -->
-
 
 
     {% for project in list_of_projects %}

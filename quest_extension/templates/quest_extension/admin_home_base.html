@@ -15,7 +15,7 @@
     <body>
         
     <h1>{{ current_project.project_name}}</h1>
-    <p> {{ current_project.project_description }}</p>
+    <html> {{ current_project.project_description|safe }} </html>
 
 	<p>Welcome Admin to the Quests!</p>
     <p>You have ___ points!</p>

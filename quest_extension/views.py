@@ -455,11 +455,14 @@ def get_admin_project_page(request):
 def add_new_project(request):
 
     if request.method == 'POST':
+        post_request = request.POST
+        print(post_request)
         # form was submitted
         project_form = ProjectForm(request.POST)
         if project_form.is_valid():
             temp = project_form.save(commit=False)
             temp.project_editable = True
+            temp.project_description = post_request['project_description']
             temp.save()
             project_id = temp.id
 

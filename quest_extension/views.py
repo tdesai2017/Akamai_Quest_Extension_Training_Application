@@ -15,7 +15,6 @@ from .logic import *
 #Views
 
 
-#create_fr_question
 def get_fr_question_form(request, quest_id):
         form = QuestionForm()
         ans_form = CorrectAnswerForm()
@@ -47,7 +46,6 @@ def create_fr_question(request, quest_id):
     
 ######################################
 
-#create_mc_question
 def get_mc_question_form(request, quest_id):
 
     question_form = QuestionForm()
@@ -70,7 +68,6 @@ def create_mc_question(request, quest_id):
 
 ######################################
 
-#admin_home_editable
 
 def get_admin_home_editable(request, project_id): 
     current_project = Project.objects.get(id = project_id)
@@ -118,7 +115,6 @@ def get_admin_home_view_only(request, project_id):
 
 ######################################
 
-#admin_quest_page_editable
 def get_admin_quest_page_editable(request, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
     current_project_id = current_quest.project.id
@@ -182,7 +178,6 @@ def undo_delete_question(request, quest_id):
 
 ######################################
 
-#admin_quest_page_view_only
 def get_admin_quest_page_view_only(request, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
     current_project_id = current_quest.project.id
@@ -212,7 +207,6 @@ def get_admin_quest_page_view_only(request, quest_id):
 
 ######################################
 
-#user_home
 def get_user_home(request, ldap, project_id):
     if not validate_user_access(request.session['current_user_ldap'], ldap):
         return HttpResponseRedirect('/quest/user_login')
@@ -248,7 +242,6 @@ def click_on_quest(request, ldap, project_id):
 
 ######################################
 
-#user_quest_page
 def get_user_quest_page(request, ldap, quest_id):
     if not validate_user_access(request.session['current_user_ldap'], ldap):
         return HttpResponseRedirect('/quest/user_login')
@@ -284,7 +277,6 @@ def get_user_quest_page(request, ldap, quest_id):
         format_2.append(format_2_tuple)
 
     context = {'current_quest': current_quest, 
-            'format': format, 
             'fr_input_form': fr_input_form, 
             'ldap': ldap, 
             'current_project_id': current_project_id, 
@@ -371,7 +363,6 @@ def validate_mc_question_response(request, ldap, quest_id):
 
 
 ######################################
-#Needs to be implemented
 
 def admin_edit_fr_question(request, question_id):
     #question_text = forms.CharField(max_length=128, widget=forms.Textarea(attrs={'placeholder': 'Please enter the title'}))
@@ -405,7 +396,6 @@ def admin_edit_fr_question(request, question_id):
 
 
 ######################################
-#edit_mc_question
 def get_edit_mc_question(request, question_id):
 
     current_question = Question.objects.get(id = question_id)
@@ -453,7 +443,6 @@ def save_edit_mc_question (request, question_id):
     return HttpResponseRedirect('/quest/admin_edit_mc_question' + str(question_id))
 
 ######################################
-#admin_project_page
 
 def get_admin_project_page(request):
     project_form = ProjectForm()
@@ -478,7 +467,6 @@ def add_new_project(request):
     return HttpResponseRedirect('/quest/admin_project_page')
     
 ######################################
-#user_project_page
 def get_user_project_page(request, ldap):
 
     if not validate_user_access(request.session['current_user_ldap'], ldap):
@@ -563,7 +551,7 @@ def remove_user_project(request, ldap):
     return HttpResponseRedirect('/quest/user_project_page' + ldap)
 
 ######################################
-#new_user
+
 
 def get_new_user_page(request):
 
@@ -587,11 +575,11 @@ def add_new_user(request):
                 valid_email = False
                 print("This is an invalid email")
                 messages.success(request, 'Please input a valid email')
+                return HttpResponseRedirect('/quest/new_user') 
 
             #Use filter for this - django ORM
             new_ldap = user_ldap not in [user.user_ldap for user in User.objects.all()]
-            
-
+            print(new_ldap)
             if valid_email and new_ldap:
                 temp.save()
                 return HttpResponseRedirect('/quest/user_login')
@@ -601,7 +589,6 @@ def add_new_user(request):
     return HttpResponseRedirect('/quest/new_user')
 
 ######################################
-#user_login
 
 def get_user_login(request):
 

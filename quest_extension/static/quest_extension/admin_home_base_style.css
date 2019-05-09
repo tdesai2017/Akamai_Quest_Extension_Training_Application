@@ -1,0 +1,12 @@
+.not_in_container {
+    text-align: center;
+}
+
+.container {
+    text-align: center;
+
+}
+
+.child {
+    display: inline-block;
+}

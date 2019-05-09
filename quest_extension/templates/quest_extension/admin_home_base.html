@@ -8,32 +8,43 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/admin_project_page_style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/admin_home_base_style.css' %}">
 
     </head>
+    
 
     <body>
-        
-    <h1>{{ current_project.project_name}}</h1>
-    <html> {{ current_project.project_description|safe }} </html>
-
-	<p>Welcome Admin to the Quests!</p>
-    <p>You have ___ points!</p>
-        
-    
-    <div class = "wrapper">
-        {% block quest_create_form %}
-        {% endblock %}
+    <div class='not_in_container'>
+        <h1>{{ current_project.project_name}}</h1>
     </div>
-    
-    {% block redirect_to_quest_page %}
-    {% endblock %}
+
+    <div class='container'>
+        <div class='child'>
+            <html> {{ current_project.project_description|safe }} </html>
+         </div>
+    </div>
+
+    <div class='not_in_container'>
+
+        <p>Welcome Admin to the Quests!</p>
+        <p>You have ___ points!</p>
+            
+        
+        <div class = "wrapper">
+            {% block quest_create_form %}
+            {% endblock %}
+        </div>
+        
+        {% block redirect_to_quest_page %}
+        {% endblock %}
 
 
-    
-    <br>
-    <a href= '/quest/admin_project_page'>Back to Projects Page</a>
+        
+        <br>
+        <a href= '/quest/admin_project_page'>Back to Projects Page</a>
 
+    </div>
     </body>
+    
     
 </html>

@@ -13,60 +13,63 @@
     </head>
 
     <body>
-	<h1>Admin Project Control</h1>
+    <div class='not_the_container'>
+        <h1>Admin Project Control</h1>
 
-	<p>Welcome Admin to the different Projects!</p>
-    
-    <div id= 'container'>
-    <!-- <form method='POST' id="test" action = "/quest/add_new_project">
-    {% csrf_token %}
-    {{ project_form }}
-    <br>
-    <button type = "submit">Submit </button>
-    </form> -->
-
-    <form method='POST' id = 'test_form' action = "/quest/add_new_project">
+        <p>Welcome Admin to the different Projects!</p>
+        
+        <!-- <form method='POST' id="test" action = "/quest/add_new_project">
         {% csrf_token %}
         {{ project_form }}
         <br>
-        Project Description: 
-
-        <div id = "the-container">
+        <button type = "submit">Submit </button>
+        </form> -->
+    </div>
+    <form method='POST' id = 'test_form' action = "/quest/add_new_project">
+        <div class='not_the_container'>
+            {% csrf_token %}
+            {{ project_form }}
+            <br>
+            Project Description: 
+        </div>
+        <div id = "container">
             <div id = 'my-text-area'>
                 <textarea id="area1" name="project_description" form = 'test_form'></textarea>
             </div>
         </div>
-        <input type=submit name="submit" value="Send" onclick="nicEditors.findEditor('area1').saveContent();">
+        <div class='not_the_container'>
+            <input type=submit name="submit" value="Send" onclick="nicEditors.findEditor('area1').saveContent();">
+        </div>
     </form>
 
+    <div class= 'not_the_container'>
+        {% for project in list_of_projects %}
+        <br>
+        {% if project.project_editable %}
 
-    {% for project in list_of_projects %}
-    <br>
-    {% if project.project_editable %}
-
-    <form method='GET' action='/quest/admin_home_editable/{{project.id}}'>
-        <button type='submit'>{{project.project_name}}</button>
-        *Project Editable: {{ project.project_editable }}
-    </form>
-
-
-    {% else %}
-
-     <form method='GET' action='/quest/admin_home_view_only/{{project.id}}'>
-        <button type='submit'>{{project.project_name}}</button>
-        *Project Editable: {{ project.project_editable }}
-    </form>
-
-    {% endif %}
-
-    {% endfor %}
-
-    <br>
-    <br>
-
-    
+        <form method='GET' action='/quest/admin_home_editable/{{project.id}}'>
+            <button type='submit'>{{project.project_name}}</button>
+            *Project Editable: {{ project.project_editable }}
+        </form>
 
 
+        {% else %}
+
+        <form method='GET' action='/quest/admin_home_view_only/{{project.id}}'>
+            <button type='submit'>{{project.project_name}}</button>
+            *Project Editable: {{ project.project_editable }}
+        </form>
+
+        {% endif %}
+
+        {% endfor %}
+
+        <br>
+        <br>
+
+        
+
+</div>
     </body>
     
 </html>

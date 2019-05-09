@@ -1,6 +1,8 @@
 
 from django import forms
 from . import models
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from .models import CustomUser
 
 
 class QuestForm(forms.ModelForm):
@@ -83,7 +85,17 @@ class EditCorrectAnswerForm(forms.ModelForm):
         model = models.CorrectAnswer
         fields = ['answer_text']
 
+class CustomUserCreationForm(UserCreationForm):
 
+    class Meta(UserCreationForm):
+        model = CustomUser
+        fields = ('username', 'email')
+
+class CustomUserChangeForm(UserChangeForm):
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email')
 
 #For Editing MC Questions
 # class EditRightAnswerForm(forms.Form):

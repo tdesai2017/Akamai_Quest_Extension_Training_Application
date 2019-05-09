@@ -157,7 +157,7 @@ def delete_question(request, quest_id):
         return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(current_question.quest.id))
 
     return HttpResponseRedirect('/quest/admin_quest_page_editable' + str(quest_id))
-#test git
+#test gi
 
 def undo_delete_question(request, quest_id):
     current_quest = Quest.objects.get(id = quest_id)

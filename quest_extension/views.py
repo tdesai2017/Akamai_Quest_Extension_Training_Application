@@ -206,27 +206,6 @@ def get_user_home(request, ldap, project_id):
     return render(request, 'quest_extension/user_home.html', context)
 
 
-
-
-def click_on_quest(request, ldap, project_id):  
-    user = User.objects.get(user_ldap= ldap)
-    current_project = Project.objects.get(id = project_id)
-
-    if request.method == 'POST':
-        post_request = request.POST
-
-        #User can move to any quest = or less than current quest
-        users_current_quest_path_num = str(UserProject.objects.get(user = user, project = current_project).current_quest.quest_path_number)
-        if str(users_current_quest_path_num) >= str(post_request['quest_path_number']):
-            quest_clicked_on = Quest.objects.get(quest_path_number = post_request['quest_path_number'], project = current_project)
-            return HttpResponseRedirect('/quest/user_quest_page/' + user.user_ldap + "/" + str(quest_clicked_on.id))
-
-        else:
-            return HttpResponseRedirect('/quest/user_home/' + ldap + '/' + str(project_id))
-
-    return HttpResponseRedirect('/quest/user_home' + ldap + str(project_id))
-
-
 ######################################
 
 def get_user_quest_page(request, ldap, quest_id):
@@ -236,6 +215,15 @@ def get_user_quest_page(request, ldap, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
     current_project_id = current_quest.project.id
     current_user = User.objects.get(user_ldap = ldap)
+    current_project = current_quest.project
+
+    current_user_project = UserProject.objects.get(user = current_user, project = current_project)
+
+    # Ensures that you cannot move to a quest you are not allowed to be in just by altering the 
+    # questions primary id in the url
+    if (current_user_project.current_quest.quest_path_number < current_quest.quest_path_number):
+        return HttpResponseRedirect('/quest/user_home/' + ldap + '/' + str(current_project_id))
+
 
     list_of_questions = Question.objects.filter(quest = current_quest, deleted=False).order_by('time_modified')
     fr_input_form = TakeInFreeResponseForm()

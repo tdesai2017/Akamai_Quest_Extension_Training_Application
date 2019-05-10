@@ -8,14 +8,24 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/admin_home_style.css' %}">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    
+
+    <script>
+    function canMoveForward(quest_path_clicked){
+        var current_quest_num = "{{ current_user_project_object.current_quest.quest_path_number }}";
+        return (current_quest_num >= parseInt(quest_path_clicked));
+        
+    }
+    </script>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_home_style.css' %}">
 
     </head>
 
     <body>
     <h1>{{ current_project.project_name}}</h1>
-    <p> {{ current_project.project_description }}</p>
+    <p> {{ current_project.project_description|safe }}</p>
 
 	<p>Welcome {{ user.user_first_name }} to the Quests!</p>
     <p>You have {{ current_user_project_object.points }} points!</p>
@@ -23,11 +33,11 @@
 
     {% for quest in quests %}
     <br>
-    <!-- Figure out how to validate users_current quest in javascript -->
-    <form method='POST' action='/quest/click_on_quest/{{user.user_ldap}}/{{current_project.id}}'>
-        {% csrf_token %}
-        <button type='submit' name= 'quest_path_number' value = '{{ quest.quest_path_number }}'>{{quest.quest_name}}</button>
+
+    <form method='GET' onsubmit='return canMoveForward( "{{quest.quest_path_number }}" );'  action='/quest/user_quest_page/{{user.user_ldap}}/{{quest.id}}'>
+        <button  type='submit' name= 'quest_path_number' value = '{{ quest.quest_path_number }}'>{{quest.quest_name}}</button>
     </form>
+    
 
 
     {% endfor %}

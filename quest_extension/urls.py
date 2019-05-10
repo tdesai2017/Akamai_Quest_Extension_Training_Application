@@ -73,7 +73,7 @@ urlpatterns = [
 
     #User Pages
     path('user_home/<ldap>/<project_id>', views.get_user_home),
-    path('click_on_quest/<ldap>/<project_id>', views.click_on_quest),
+    # path('click_on_quest/<ldap>/<project_id>', views.click_on_quest),
 
 
 ######################################

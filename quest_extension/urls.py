@@ -109,9 +109,15 @@ urlpatterns = [
 
 
 
+######################################
+path('admin_edit_project_description/<project_id>', views.get_admin_edit_project_description),
+path('admin_update_project_description/<project_id>', views.admin_update_project_description),
+
+
+
+
+
     
-
-
 
 
 

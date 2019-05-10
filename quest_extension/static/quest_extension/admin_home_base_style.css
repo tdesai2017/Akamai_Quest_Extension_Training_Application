@@ -3,10 +3,35 @@
 }
 
 .container {
+    padding-top: 3%;
     text-align: center;
+    width: 100%;
 
 }
 
-.child {
+#my-text-area {
     display: inline-block;
+    width: 700px;
+}
+
+#edit-container {
+    text-align: center;
+    display: none;
+  }
+  
+#edit-my-text-area{
+  
+display: inline-block;
+  
+}
+
+textarea {
+  
+    width: 700px;
+    height: 300px;
+    }
+
+#edit_description_button{
+    text-align: center;
+
 }

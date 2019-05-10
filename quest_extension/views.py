@@ -620,13 +620,23 @@ def user_login_to_account(request):
             messages.success(request, 'There is no account associated with this LDAP')
     
     return HttpResponseRedirect('/quest/user_login')
-    
-    
 
 
+####################################
 
+def get_admin_edit_project_description(request, project_id):
+    current_project = Project.objects.get(id = project_id)
+    context = {'current_project': current_project}
+    return render(request, 'quest_extension/admin_edit_project_description.html', context)
 
-
-            
-
-
+def admin_update_project_description(request, project_id):
+    current_project = Project.objects.get(id = project_id)
+    if request.method == 'POST':
+        post_request = request.POST
+        updated_project_description = post_request['project_description']
+        current_project.project_description = updated_project_description
+        current_project.save()
+        print('IA M HERE')
+        return HttpResponseRedirect('/quest/admin_home_editable/' + str(project_id))
+        
+    return HttpResponseRedirect('/quest/get_admin_edit_project_description' + str(project_id))

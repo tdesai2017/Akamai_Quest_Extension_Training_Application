@@ -1,5 +1,40 @@
 {% extends 'quest_extension/admin_home_base.html' %}
 
+
+{% block edit_description %}
+
+<!-- <div class = 'container'>
+    <form method= 'GET' action= '/quest/admin_edit_project_description/{{current_project.id}}'>
+
+        <button type='submit'> Edit Description </button>
+
+    </form>
+</div> -->
+
+<div id = 'edit-container'>
+
+        <form method='POST' id = 'test_form' action = "/quest/admin_update_project_description/{{current_project.id}}">
+                {% csrf_token %}
+                Project Description: 
+                <br>
+                <div id = 'edit-my-text-area'>
+                    <textarea id="area1" name="project_description" form = 'test_form'>
+                        {{current_project.project_description}}
+                    </textarea>
+                </div>
+            <br>
+                <input type=submit name="submit" value="Update Project Description" onclick="nicEditors.findEditor('area1').saveContent();">
+        </form>
+</div>
+<div id = 'edit_description_button'>
+    <br>
+    <button onclick="show();" >Edit Description</button>
+</div>
+
+{% endblock %}
+
+
+
 {% block quest_create_form %}
     <form method='POST' action='/quest/save_new_quest/{{current_project.id}}'>
         {% csrf_token %}

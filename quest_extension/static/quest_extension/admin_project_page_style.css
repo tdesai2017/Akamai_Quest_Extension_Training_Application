@@ -10,35 +10,11 @@ h1 {
   color: black; font-family: 'Trocchi', serif; font-size: 45px; font-weight: normal; line-height: 48px; margin: 0;
 }
 
-/* #container {
-    width: 100%;
-    height: 100%;
-}
-
-body {
-    margin: 0px;
-}
-
-#container {
-    position: relative;
-    transform: translateX(40%);
-    display: flex, bottom;
-}
-
-#my-text-area {
-    position: relative;
-    
-}
-
-textarea {
-    
-    width: 400px; 
-    height: 200px;
-} */
-
 
 #container {
   text-align: center;
+  display:none
+
 }
 
 #my-text-area{
@@ -46,4 +22,10 @@ textarea {
   display: inline-block;
   
 
+}
+
+textarea {
+
+width: 700px;
+height: 200px;
 }

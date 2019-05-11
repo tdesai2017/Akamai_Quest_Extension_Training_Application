@@ -37,8 +37,6 @@
     <form method='GET' onsubmit='return canMoveForward( "{{quest.quest_path_number }}" );'  action='/quest/user_quest_page/{{user.user_ldap}}/{{quest.id}}'>
         <button  type='submit' name= 'quest_path_number' value = '{{ quest.quest_path_number }}'>{{quest.quest_name}}</button>
     </form>
-    
-
 
     {% endfor %}
     <br>

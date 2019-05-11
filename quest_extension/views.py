@@ -108,6 +108,9 @@ def get_admin_quest_page_editable(request, quest_id):
     current_project_id = current_quest.project.id
     list_of_questions = Question.objects.filter(quest = current_quest, deleted=False).order_by('time_modified')
     fr_input_form = TakeInFreeResponseForm()
+    video_form = VideoForm()
+    all_videos = Video.objects.filter(quest = current_quest)
+
 
     format = {}
     for question in list_of_questions:
@@ -127,7 +130,12 @@ def get_admin_quest_page_editable(request, quest_id):
         #Combines wrong answers with correct answer
         format[question] = all_answers 
 
-    context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form, 'current_project_id': current_project_id}
+    context = {'current_quest': current_quest,
+     'format': format,
+     'fr_input_form': fr_input_form,
+     'current_project_id': current_project_id,
+     'video_form': video_form,
+     'all_videos': all_videos}
     return render(request, 'quest_extension/admin_quest_page_editable.html', context)
 
 
@@ -142,9 +150,8 @@ def delete_question(request, quest_id):
         current_question.deleted = True
         current_question.save()
         Question.objects.filter(id = post_request['deleted']).update(time_modified = current_time_modified)
-        return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(current_question.quest.id))
 
-    return HttpResponseRedirect('/quest/admin_quest_page_editable' + str(quest_id))
+    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(quest_id))
 
 def undo_delete_question(request, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
@@ -158,9 +165,44 @@ def undo_delete_question(request, quest_id):
             object_to_reappear.save()
             Question.objects.filter(id = object_to_reappear_id).update(time_modified = current_time_modified)
 
-            return HttpResponseRedirect(quest_id)
-
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(quest_id))
+
+
+def save_video(request, quest_id):
+    current_quest = Quest.objects.get(id = quest_id)
+    if request.method == 'POST': 
+        post_request = request.POST
+        video_form = VideoForm(post_request)
+        print(video_form)
+        if video_form.is_valid():
+            temp = video_form.save(commit=False)   
+            url = post_request['video_url']
+            if "v=" not in url or len(url) <= 2:
+                    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(quest_id))
+
+            video_identifier = url[url.index('v=') + 2]
+            temp.video_url = video_identifier
+            temp.quest = current_quest
+            temp.save()
+            
+    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(quest_id))
+
+
+def delete_video(request, quest_id):
+    current_quest = Quest.objects.get(id = quest_id)
+    if request.method == 'POST': 
+        post_request = request.POST
+        video_id = post_request['delete']
+        video_to_delete = Video.objects.get(id = video_id)
+        print("YOU ARE HERE", video_to_delete)
+        video_to_delete.delete()
+            
+    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(quest_id))
+
+
+
+        
+
 
 
 ######################################
@@ -170,6 +212,8 @@ def get_admin_quest_page_view_only(request, quest_id):
     current_project_id = current_quest.project.id
     list_of_questions = Question.objects.filter(quest = current_quest, deleted=False).order_by('time_modified')
     fr_input_form = TakeInFreeResponseForm()
+    all_videos = Video.objects.filter(quest = current_quest)
+
 
     format = {}
     for question in list_of_questions:
@@ -189,7 +233,7 @@ def get_admin_quest_page_view_only(request, quest_id):
         #Combines wrong answers with correct answer
         format[question] = all_answers 
 
-    context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form, 'current_project_id': current_project_id}
+    context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form, 'current_project_id': current_project_id, 'all_videos': all_videos}
     return render(request, 'quest_extension/admin_quest_page_view_only.html', context)
 
 ######################################
@@ -216,6 +260,8 @@ def get_user_quest_page(request, ldap, quest_id):
     current_project_id = current_quest.project.id
     current_user = User.objects.get(user_ldap = ldap)
     current_project = current_quest.project
+    all_videos = Video.objects.filter(quest = current_quest)
+
 
     current_user_project = UserProject.objects.get(user = current_user, project = current_project)
 
@@ -256,7 +302,8 @@ def get_user_quest_page(request, ldap, quest_id):
             'ldap': ldap, 
             'current_project_id': current_project_id, 
             'have_correct_answer': have_correct_answer,
-            'format_2': format_2}
+            'format_2': format_2,
+            'all_videos': all_videos}
 
     return render(request, 'quest_extension/user_quest_page.html', context)
 

@@ -1,21 +1,43 @@
-{% load static %}
 <!DOCTYPE html>
 
     <head>
         
         <title> {{ current_quest.quest_name }} </title>
-        
+    
+              
+        {% block stylesheet_js %}
+        {% endblock %}
+
     </head>
     <body>
         {% block forms_and_undo %}
         {% endblock %}
 
-        <link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_quest_page_style.css' %}">
         <h1> {{ current_quest.quest_name }} </h1>
 
         <div class="description">
             <h2>{{ current_quest.quest_description }}</h2>
         </div>  
+
+        {% for video in all_videos %}
+
+            {% if video.video_type == 'Youtube' %}
+                <iframe width="560" 
+                height="315" 
+                src="https://www.youtube.com/embed/{{video.video_url}}" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen></iframe>
+            {% endif %}
+
+            {% block delete_video_buttons %}
+            {% endblock %}
+
+
+        {% endfor %}
+
+        <br>
+        <br>
     
         {% block fr_mc_undodelete %}
         {% endblock %}

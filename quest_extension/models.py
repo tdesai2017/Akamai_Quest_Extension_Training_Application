@@ -73,4 +73,19 @@ class UserProject(models.Model):
     current_quest = models.ForeignKey(Quest, on_delete=models.CASCADE, null=True)
     points = models.IntegerField(default = 0)
     completed_project = models.BooleanField(default=False)
+    
+
+class Video(models.Model):
+    VIDEO_TYPES = (
+    ('Youtube', 'Youtube'),
+    ('Personal', 'Personal'))
+    quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
+    video_url = models.CharField(max_length = 1000)
+    video_type = models.CharField(max_length = 1000, choices = VIDEO_TYPES)
+
+    
+
+    
+    
+
 

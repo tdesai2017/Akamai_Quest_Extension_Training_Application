@@ -1,4 +1,10 @@
 {% extends 'quest_extension/admin_quest_page_base.html' %}
+{% load static %}
+
+
+{% block stylesheet %}
+<link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_quest_page_style/admin_quest_page_view_only_style.css' %}">
+{% endblock %}
 
 {% block home %}
     <form id='home' action = '/quest/admin_home_view_only/{{current_project_id}}' method='GET'></form>

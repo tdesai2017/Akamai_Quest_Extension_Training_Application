@@ -69,4 +69,10 @@ class LoginForm(forms.Form):
     password = forms.CharField(max_length=45)
 
 
+class VideoForm(forms.ModelForm):
+    class Meta:
+        model = models.Video
+        fields = ['video_url', 'video_type' ]
+
+
 

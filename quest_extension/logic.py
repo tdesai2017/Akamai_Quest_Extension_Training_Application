@@ -48,6 +48,8 @@ def save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, ti
     
 
     list_of_correct_answers = answer_form.cleaned_data['correct_choices'].split('\n')
+    #Removes blank correct answers
+    list_of_correct_answers = [x for x in list_of_correct_answers if len(x.strip())>0]
 
 
     for correct_answer in list_of_correct_answers:
@@ -56,6 +58,9 @@ def save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, ti
         ccc.save()
 
     list_of_wrong_answers = wrong_answer_form.cleaned_data['incorrect_choices'].split('\n')
+    #Removes blank wrong answers
+    list_of_wrong_answers = [x for x in list_of_wrong_answers if len(x.strip())>0]
+
 
     for wrong_answer in list_of_wrong_answers:
         wrong_answer = str(wrong_answer).strip()

@@ -32,6 +32,10 @@ urlpatterns = [
     path('admin_quest_page_editable/<quest_id>', views.get_admin_quest_page_editable),
     path('delete_question/<quest_id>', views.delete_question),
     path('undo_delete_question/<quest_id>', views.undo_delete_question),
+    path('save_video/<quest_id>', views.save_video),
+    path('delete_video/<quest_id>', views.delete_video), 
+
+
 
 
 
@@ -73,7 +77,6 @@ urlpatterns = [
 
     #User Pages
     path('user_home/<ldap>/<project_id>', views.get_user_home),
-    # path('click_on_quest/<ldap>/<project_id>', views.click_on_quest),
 
 
 ######################################

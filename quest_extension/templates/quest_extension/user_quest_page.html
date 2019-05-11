@@ -17,6 +17,21 @@
         <br>
         <br>
 
+        {% for video in all_videos %}
+
+            {% if video.video_type == 'Youtube' %}
+                <iframe width="560" 
+                height="315" 
+                src="https://www.youtube.com/embed/{{video.video_url}}" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen></iframe>
+            {% endif %}
+
+            
+
+        {% endfor %}
+        
         {% for question, answers, correct_answers in format_2 %}
             <div class='question'>
                 <p>{{ question.question_text }}</p>

@@ -14,6 +14,7 @@ admin.site.register(IncorrectAnswer)
 admin.site.register(Project)
 admin.site.register(CorrectlyAnsweredQuestion)
 admin.site.register(UserProject)
+admin.site.register(Video)
 
 
 

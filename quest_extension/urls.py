@@ -116,6 +116,19 @@ urlpatterns = [
 path('admin_edit_project_description/<project_id>', views.get_admin_edit_project_description),
 path('admin_update_project_description/<project_id>', views.admin_update_project_description),
 
+###########################
+
+path('user_info/<ldap>',views.get_user_info),
+path('update_user_ldap/<ldap>', views.update_user_ldap),
+path('update_user_first_name/<ldap>', views.update_user_first_name),
+path('update_user_last_name/<ldap>', views.update_user_last_name),
+path('update_user_email/<ldap>', views.update_user_email),
+path('update_user_manager_ldap/<ldap>', views.update_user_manager_ldap),
+path('update_user_director_ldap/<ldap>', views.update_user_director_ldap),
+path('update_user_password/<ldap>', views.update_user_password),
+
+
+
 
 
 

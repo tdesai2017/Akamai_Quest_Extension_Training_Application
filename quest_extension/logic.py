@@ -104,4 +104,7 @@ def go_to_next_quest(current_quest, current_user, current_project):
         else:
             users_user_project_object.completed_project = True
             users_user_project_object.save()
+
+
+
             

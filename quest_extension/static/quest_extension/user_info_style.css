@@ -1,0 +1,12 @@
+* {
+    text-align: center;
+}
+
+
+#update_ldap_form, #update_first_name_form, #update_last_name_form, #update_email_form, #update_manager_ldap_form, #update_director_ldap_form  
+{
+
+    display: none;
+
+}
+

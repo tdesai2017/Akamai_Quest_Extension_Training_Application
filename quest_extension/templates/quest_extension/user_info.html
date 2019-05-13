@@ -1,0 +1,86 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+
+   
+    
+    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_info_style.css' %}">
+</head>
+
+<script> function update(info){
+        document.getElementById("update_" + info + "_button").style.display = "none";
+        document.getElementById("update_" + info + "_form").style.display = "inline"
+      } </script>
+
+<body>
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    
+    
+    <p>LDAP: {{current_user.user_ldap}}</p>
+    <button id = 'update_ldap_button' onclick="update('ldap')"> Update LDAP</button>
+    <form id = 'update_ldap_form' method='POST' action= '/quest/update_user_ldap/{{current_user.user_ldap}}'>
+        {% csrf_token %}
+        <input type='text' name = 'user_ldap' value = '{{current_user.user_ldap}}'>
+        <button type = 'submit'> Confirm Update </button>
+    </form>
+
+    <p> First Name:  {{current_user.user_first_name }} </p>
+    <button id = 'update_first_name_button' onclick="update('first_name')"> Update First Name</button>
+    <form id = 'update_first_name_form' method='POST' action= '/quest/update_user_first_name/{{current_user.user_ldap}}'>
+        {% csrf_token %}
+        <input type='text' name = 'user_first_name' value = '{{current_user.user_first_name}}'>
+        <button type = 'submit'> Confirm Update </button>
+    </form>
+
+    <p> Last Name: {{current_user.user_last_name}} </p>
+    <button id = 'update_last_name_button' onclick="update('last_name')"> Update Last Name</button>
+    <form id = 'update_last_name_form' method='POST' action= '/quest/update_user_last_name/{{current_user.user_ldap}}'>
+        {% csrf_token %}
+        <input type='text' name = 'user_last_name' value = '{{current_user.user_last_name}}'>
+        <button type = 'submit'> Confirm Update </button>
+    </form>
+
+    <p> Email Address: </h3> {{current_user.user_email}} </p>
+    <button id = 'update_email_button' onclick="update('email')"> Update Email</button>
+    <form id = 'update_email_form' method='POST' action= '/quest/update_user_email/{{current_user.user_ldap}}'>
+        {% csrf_token %}
+        <input type='text' name = 'user_email' value = '{{current_user.user_email}}'>
+        <button type = 'submit'> Confirm Update </button>
+    </form>
+
+    <p> Manager's LDAP: </h3> {{current_user.user_manager_ldap}} </p>
+    <button id = 'update_manager_ldap_button' onclick="update('manager_ldap')"> Update Manager's LDAP</button>
+    <form id = 'update_manager_ldap_form' method='POST' action= '/quest/update_user_manager_ldap/{{current_user.user_ldap}}'>
+        {% csrf_token %}
+        <input type='text' name = 'user_manager_ldap' value = '{{current_user.user_manager_ldap}}'>
+        <button type = 'submit'> Confirm Update </button>
+    </form>
+
+    <p> Director's LDAP: {{current_user.user_director_ldap}} </p>
+    <button id = 'update_director_ldap_button' onclick="update('director_ldap')"> Update Director LDAP</button>
+    <form id = 'update_director_ldap_form' method='POST' action= '/quest/update_user_director_ldap/{{current_user.user_ldap}}'>
+        {% csrf_token %}
+        <input type='text' name = 'user_director_ldap' value = '{{current_user.user_director_ldap}}'>
+        <button type = 'submit'> Confirm Update </button>
+    </form>
+
+    <br>
+    <br>
+    
+    <form method = 'GET' action = '/quest/user_project_page/{{current_user.user_ldap}}'>
+        <button type='submit'> Back </button>
+    </form>
+
+
+    
+</body>
+</html>
+

@@ -9,49 +9,56 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_project_page_style.css' %}">
 
     </head>
-
-    <body>
-	<h1>All Projects!</h1>
-
-	<p>Welcome {{ current_user.user_first_name }} to the different Projects!</p>
-         
-    <h3> My Projects </h3>
-
-    {% for project in user_projects %}
     
-        <form method='GET', action = '/quest/user_home/{{ current_user.user_ldap }}/{{ project.id }}'>
-            <div id= 'project_button'>
-                <button type='submit'>{{project.project_name}}</button>
-            </div>
-        </form>
+    <body>
 
-        <form method='POST' action = '/quest/remove_user_project/{{ current_user.user_ldap }}'>
-            {% csrf_token %}
-            <button onclick="return confirm('Are you sure you want to remove this project (All data submitted and all questions answered for this project will be deleted)?');" type = 'submit' name = 'remove_project' value = '{{ project.id }}'> Remove Project </button>
-        </form>
-        <br>
+    <form method='GET' action = '/quest/user_info/{{current_user.user_ldap}}'>
+        <button type='submit'>Settings/Info</button>
+    </form>
 
+    <div id = 'centered'>
+        <h1>All Projects!</h1>
 
+        <p>Welcome {{ current_user.user_first_name }} to the different Projects!</p>
+            
+        <h3> My Projects </h3>
+
+        {% for project in user_projects %}
         
-    {% endfor %}
-
-    <h3> All Other Projects </h3>
-
-    {% for project in all_other_projects %}
-
-        <form id = 'add_new_project' method='POST' action = '/quest/add_user_project_page/{{ current_user.user_ldap }}'>
-            {% csrf_token %}
-            <button type ='submit' name = 'project_id' value = '{{project.id}}'>{{project.project_name}}</button>
-            {{ add_new_project_form }}
-        </form>
-        <br>
-        
-    {% endfor %}
-        <div id= 'logout'>
-          <form method='POST' action = '/quest/user_logout/{{ current_user.user_ldap}}'>
-                {% csrf_token%}
-                <button type = 'submit', name = 'logout'>Logout</button>
+            <form method='GET', action = '/quest/user_home/{{ current_user.user_ldap }}/{{ project.id }}'>
+                <div id= 'project_button'>
+                    <button type='submit'>{{project.project_name}}</button>
+                </div>
             </form>
+
+            <form method='POST' action = '/quest/remove_user_project/{{ current_user.user_ldap }}'>
+                {% csrf_token %}
+                <button onclick="return confirm('Are you sure you want to remove this project (All data submitted and all questions answered for this project will be deleted)?');" type = 'submit' name = 'remove_project' value = '{{ project.id }}'> Remove Project </button>
+            </form>
+            <br>
+
+
+            
+        {% endfor %}
+
+        <h3> All Other Projects </h3>
+
+        {% for project in all_other_projects %}
+
+            <form id = 'add_new_project' method='POST' action = '/quest/add_user_project_page/{{ current_user.user_ldap }}'>
+                {% csrf_token %}
+                <button type ='submit' name = 'project_id' value = '{{project.id}}'>{{project.project_name}}</button>
+                {{ add_new_project_form }}
+            </form>
+            <br>
+            
+        {% endfor %}
+            <div id= 'logout'>
+            <form method='POST' action = '/quest/user_logout/{{ current_user.user_ldap}}'>
+                    {% csrf_token%}
+                    <button type = 'submit', name = 'logout'>Logout</button>
+                </form>
+            </div>
         </div>
 
 	

@@ -6,6 +6,10 @@
    <title> New User </title>
 </head>
 <body>
+    
+    <form method='GET' action='/quest/user_login'>
+        <button type = 'submit'> Login </button>
+    </form>
 
         {% if messages %}
         <ul class="messages">
@@ -22,8 +26,12 @@
         <form method='POST' id = 'user_form' action = '/quest/add_new_user'>
             {% csrf_token %}
             {{ user_form }}
+            <label for="retyped_password">Retype Password:</label>
+            <input type="password" name="retyped_password" maxlength="200" >
             <button form = 'user_form' type= 'submit'> Submit </button> 
         </form>
     </div>  
+
+   
 </body>
 </html>

@@ -600,13 +600,15 @@ def get_new_user_page(request):
 
 def add_new_user(request):
     if request.method == 'POST':
+        post_request = request.POST
+        retyped_password = post_request['retyped_password']
         user_form = UserForm(request.POST)
         if user_form.is_valid():
             temp = user_form.save(commit=False)
             username = temp.user_email
             user_ldap = temp.user_ldap
-            #I feel like this is really slow and want to figure out a faster way, since right now
-            #This will have to iterate through every person -> figure out a way to make this faster
+
+            
             try:
                 validate_email(username)
                 valid_email = True
@@ -616,14 +618,16 @@ def add_new_user(request):
                 messages.success(request, 'Please input a valid email')
                 return HttpResponseRedirect('/quest/new_user') 
 
-            #Use filter for this - django ORM
-            new_ldap = user_ldap not in [user.user_ldap for user in User.objects.all()]
-            print(new_ldap)
-            if valid_email and new_ldap:
+            valid_password = (retyped_password == temp.user_password)
+            new_ldap = user_ldap not in User.objects.all().values_list('user_ldap', flat=True) 
+            print(User.objects.all().values_list('user_ldap', flat=True) )
+            if valid_email and new_ldap and valid_password:
                 temp.save()
                 return HttpResponseRedirect('/quest/user_login')
-            else:
+            if not new_ldap:
                 messages.success(request, 'There is already an account associated with this LDAP')
+            if not valid_password:
+                messages.success(request, 'Your Password and Retyped Password do not match')
 
     return HttpResponseRedirect('/quest/new_user')
 
@@ -675,3 +679,102 @@ def admin_update_project_description(request, project_id):
         return HttpResponseRedirect('/quest/admin_home_editable/' + str(project_id))
         
     return HttpResponseRedirect('/quest/get_admin_edit_project_description' + str(project_id))
+
+####################################
+
+def get_user_info(request, ldap):
+    if not validate_user_access(request.session['current_user_ldap'], ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
+    current_user = User.objects.get(user_ldap = ldap)
+    context = {'current_user': current_user}
+    return render(request, 'quest_extension/user_info.html', context)
+
+def update_user_ldap(request, ldap):
+    current_user = User.objects.get(user_ldap = ldap)
+    if request.method == 'POST':
+        post_request = request.POST
+        ldap_input = post_request['user_ldap']
+        new_ldap = ldap_input not in User.objects.all().values_list('user_ldap', flat=True) 
+        if (new_ldap):
+            current_user.user_ldap = ldap_input
+            current_user.save()
+            request.session['current_user_ldap'] = ldap_input
+            messages.success(request, 'Change was successful!')
+
+        else:
+             messages.success(request, 'There is already an account associated with this LDAP')
+
+
+    
+    return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
+
+def update_user_first_name(request, ldap):
+    current_user = User.objects.get(user_ldap = ldap)
+    if request.method == 'POST':
+        post_request = request.POST
+        first_name_input = post_request['user_first_name']
+        current_user.user_first_name = first_name_input
+        current_user.save()
+        messages.success(request, 'Change was successful!')
+
+
+    return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
+
+def update_user_last_name(request, ldap):
+    current_user = User.objects.get(user_ldap = ldap)
+    if request.method == 'POST':
+        post_request = request.POST
+        last_name_input = post_request['user_last_name']
+        current_user.user_last_name = last_name_input
+        current_user.save()
+        messages.success(request, 'Change was successful!')
+
+    return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
+
+def update_user_email(request, ldap):
+    current_user = User.objects.get(user_ldap = ldap)
+    if request.method == 'POST':
+        post_request = request.POST
+        user_email_input = post_request['user_email']
+        try:
+            validate_email(user_email_input)
+            current_user.user_email = user_email_input
+            current_user.save()
+            messages.success(request, 'Change was successful!')
+        except:
+            messages.success(request, 'This is an invalid email')
+    return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
+
+def update_user_manager_ldap(request, ldap):
+    current_user = User.objects.get(user_ldap = ldap)
+    if request.method == 'POST':
+        post_request = request.POST
+        user_manager_ldap_input = post_request['user_manager_ldap']
+        current_user.user_manager_ldap = user_manager_ldap_input
+        current_user.save()
+        messages.success(request, 'Change was successful!')
+    
+    return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
+
+def update_user_director_ldap(request, ldap):
+    current_user = User.objects.get(user_ldap = ldap)
+    if request.method == 'POST':
+        post_request = request.POST
+        user_director_ldap_input = post_request['user_director_ldap']
+        current_user.user_director_ldap = user_director_ldap_input
+        current_user.save()
+        messages.success(request, 'Change was successful!')
+
+    
+    return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
+
+#We will need to do more with this one
+def update_user_password(request, ldap):
+    current_user = User.objects.get(user_ldap = ldap)
+    if request.method == 'POST':
+        post_request = request.POST
+        user_password_input = post_request['user_password']
+        messages.success(request, 'Change was successful!')
+
+    return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)

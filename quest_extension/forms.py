@@ -21,6 +21,7 @@ class QuestionForm(forms.ModelForm):
 
 
 class UserForm(forms.ModelForm):
+    user_password = forms.CharField(widget=forms.PasswordInput(attrs={'autocomplete' : 'new-password'}))
     class Meta:
         model = models.User
         fields = ['user_ldap', 'user_first_name', 'user_last_name', 'user_email', 'user_manager_ldap', 
@@ -66,13 +67,18 @@ class AddNewProjectForm(forms.Form):
 
 class LoginForm(forms.Form):
     ldap = forms.CharField(max_length=45, label= 'LDAP')
-    password = forms.CharField(max_length=45)
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'autocomplete' : 'new-password'}))
+
 
 
 class VideoForm(forms.ModelForm):
     class Meta:
         model = models.Video
-        fields = ['video_url', 'video_type' ]
+        fields = ['video_url', 'video_type']
+
+
+
+
 
 
 

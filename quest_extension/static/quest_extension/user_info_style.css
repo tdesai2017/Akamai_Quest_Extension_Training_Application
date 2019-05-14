@@ -3,10 +3,14 @@
 }
 
 
-#update_ldap_form, #update_first_name_form, #update_last_name_form, #update_email_form, #update_manager_ldap_form, #update_director_ldap_form  
+#update_ldap_form, #update_first_name_form, #update_last_name_form, #update_email_form, #update_manager_ldap_form, #update_director_ldap_form, #update_password_form   
 {
 
     display: none;
 
 }
 
+#update_password_button {
+height: 50px;
+width: 100px;
+}

@@ -71,6 +71,25 @@
         <input type='text' name = 'user_director_ldap' value = '{{current_user.user_director_ldap}}'>
         <button type = 'submit'> Confirm Update </button>
     </form>
+    <br>
+    <br>
+
+
+    <button id = 'update_password_button' onclick="update('password')"> Update Password</button>
+
+    <form id = 'update_password_form' method='POST' action= '/quest/update_user_password/{{current_user.user_ldap}}'>
+        {% csrf_token %}
+        <label> Current Password:</label>
+        <input type='password' name = 'current_password'  autocomplete="new-password" >
+        
+        <label> New Password: </label>
+        <input type='password' name = 'new_password' autocomplete="new-password">
+    
+        <label> Retype New Password: </label>
+        <input type='password' name = 'retyped_password' autocomplete= "new-password" >
+
+        <button type = 'submit'> Confirm Update </button>
+    </form>
 
     <br>
     <br>

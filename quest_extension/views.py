@@ -774,7 +774,16 @@ def update_user_password(request, ldap):
     current_user = User.objects.get(user_ldap = ldap)
     if request.method == 'POST':
         post_request = request.POST
-        user_password_input = post_request['user_password']
-        messages.success(request, 'Change was successful!')
+        user_current_password = post_request['current_password']
+        user_new_password = post_request['new_password']
+        user_new_password_retyped = post_request['retyped_password']
+        if user_current_password != current_user.user_password:
+            messages.success(request, 'Your current password was typed incorrectly')
+        if user_new_password != user_new_password_retyped:
+            messages.success(request, 'Your new passwords do not match')
+        else:
+            current_user.user_password = user_new_password
+            current_user.save()
+            messages.success(request, 'Change was successful!')
 
     return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)

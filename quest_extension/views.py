@@ -250,7 +250,8 @@ def get_admin_quest_page_view_only(request, quest_id):
 ######################################
 
 def get_user_home(request, ldap, project_id):
-    if not validate_user_access(request.session['current_user_ldap'], ldap):
+
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     user = User.objects.get(user_ldap= ldap)
@@ -264,7 +265,7 @@ def get_user_home(request, ldap, project_id):
 ######################################
 
 def get_user_quest_page(request, ldap, quest_id):
-    if not validate_user_access(request.session['current_user_ldap'], ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_quest = Quest.objects.get(id = quest_id)
@@ -319,6 +320,8 @@ def get_user_quest_page(request, ldap, quest_id):
     return render(request, 'quest_extension/user_quest_page.html', context)
 
 def validate_fr_question_response(request, ldap, quest_id):
+    if not validate_user_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
 
     current_quest = Quest.objects.get(id = quest_id)
     current_project = current_quest.project
@@ -354,6 +357,8 @@ def validate_fr_question_response(request, ldap, quest_id):
 
 
 def validate_mc_question_response(request, ldap, quest_id):
+    if not validate_user_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
 
     current_quest = Quest.objects.get(id = quest_id)
     current_project = current_quest.project
@@ -519,8 +524,9 @@ def add_new_project(request):
 ######################################
 def get_user_project_page(request, ldap):
 
-    if not validate_user_access(request.session['current_user_ldap'], ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
+
 
     current_user = User.objects.get(user_ldap = ldap)
     user_projects = [user_project.project for user_project in UserProject.objects.filter(user = current_user)]
@@ -537,6 +543,9 @@ def get_user_project_page(request, ldap):
 
 def user_logout(request, ldap):
 
+    if not validate_user_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
     if request.method == 'POST':
         del request.session['current_user_ldap']
         return HttpResponseRedirect('/quest/user_login')
@@ -545,6 +554,9 @@ def user_logout(request, ldap):
 
 
 def add_user_project_page(request, ldap):
+
+    if not validate_user_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
 
     if request.method == 'POST':
         post_request = request.POST
@@ -573,6 +585,9 @@ def add_user_project_page(request, ldap):
     return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 
 def remove_user_project(request, ldap):
+
+    if not validate_user_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
 
     current_user = User.objects.get(user_ldap = ldap)
     
@@ -643,6 +658,10 @@ def add_new_user(request):
 ######################################
 
 def get_user_login(request):
+    #If you every reach this page, any current user sessions should be deleted so that you cannot skip
+    #into quests
+    if 'current_user_ldap' in request.session:
+        del request.session['current_user_ldap']
 
     login_form = LoginForm()
     context = {'login_form': login_form}
@@ -696,14 +715,22 @@ def change_password_request(request):
             )
             print('MAIL SENT')
             return HttpResponseRedirect('/quest/user_forgot_password/' + ldap)
-            
-
     
-    return HttpResponseRedirect('/quest/user_login')
+        return HttpResponseRedirect('/quest/user_login')
+
+def go_back_to_login(request, ldap):
+        if request.method == 'POST':
+            current_user = User.objects.get(user_ldap = ldap)
+            current_user.user_reset_password_pin = None
+            current_user.save()
+        return HttpResponseRedirect('/quest/user_login')
+
+
 
 ####################################
 
 def get_user_forgot_password(request, ldap):
+    request.session['current_user_ldap'] = ldap
     forgot_password_form = ForgotPasswordForm()
     context = {'forgot_password_form': forgot_password_form, 'ldap': ldap}
     return render(request, 'quest_extension/user_forgot_password.html', context)
@@ -716,7 +743,6 @@ def new_password_sent(request, ldap):
             pin = forgot_password_form.cleaned_data['pin']
             new_password = forgot_password_form.cleaned_data['new_password']
             retype_new_password = forgot_password_form.cleaned_data['retype_new_password']
-
 
             if (current_user.user_reset_password_pin != pin):
                 messages.success(request,'Pin does not match the sent pin')
@@ -731,17 +757,12 @@ def new_password_sent(request, ldap):
                 current_user.user_reset_password_pin = None
                 current_user.save()
                 messages.success(request, 'Your new password was saved!')
+                del request.session['current_user_ldap']
                 return HttpResponseRedirect('/quest/user_login')
 
     return HttpResponseRedirect('/quest/user_forgot_password/' + ldap)
 
             
-            
-    
-
-
-
-
 
 
 ####################################
@@ -766,7 +787,7 @@ def admin_update_project_description(request, project_id):
 ####################################
 
 def get_user_info(request, ldap):
-    if not validate_user_access(request.session['current_user_ldap'], ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_user = User.objects.get(user_ldap = ldap)
@@ -774,6 +795,9 @@ def get_user_info(request, ldap):
     return render(request, 'quest_extension/user_info.html', context)
 
 def update_user_ldap(request, ldap):
+    if not validate_user_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
     current_user = User.objects.get(user_ldap = ldap)
     if request.method == 'POST':
         post_request = request.POST
@@ -793,6 +817,9 @@ def update_user_ldap(request, ldap):
     return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
 
 def update_user_first_name(request, ldap):
+    if not validate_user_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
     current_user = User.objects.get(user_ldap = ldap)
     if request.method == 'POST':
         post_request = request.POST
@@ -805,6 +832,9 @@ def update_user_first_name(request, ldap):
     return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
 
 def update_user_last_name(request, ldap):
+    if not validate_user_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
     current_user = User.objects.get(user_ldap = ldap)
     if request.method == 'POST':
         post_request = request.POST
@@ -816,6 +846,9 @@ def update_user_last_name(request, ldap):
     return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
 
 def update_user_email(request, ldap):
+    if not validate_user_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
     current_user = User.objects.get(user_ldap = ldap)
     if request.method == 'POST':
         post_request = request.POST
@@ -830,6 +863,9 @@ def update_user_email(request, ldap):
     return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
 
 def update_user_manager_ldap(request, ldap):
+    if not validate_user_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
     current_user = User.objects.get(user_ldap = ldap)
     if request.method == 'POST':
         post_request = request.POST
@@ -841,6 +877,9 @@ def update_user_manager_ldap(request, ldap):
     return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
 
 def update_user_director_ldap(request, ldap):
+    if not validate_user_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
     current_user = User.objects.get(user_ldap = ldap)
     if request.method == 'POST':
         post_request = request.POST
@@ -854,6 +893,9 @@ def update_user_director_ldap(request, ldap):
 
 #We will need to do more with this one
 def update_user_password(request, ldap):
+    if not validate_user_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
     current_user = User.objects.get(user_ldap = ldap)
     if request.method == 'POST':
         post_request = request.POST

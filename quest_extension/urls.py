@@ -110,6 +110,7 @@ urlpatterns = [
     path('user_login', views.get_user_login),
     path('user_login_to_account', views.user_login_to_account),
     path('change_password_request', views.change_password_request),
+    path('go_back_to_login/<ldap>', views.go_back_to_login),
 
 ######################################
 path('user_forgot_password/<ldap>', views.get_user_forgot_password),

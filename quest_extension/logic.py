@@ -72,8 +72,8 @@ def save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, ti
 
 
 #Verifies that you are only trying to access the content for the ldap that you are logged in for
-def validate_user_access(session_ldap, current_ldap):
-    return (session_ldap == current_ldap)
+def validate_user_access(request, ldap):
+    return 'current_user_ldap' in request.session and request.session['current_user_ldap'] == ldap
         
     
 

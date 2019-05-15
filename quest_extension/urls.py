@@ -113,6 +113,7 @@ urlpatterns = [
 
 ######################################
 path('user_forgot_password/<ldap>', views.get_user_forgot_password),
+path('new_password_sent/<ldap>', views.new_password_sent),
 
 ######################################
 

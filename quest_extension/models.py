@@ -1,3 +1,4 @@
+
 from django.db import models
 from datetime import datetime
 from django.db import models
@@ -46,6 +47,7 @@ class User(models.Model):
    user_manager_ldap = models.CharField(max_length=45)
    user_director_ldap = models.CharField(max_length=45)
    user_password = models.CharField(max_length = 45)
+   user_reset_password_pin = models.CharField(max_length = 5, null=True, default = None)
    #exempt = models.BooleanField(default=False) (This should go in User_project)
 
    
@@ -84,8 +86,3 @@ class Video(models.Model):
     video_type = models.CharField(max_length = 1000, choices = VIDEO_TYPES)
 
     
-
-    
-    
-
-

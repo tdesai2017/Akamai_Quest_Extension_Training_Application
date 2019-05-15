@@ -676,12 +676,18 @@ def change_password_request(request):
     if request.method == 'POST':
         post_request = request.POST
         ldap = post_request['ldap']
+        #only proceed if there is a user with this ldap
+        if not User.objects.filter(user_ldap = ldap):
+            messages.success(request, 'There is no account with this ldap')
+            return HttpResponseRedirect('/quest/user_login')
         current_user = User.objects.get(user_ldap = ldap)
         if ldap not in User.objects.all().values_list('user_ldap', flat=True):
             messages.success(request, 'There is no account created for that LDAP')
         else:
-            pin = random.randint(99999, 999999)
-            message_body = ('Hi' + current_user.user_first_name + '. We have just recieved notice that you requested' +
+            pin = str(random.randint(99999, 999999))
+            current_user.user_reset_password_pin = pin
+            current_user.save()
+            message_body = ('Hi ' + current_user.user_first_name + '. We have just recieved notice that you requested ' +
             'to create a new password! Your six digit pin is ' + str(pin))
             send_mail(
             'Password Reset',
@@ -701,8 +707,40 @@ def change_password_request(request):
 
 def get_user_forgot_password(request, ldap):
     forgot_password_form = ForgotPasswordForm()
-    context = {'forgot_password_form': forgot_password_form}
+    context = {'forgot_password_form': forgot_password_form, 'ldap': ldap}
     return render(request, 'quest_extension/user_forgot_password.html', context)
+
+def new_password_sent(request, ldap):
+    current_user = User.objects.get(user_ldap = ldap)
+    if request.method == 'POST':
+        forgot_password_form = ForgotPasswordForm(request.POST)
+        if forgot_password_form.is_valid():
+            pin = forgot_password_form.cleaned_data['pin']
+            new_password = forgot_password_form.cleaned_data['new_password']
+            retype_new_password = forgot_password_form.cleaned_data['retype_new_password']
+
+
+            if (current_user.user_reset_password_pin != pin):
+                messages.success(request,'Pin does not match the sent pin')
+                return HttpResponseRedirect ('/quest/user_forgot_password/' + ldap)
+            elif (new_password != retype_new_password):
+                messages.success(request, 'Your Passwords do not match')
+                return HttpResponseRedirect ('/quest/user_forgot_password/' + ldap)
+            else:
+                current_user.user_password = new_password
+                #By setting this value to none as soon as possible, it leaves a very small window for
+                #an intruder to try guessing the users pin
+                current_user.user_reset_password_pin = None
+                current_user.save()
+                messages.success(request, 'Your new password was saved!')
+                return HttpResponseRedirect('/quest/user_login')
+
+    return HttpResponseRedirect('/quest/user_forgot_password/' + ldap)
+
+            
+            
+    
+
 
 
 

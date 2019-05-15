@@ -109,10 +109,13 @@ urlpatterns = [
 
     path('user_login', views.get_user_login),
     path('user_login_to_account', views.user_login_to_account),
-
-
+    path('change_password_request', views.change_password_request),
 
 ######################################
+path('user_forgot_password/<ldap>', views.get_user_forgot_password),
+
+######################################
+
 path('admin_edit_project_description/<project_id>', views.get_admin_edit_project_description),
 path('admin_update_project_description/<project_id>', views.admin_update_project_description),
 

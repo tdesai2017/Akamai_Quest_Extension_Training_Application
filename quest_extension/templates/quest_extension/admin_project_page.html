@@ -12,8 +12,15 @@
 
     <script> function show(){
         document.getElementById("container").style.display = "inline";
-        document.getElementById("create_new_project").style.display = "none"
-      } </script>
+        document.getElementById("create_new_project").style.display = "none";
+      } 
+            function hide(){
+                document.getElementById("container").style.display = "none";
+                document.getElementById("create_new_project").style.display = "inline";
+
+            }
+      
+      </script>
 
     <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/admin_project_page_style.css' %}">
 
@@ -50,6 +57,7 @@
                 <br>
                 <input type=submit name="submit" value="Submit New Project" onclick="nicEditors.findEditor('area1').saveContent();">
         </form>
+        <button id = 'hide' type= submit onclick="hide();"> Hide </button>
     </div>
 
 

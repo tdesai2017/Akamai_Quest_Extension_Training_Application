@@ -11,6 +11,10 @@ from django.contrib import messages
 from datetime import datetime
 import copy
 from .logic import *
+from django.core.mail import send_mail
+import random
+
+
 
 #Views
 
@@ -111,6 +115,12 @@ def get_admin_quest_page_editable(request, quest_id):
     video_form = VideoForm()
     all_videos = Video.objects.filter(quest = current_quest)
 
+    question_text_form = QuestionForm()
+    mc_correct_answer_form = RightAnswerForm()
+    mc_wrong_answer_form = WrongAnswerForm()
+
+    fr_answer_form = CorrectAnswerForm()
+
 
     format = {}
     for question in list_of_questions:
@@ -135,7 +145,8 @@ def get_admin_quest_page_editable(request, quest_id):
      'fr_input_form': fr_input_form,
      'current_project_id': current_project_id,
      'video_form': video_form,
-     'all_videos': all_videos}
+     'all_videos': all_videos,     
+     }
     return render(request, 'quest_extension/admin_quest_page_editable.html', context)
 
 
@@ -659,6 +670,42 @@ def user_login_to_account(request):
             messages.success(request, 'There is no account associated with this LDAP')
     
     return HttpResponseRedirect('/quest/user_login')
+
+
+def change_password_request(request):
+    if request.method == 'POST':
+        post_request = request.POST
+        ldap = post_request['ldap']
+        current_user = User.objects.get(user_ldap = ldap)
+        if ldap not in User.objects.all().values_list('user_ldap', flat=True):
+            messages.success(request, 'There is no account created for that LDAP')
+        else:
+            pin = random.randint(99999, 999999)
+            message_body = ('Hi' + current_user.user_first_name + '. We have just recieved notice that you requested' +
+            'to create a new password! Your six digit pin is ' + str(pin))
+            send_mail(
+            'Password Reset',
+            message_body,
+            'icet.tushar@gmail.com', #This will have to change once we deploy this on a remote server
+            [current_user.user_email],
+            fail_silently=False,
+            )
+            print('MAIL SENT')
+            return HttpResponseRedirect('/quest/user_forgot_password/' + ldap)
+            
+
+    
+    return HttpResponseRedirect('/quest/user_login')
+
+####################################
+
+def get_user_forgot_password(request, ldap):
+    forgot_password_form = ForgotPasswordForm()
+    context = {'forgot_password_form': forgot_password_form}
+    return render(request, 'quest_extension/user_forgot_password.html', context)
+
+
+
 
 
 ####################################

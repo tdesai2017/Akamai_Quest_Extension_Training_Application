@@ -77,6 +77,16 @@ class VideoForm(forms.ModelForm):
         fields = ['video_url', 'video_type']
 
 
+#-----------------
+
+class ForgotPasswordForm(forms.Form):
+    pin = forms.CharField(max_length=100, label='PIN')
+    new_password = forms.CharField(label = 'New Password', widget=forms.PasswordInput(attrs={'autocomplete' : 'new-password'}))
+    retype_new_password = forms.CharField( label= 'Retype Password', widget=forms.PasswordInput(attrs={'autocomplete' : 'new-password'} ))
+        
+
+
+
 
 
 

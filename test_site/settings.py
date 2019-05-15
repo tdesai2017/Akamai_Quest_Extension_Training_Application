@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -121,3 +122,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'icet.tushar@gmail.com'
+EMAIL_PORT = 587
+#Allows you to read in values from the file password.py and save them as EMAIL_HOST_PASSWORD
+with open('/Users/tdesai/Documents/all_things_code/django_projects/password.py') as f:
+    EMAIL_HOST_PASSWORD = f.read().strip()

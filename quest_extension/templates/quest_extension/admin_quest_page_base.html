@@ -53,6 +53,8 @@
                 {% if question.question_type ==  'FR' %}
                     {{ fr_input_form }}
                     <button type= 'submit'>Submit</button>
+                    <br>
+                   
                 {% endif %}
 
                 {% if question.question_type == 'MC' %}
@@ -61,15 +63,13 @@
                     {% endfor %}
                     <br>
                     <button type= 'submit'>Submit</button>
+                    
                 {% endif %}
                 <br>
                 <br>
-                
             {% block edit_deletequestion %}
             {% endblock %}
 
-
-            
             <br>
             <br>
         {% endfor %}

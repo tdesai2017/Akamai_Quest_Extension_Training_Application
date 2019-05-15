@@ -14,19 +14,19 @@ import copy
 #Saves a free response question to the backend
 def save_fr_question(question_form, answer_form, quest_id, timestamp=datetime.now()):
     quest = Quest.objects.get(id=quest_id)
-    bbb = question_form.save(commit=False)
-    bbb.question_type = 'FR'
+    q_form = question_form.save(commit=False)
+    q_form.question_type = 'FR'
     
-    bbb.quest = quest
-    bbb.save()
-    question_id = bbb.id
+    q_form.quest = quest
+    q_form.save()
+    question_id = q_form.id
     Question.objects.filter(id = question_id).update(time_modified = timestamp)
     current_question = Question.objects.get(id = question_id)
     print(current_question.time_modified)
 
-    ccc = answer_form.save(commit=False)
-    ccc.question = Question.objects.get(id=question_id)
-    ccc.save()
+    a_form = answer_form.save(commit=False)
+    a_form.question = Question.objects.get(id=question_id)
+    a_form.save()
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(quest_id))
 
 
@@ -35,11 +35,11 @@ def save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, ti
 
     quest_id = str(quest_id)
     quest = Quest.objects.get(id=quest_id)
-    bbb = question_form.save(commit=False)
-    bbb.question_type = 'MC'
-    bbb.quest = quest
-    bbb.save()
-    question_id = bbb.id
+    q_form = question_form.save(commit=False)
+    q_form.question_type = 'MC'
+    q_form.quest = quest
+    q_form.save()
+    question_id = q_form.id
     #This allows us to bypass the automatic date from auto_now
     Question.objects.filter(id = question_id).update(time_modified = timestamp)
     
@@ -54,8 +54,8 @@ def save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, ti
 
     for correct_answer in list_of_correct_answers:
         correct_answer = str(correct_answer).strip()
-        ccc = CorrectAnswer(question=Question.objects.get(id=question_id), answer_text= correct_answer)
-        ccc.save()
+        a_form = CorrectAnswer(question=Question.objects.get(id=question_id), answer_text= correct_answer)
+        a_form.save()
 
     list_of_wrong_answers = wrong_answer_form.cleaned_data['incorrect_choices'].split('\n')
     #Removes blank wrong answers
@@ -64,8 +64,8 @@ def save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, ti
 
     for wrong_answer in list_of_wrong_answers:
         wrong_answer = str(wrong_answer).strip()
-        ddd = IncorrectAnswer(question=Question.objects.get(id=question_id), answer_text= wrong_answer)
-        ddd.save()
+        w_a_form = IncorrectAnswer(question=Question.objects.get(id=question_id), answer_text= wrong_answer)
+        w_a_form.save()
 
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + quest_id)
 

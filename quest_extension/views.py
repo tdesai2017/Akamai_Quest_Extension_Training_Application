@@ -350,7 +350,7 @@ def validate_fr_question_response(request, ldap, quest_id):
         print('You are wrong')
         return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
     
-    return HttpResponseRedirect('/quest/user_quest_page' + ldap + str(quest_id))
+    return HttpResponseRedirect('/quest/user_quest_page/' + ldap + str(quest_id))
 
 
 def validate_mc_question_response(request, ldap, quest_id):
@@ -392,7 +392,7 @@ def validate_mc_question_response(request, ldap, quest_id):
         print('You are wrong')
         return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
         
-    return HttpResponseRedirect('/quest/user_quest_page' + ldap + str(quest_id))
+    return HttpResponseRedirect('/quest/user_quest_page/' + ldap + str(quest_id))
 
 
 ######################################
@@ -487,7 +487,7 @@ def save_edit_mc_question (request, question_id):
             Question.objects.filter(id = question_id).update(time_modified = timestamp)
             return save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, timestamp)
 
-    return HttpResponseRedirect('/quest/admin_edit_mc_question' + str(question_id))
+    return HttpResponseRedirect('/quest/admin_edit_mc_question/' + str(question_id))
 
 ######################################
 
@@ -541,7 +541,7 @@ def user_logout(request, ldap):
         del request.session['current_user_ldap']
         return HttpResponseRedirect('/quest/user_login')
 
-    return HttpResponseRedirect('/quest/user_project_page' + ldap)
+    return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 
 
 def add_user_project_page(request, ldap):
@@ -553,8 +553,6 @@ def add_user_project_page(request, ldap):
             project_requested = Project.objects.get(id = post_request['project_id'])
 
 
-            
-            
             if inputted_random_phrase == project_requested.project_random_phrase:
                 new_user_project = UserProject()
                 new_user_project.user = User.objects.get(user_ldap = ldap)
@@ -572,7 +570,7 @@ def add_user_project_page(request, ldap):
 
             return HttpResponseRedirect('/quest/user_project_page/' + ldap)
     
-    return HttpResponseRedirect('/quest/user_project_page' + ldap)
+    return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 
 def remove_user_project(request, ldap):
 
@@ -598,7 +596,7 @@ def remove_user_project(request, ldap):
 
 
         return HttpResponseRedirect('/quest/user_project_page/' + ldap)
-    return HttpResponseRedirect('/quest/user_project_page' + ldap)
+    return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 
 ######################################
 
@@ -763,7 +761,7 @@ def admin_update_project_description(request, project_id):
         print('IA M HERE')
         return HttpResponseRedirect('/quest/admin_home_editable/' + str(project_id))
         
-    return HttpResponseRedirect('/quest/get_admin_edit_project_description' + str(project_id))
+    return HttpResponseRedirect('/quest/get_admin_edit_project_description/' + str(project_id))
 
 ####################################
 

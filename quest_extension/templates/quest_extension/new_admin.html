@@ -1,24 +1,23 @@
 {% extends 'quest_extension/new_account_base.html' %}
-
 {% load static %}
 
 {% block new_account_welcome %}
-<h1>New User Signup!</h1>
+<h1>New Admin Signup!</h1>
 {% endblock %}
 
 {% block stylesheet %}
-<link rel="stylesheet" type="text/css" href="{% static 'quest_extension/new_account/new_user_style.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'quest_extension/new_account/new_admin_style.css' %}">
 {% endblock %}
 
 {% block login %}
-<form method='GET' action='/quest/user_login'>
+<form method='GET' action='/quest/admin_login'>
     <button type = 'submit'> Login </button>
 </form>
 {% endblock %}
 
 
 {% block account_form %}
-<form method='POST' id = 'user_form' action = '/quest/add_new_user'>
+<form method='POST' id = 'user_form' action = '/quest/add_new_admin'>
     {% csrf_token %}
-    {{ user_form }}
+    {{ admin_form }}
 {% endblock %}

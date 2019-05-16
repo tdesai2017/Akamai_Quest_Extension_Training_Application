@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+   <title> New Account </title>
+   {% block stylesheet %}
+   {% endblock %}
+
+</head>
+<body>
+        {% block new_account_welcome %}
+        New Admin Signup!
+        {% endblock %}
+    
+        {% block login %}
+        {% endblock %}
+
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+    <br>
+    <br>
+    <br>
+
+    <div id = 'container'>
+        
+
+            {% block account_form %}
+            {% endblock %}
+
+            <label for="retyped_password">Retype Password:</label>
+            <input type="password" name="retyped_password" maxlength="200" >
+            <button form = 'user_form' type= 'submit'> Submit </button> 
+        </form>
+    </div>  
+
+   
+</body>
+</html>

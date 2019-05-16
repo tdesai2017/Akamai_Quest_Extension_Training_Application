@@ -29,9 +29,7 @@ class UserForm(forms.ModelForm):
         labels = {'user_ldap': 'LDAP',
                   'user_first_name': 'First Name',
                   'user_last_name': 'Last Name',
-                  'user_email': 'Email',
-                  'user_manager_ldap': 'Manager\'s LDAP', 
-                  'user_director_ldap': 'Director\'s LDAP', 
+                  'user_email': 'Email', 
                   'user_password': 'Password'}
 
 
@@ -85,9 +83,17 @@ class ForgotPasswordForm(forms.Form):
     retype_new_password = forms.CharField( label= 'Retype Password', widget=forms.PasswordInput(attrs={'autocomplete' : 'new-password'} ))
         
 
-
-
-
+class AdminForm(forms.ModelForm):
+    admin_password = forms.CharField(widget=forms.PasswordInput(attrs={'autocomplete' : 'new-password'}))
+    class Meta:
+        model = models.Admin
+        fields = ['admin_ldap', 'admin_first_name', 'admin_last_name', 'admin_email', 
+                   'admin_password',]
+        labels = {'admin_ldap': 'LDAP',
+                  'admin_first_name': 'First Name',
+                  'admin_last_name': 'Last Name',
+                  'admin_email': 'Email', 
+                  'admin_password': 'Password'}
 
 
 

@@ -2,15 +2,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/login/user_login_style.css' %}">
-    <Title> User Login </Title>
+    <Title> Login </Title>
 
     <script> function show(){
         document.getElementById("ldap_for_new_password").style.display = "inline";
 
     }
     </script>
-    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/login/user_login_style.css' %}">
+    {% block stylesheet %}
+    {% endblock %}
+
 
 </head>
 
@@ -39,23 +40,10 @@
     
 
         <button id = 'forgot_password' type='submit' onclick = "show();">Forgot Password</button>
-        <form id='ldap_for_new_password' method='POST' action = '/quest/change_password_request'>
-            {% csrf_token %}
-            Please type your LDAP below:
-            <br>
-            <br>
-            LDAP:
-            <input type='text' name='ldap'>
-            <button id = 'new_password_ldap' type="submit">Submit</button>
-
-
-        </form>
+            {% block change_password_request_form %}
+            {% endblock %}
+            
 
     </div>
-
-
-
-    
-
 </body>
 </html>

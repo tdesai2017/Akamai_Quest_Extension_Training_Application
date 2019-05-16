@@ -711,12 +711,11 @@ def add_new_user(request):
         user_form = UserForm(request.POST)
         if user_form.is_valid():
             temp = user_form.save(commit=False)
-            username = temp.user_email
+            email = temp.user_email
             user_ldap = temp.user_ldap
 
-            
             try:
-                validate_email(username)
+                validate_email(email)
                 valid_email = True
             except:
                 valid_email = False
@@ -729,6 +728,7 @@ def add_new_user(request):
             print(User.objects.all().values_list('user_ldap', flat=True) )
             if valid_email and new_ldap and valid_password:
                 temp.save()
+                messages.success(request, 'Your new account was created!')
                 return HttpResponseRedirect('/quest/user_login')
             if not new_ldap:
                 messages.success(request, 'There is already an account associated with this LDAP')
@@ -774,7 +774,7 @@ def user_login_to_account(request):
     return HttpResponseRedirect('/quest/user_login')
 
 
-def change_password_request(request):
+def user_change_password_request(request):
     if request.method == 'POST':
         post_request = request.POST
         ldap = post_request['ldap']
@@ -803,12 +803,7 @@ def change_password_request(request):
     
         return HttpResponseRedirect('/quest/user_login')
 
-def go_back_to_login(request, ldap):
-        if request.method == 'POST':
-            current_user = User.objects.get(user_ldap = ldap)
-            current_user.user_reset_password_pin = None
-            current_user.save()
-        return HttpResponseRedirect('/quest/user_login')
+
 
 
 
@@ -846,8 +841,12 @@ def new_password_sent(request, ldap):
 
     return HttpResponseRedirect('/quest/user_forgot_password/' + ldap)
 
-            
-
+def go_back_to_login(request, ldap):
+    if request.method == 'POST':
+        current_user = User.objects.get(user_ldap = ldap)
+        current_user.user_reset_password_pin = None
+        current_user.save()
+    return HttpResponseRedirect('/quest/user_login')
 
 ####################################
 
@@ -1034,9 +1033,6 @@ def get_admin_login(request):
     if 'current_admin_ldap' in request.session:
         del request.session['current_admin_ldap']
 
-    # if 'current_user_ldap' in request.session:
-    #     del request.session['current_user_ldap']
-
     login_form = LoginForm()
     context = {'login_form': login_form}
     return render(request, 'quest_extension/admin_login.html', context)
@@ -1062,48 +1058,119 @@ def admin_login_to_account(request):
     
     return HttpResponseRedirect('/quest/admin_login')
 
+def admin_change_password_request(request):
+    if request.method == 'POST':
+        post_request = request.POST
+        ldap = post_request['ldap']
+        #only proceed if there is an Admin with this ldap
+        if not Admin.objects.filter(admin_ldap = ldap):
+            messages.success(request, 'There is no account with this ldap')
+            return HttpResponseRedirect('/quest/admin_login')
+        current_admin = Admin.objects.get(admin_ldap = ldap)
+        if ldap not in Admin.objects.all().values_list('admin_ldap', flat=True):
+            messages.success(request, 'There is no account created for that LDAP')
+        else:
+            pin = str(random.randint(99999, 999999))
+            current_admin.admin_reset_password_pin = pin
+            current_admin.save()
+            message_body = ('Hi ' + current_admin.admin_first_name + '. We have just recieved notice that you requested ' +
+            'to create a new password! Your six digit pin is ' + str(pin))
+            send_mail(
+            'Password Reset',
+            message_body,
+            'icet.tushar@gmail.com', #This will have to change once we deploy this on a remote server
+            [current_admin.admin_email],
+            fail_silently=False,
+            )
+            print('MAIL SENT')
+            return HttpResponseRedirect('/quest/admin_forgot_password/' + ldap)
+    
+        return HttpResponseRedirect('/quest/admin_login')
+
 
 ####################################
 
-
 def get_new_admin_page(request):
 
-    user_form = UserForm()
-    context = {'admin_form': user_form}
-    return render(request, 'quest_extension/new_user.html', context)
+    admin_form = AdminForm()
+    context = {'admin_form': admin_form}
+    return render(request, 'quest_extension/new_admin.html', context)
 
-# def add_new_admin(request):
-#     if request.method == 'POST':
-#         post_request = request.POST
-#         retyped_password = post_request['retyped_password']
-#         user_form = UserForm(request.POST)
-#         if user_form.is_valid():
-#             temp = user_form.save(commit=False)
-#             username = temp.user_email
-#             user_ldap = temp.user_ldap
+def add_new_admin(request):
+    if request.method == 'POST':
+        post_request = request.POST
+        retyped_password = post_request['retyped_password']
+        admin_form = AdminForm(request.POST)
+        if admin_form.is_valid():
+            temp = admin_form.save(commit=False)
+            email = temp.admin_email
+            admin_ldap = temp.admin_ldap
 
             
-#             try:
-#                 validate_email(username)
-#                 valid_email = True
-#             except:
-#                 valid_email = False
-#                 print("This is an invalid email")
-#                 messages.success(request, 'Please input a valid email')
-#                 return HttpResponseRedirect('/quest/new_user') 
+            try:
+                validate_email(email)
+                valid_email = True
+            except:
+                valid_email = False
+                print("This is an invalid email")
+                messages.success(request, 'Please input a valid email')
+                return HttpResponseRedirect('/quest/new_admin') 
 
-#             valid_password = (retyped_password == temp.user_password)
-#             new_ldap = user_ldap not in User.objects.all().values_list('user_ldap', flat=True) 
-#             print(User.objects.all().values_list('user_ldap', flat=True) )
-#             if valid_email and new_ldap and valid_password:
-#                 temp.save()
-#                 return HttpResponseRedirect('/quest/user_login')
-#             if not new_ldap:
-#                 messages.success(request, 'There is already an account associated with this LDAP')
-#             if not valid_password:
-#                 messages.success(request, 'Your Password and Retyped Password do not match')
+            valid_password = (retyped_password == temp.admin_password)
+            new_ldap = admin_ldap not in Admin.objects.all().values_list('admin_ldap', flat=True) 
+            print(Admin.objects.all().values_list('admin_ldap', flat=True) )
+            if valid_email and new_ldap and valid_password:
+                temp.save()
+                messages.success(request, 'Your new account was created!')
+                return HttpResponseRedirect('/quest/admin_login')
+            if not new_ldap:
+                messages.success(request, 'There is already an account associated with this LDAP')
+            if not valid_password:
+                messages.success(request, 'Your Password and Retyped Password do not match')
 
-#     return HttpResponseRedirect('/quest/new_user')
+    return HttpResponseRedirect('/quest/new_admin')
+
+####################################
+
+def get_admin_forgot_password(request, ldap):
+    forgot_password_form = ForgotPasswordForm()
+    context = {'forgot_password_form': forgot_password_form, 'ldap': ldap}
+    return render(request, 'quest_extension/admin_forgot_password.html', context)
+
+
+def admin_new_password_sent(request, ldap):
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    if request.method == 'POST':
+        forgot_password_form = ForgotPasswordForm(request.POST)
+        if forgot_password_form.is_valid():
+            pin = forgot_password_form.cleaned_data['pin']
+            new_password = forgot_password_form.cleaned_data['new_password']
+            retype_new_password = forgot_password_form.cleaned_data['retype_new_password']
+
+            if (current_admin.admin_reset_password_pin != pin):
+                messages.success(request,'Pin does not match the sent pin')
+                return HttpResponseRedirect ('/quest/admin_forgot_password/' + ldap)
+            elif (new_password != retype_new_password):
+                messages.success(request, 'Your Passwords do not match')
+                return HttpResponseRedirect ('/quest/admin_forgot_password/' + ldap)
+            else:
+                current_admin.admin_password = new_password
+                #By setting this value to none as soon as possible, it leaves a very small window for
+                #an intruder to try guessing the admins pin
+                current_admin.admin_reset_password_pin = None
+                current_admin.save()
+                messages.success(request, 'Your new password was saved!')
+                return HttpResponseRedirect('/quest/admin_login')
+
+    return HttpResponseRedirect('/quest/admin_forgot_password/' + ldap)
+
+
+def admin_go_back_to_login(request, ldap):
+    if request.method == 'POST':
+        current_admin = Admin.objects.get(admin_ldap = ldap)
+        current_admin.admin_reset_password_pin = None
+        current_admin.save()
+    return HttpResponseRedirect('/quest/admin_login')
 
 
 

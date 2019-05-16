@@ -1,6 +1,10 @@
 {% extends 'quest_extension/login_base.html' %}
 {% load static %}
 
+{% block stylesheet %}
+<link rel="stylesheet" type="text/css" href="{% static 'quest_extension/login/user_login_style.css' %}">
+{% endblock %}
+
 
 {% block login_welcome %}
 <h1>User Login</h1>
@@ -21,3 +25,16 @@
             <button id = 'submit_login' type="submit">Submit</button>
         </form> 
 {% endblock %}
+
+{% block change_password_request_form %}
+    <form id='ldap_for_new_password' method='POST' action = '/quest/user_change_password_request'>
+    {% csrf_token %}
+        Please type your LDAP below:
+        <br>
+        <br>
+        LDAP:
+        <input type='text' name='ldap'>
+        <button id = 'new_password_ldap' type="submit">Submit</button>
+    </form>
+{% endblock %}
+

@@ -111,7 +111,7 @@ urlpatterns = [
 
     path('user_login', views.get_user_login),
     path('user_login_to_account', views.user_login_to_account),
-    path('change_password_request', views.change_password_request),
+    path('user_change_password_request', views.user_change_password_request),
     path('go_back_to_login/<ldap>', views.go_back_to_login),
 
 ######################################
@@ -145,12 +145,18 @@ path ('delete_project/<ldap>/<project_id>', views.delete_project),
 
 path('admin_login', views.get_admin_login),
 path('admin_login_to_account', views.admin_login_to_account),
+path('admin_change_password_request', views.admin_change_password_request),
+
 
 ##############################
 
-# path('new_admin', views.new_admin),
+ path('new_admin', views.get_new_admin_page),
+ path('add_new_admin', views.add_new_admin),
 
-
+ ##############################
+path('admin_forgot_password/<ldap>', views.get_admin_forgot_password),
+path('admin_new_password_sent/<ldap>', views.admin_new_password_sent),
+path('admin_go_back_to_login/<ldap>', views.admin_go_back_to_login),
 
 
 

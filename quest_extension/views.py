@@ -21,7 +21,7 @@ import random
 #For the creation of a FR question (not editing)
 def get_fr_question_form(request, ldap, quest_id):
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -32,14 +32,14 @@ def get_fr_question_form(request, ldap, quest_id):
 
 def create_fr_question(request, ldap, quest_id):
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     if request.method  == 'POST':
         question_form = QuestionForm(request.POST)
         answer_form = CorrectAnswerForm(request.POST)
         if question_form.is_valid() and answer_form.is_valid():
-            return save_fr_question(question_form, answer_form, quest_id)
+            return save_fr_question(ldap, question_form, answer_form, quest_id)
     
     return HttpResponseRedirect('/quest/fr-create-form/' + ldap + '/' + str(quest_id))
     
@@ -49,10 +49,10 @@ def create_fr_question(request, ldap, quest_id):
 #For the creation of a free response form (not editing)
 def get_mc_question_form(request, ldap, quest_id):
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
-    current_admin = Admin.objects.get(admin_ldap = admin)
+    current_admin = Admin.objects.get(admin_ldap = ldap)
     question_form = QuestionForm()
     answer_form = RightAnswerForm()
     wrong_answer_form = WrongAnswerForm()
@@ -62,7 +62,7 @@ def get_mc_question_form(request, ldap, quest_id):
 
 def create_mc_question(request, ldap, quest_id):
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     if request.method  == 'POST':
@@ -70,7 +70,7 @@ def create_mc_question(request, ldap, quest_id):
         answer_form = RightAnswerForm(request.POST)
         wrong_answer_form = WrongAnswerForm(request.POST)
         if question_form.is_valid() and answer_form.is_valid() and wrong_answer_form.is_valid():
-            return save_mc_question(question_form, answer_form, wrong_answer_form, quest_id)
+            return save_mc_question(ldap, question_form, answer_form, wrong_answer_form, quest_id)
         
     return HttpResponseRedirect('/quest/mc-create-form/' + ldap + '/' + str(quest_id))
 
@@ -80,7 +80,7 @@ def create_mc_question(request, ldap, quest_id):
 
 def get_admin_home_editable(request, ldap, project_id): 
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -92,7 +92,7 @@ def get_admin_home_editable(request, ldap, project_id):
 
 def save_new_quest(request, ldap, project_id): 
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_project = Project.objects.get(id = project_id)
@@ -127,7 +127,7 @@ def save_new_quest(request, ldap, project_id):
 
 def get_admin_home_view_only(request, ldap,  project_id): 
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -140,7 +140,7 @@ def get_admin_home_view_only(request, ldap,  project_id):
 
 def get_admin_quest_page_editable(request, ldap, quest_id):
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -182,7 +182,7 @@ def get_admin_quest_page_editable(request, ldap, quest_id):
 
 def delete_question(request, ldap, quest_id):
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     if request.method == 'POST':
@@ -199,7 +199,7 @@ def delete_question(request, ldap, quest_id):
 
 def undo_delete_question(request, ldap, quest_id):
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_quest = Quest.objects.get(id = quest_id)
@@ -218,7 +218,7 @@ def undo_delete_question(request, ldap, quest_id):
 
 def save_video(request, ldap, quest_id):
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_quest = Quest.objects.get(id = quest_id)
@@ -232,7 +232,7 @@ def save_video(request, ldap, quest_id):
             if "v=" not in url or len(url) <= 2:
                     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
 
-            video_identifier = url[url.index('v=') + 2]
+            video_identifier = url[url.index('v=') + 2:]
             temp.video_url = video_identifier
             temp.quest = current_quest
             temp.save()
@@ -242,10 +242,9 @@ def save_video(request, ldap, quest_id):
 
 def delete_video(request, ldap, quest_id):
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
-    current_quest = Quest.objects.get(id = quest_id)
     if request.method == 'POST': 
         post_request = request.POST
         video_id = post_request['delete']
@@ -265,7 +264,7 @@ def delete_video(request, ldap, quest_id):
 
 def get_admin_quest_page_view_only(request, ldap, quest_id):
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -301,7 +300,7 @@ def get_admin_quest_page_view_only(request, ldap, quest_id):
 
 def get_user_home(request, ldap, project_id):
 
-    if not validate_access(request, ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     user = User.objects.get(user_ldap= ldap)
@@ -316,7 +315,7 @@ def get_user_home(request, ldap, project_id):
 
 def get_user_quest_page(request, ldap, quest_id):
 
-    if not validate_access(request, ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_quest = Quest.objects.get(id = quest_id)
@@ -372,7 +371,7 @@ def get_user_quest_page(request, ldap, quest_id):
 
 def validate_fr_question_response(request, ldap, quest_id):
 
-    if not validate_access(request, ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_quest = Quest.objects.get(id = quest_id)
@@ -410,7 +409,7 @@ def validate_fr_question_response(request, ldap, quest_id):
 
 def validate_mc_question_response(request, ldap, quest_id):
 
-    if not validate_access(request, ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_quest = Quest.objects.get(id = quest_id)
@@ -456,9 +455,9 @@ def validate_mc_question_response(request, ldap, quest_id):
 ######################################
 
 #For editing free response questions (not creating)
-def admin_edit_fr_question(request, ldap, question_id):
+def get_admin_edit_fr_question(request, ldap, question_id):
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -473,11 +472,17 @@ def admin_edit_fr_question(request, ldap, question_id):
 
     fr_answer_form = CorrectAnswerForm(initial={'answer_text': all_answers})
 
-    
-    print (all_answers)
+    print(current_question.question_type)
+    context = {'current_question': current_question,
+                'question_text_form': question_text_form,
+                'fr_answer_form': fr_answer_form,
+                'current_admin': current_admin}
+    return render(request, 'quest_extension/admin_edit_fr_question.html', context)
 
+
+def save_admin_edit_fr_question(request, ldap, question_id):
+    current_question = Question.objects.get(id = question_id)
     if request.method == 'POST':
-        post_request = request.POST
         question_form = QuestionForm(request.POST)
         answer_form = CorrectAnswerForm(request.POST)
         quest_id = current_question.quest.id
@@ -489,25 +494,19 @@ def admin_edit_fr_question(request, ldap, question_id):
             #If you want to undo the deletion of the previous version of the question, it will pop up back in
             #it's original place
             Question.objects.filter(id = question_id).update(time_modified = timestamp)
-            return save_fr_question(question_form, answer_form, quest_id, timestamp)
+            return save_fr_question(ldap, question_form, answer_form, quest_id, timestamp)
+
+    return HttpResponseRedirect('/quest/admin_edit_fr_question/' + ldap + '/' + str(question_id))
 
 
-    
-    current_question = Question.objects.get(id = question_id)
-    print(current_question.question_type)
-    context = {'current_question': current_question,
-                'question_text_form': question_text_form,
-                'fr_answer_form': fr_answer_form,
-                'current_admin': current_admin}
-    return render(request, 'quest_extension/admin_edit_fr_question.html', context)
 
 
 
 ######################################
 #For editing mc questions (not creating)
-def get_edit_mc_question(request, ldap, question_id):
+def get_admin_edit_mc_question(request, ldap, question_id):
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -540,9 +539,9 @@ def get_edit_mc_question(request, ldap, question_id):
                 'current_admin': current_admin}
     return render(request, 'quest_extension/admin_edit_mc_question.html', context)
     
-def save_edit_mc_question (request, ldap, question_id):
+def save_admin_edit_mc_question (request, ldap, question_id):
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_question = Question.objects.get(id = question_id)
@@ -559,7 +558,7 @@ def save_edit_mc_question (request, ldap, question_id):
             #If you want to undo the deletion of the previous version of the question, it will pop up back in
             #it's original place
             Question.objects.filter(id = question_id).update(time_modified = timestamp)
-            return save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, timestamp)
+            return save_mc_question(ldap, question_form, answer_form, wrong_answer_form, quest_id, timestamp)
 
     return HttpResponseRedirect('/quest/admin_edit_mc_question/' + ldap + '/' + str(question_id))
 
@@ -567,7 +566,7 @@ def save_edit_mc_question (request, ldap, question_id):
 
 def get_admin_project_page(request, ldap):
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     project_form = ProjectForm()
@@ -579,7 +578,7 @@ def get_admin_project_page(request, ldap):
 
 def add_new_project(request, ldap):
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -607,7 +606,7 @@ def add_new_project(request, ldap):
 ######################################
 def get_user_project_page(request, ldap):
 
-    if not validate_access(request, ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
 
@@ -626,7 +625,7 @@ def get_user_project_page(request, ldap):
 
 def user_logout(request, ldap):
 
-    if not validate_access(request, ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     if request.method == 'POST':
@@ -638,7 +637,7 @@ def user_logout(request, ldap):
 
 def add_user_project_page(request, ldap):
 
-    if not validate_access(request, ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     if request.method == 'POST':
@@ -669,7 +668,7 @@ def add_user_project_page(request, ldap):
 
 def remove_user_project(request, ldap):
 
-    if not validate_access(request, ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_user = User.objects.get(user_ldap = ldap)
@@ -746,6 +745,9 @@ def get_user_login(request):
     if 'current_user_ldap' in request.session:
         del request.session['current_user_ldap']
 
+    # if 'current_admin_ldap' in request.session:
+    #     del request.session['current_admin_ldap']
+
     login_form = LoginForm()
     context = {'login_form': login_form}
     return render(request, 'quest_extension/user_login.html', context)
@@ -761,7 +763,7 @@ def user_login_to_account(request):
             #If incorrect password
             if not User.objects.get(user_ldap = ldap).user_password == password:
                 messages.success(request, 'Invalid Password')
-            #If correct password for ldap
+            #If correct password for ldap - creates a session for the user
             else: 
                 request.session['current_user_ldap'] = post_request['ldap']
                 return HttpResponseRedirect('/quest/user_project_page/' + request.session['current_user_ldap'])
@@ -813,7 +815,6 @@ def go_back_to_login(request, ldap):
 ####################################
 
 def get_user_forgot_password(request, ldap):
-    request.session['current_user_ldap'] = ldap
     forgot_password_form = ForgotPasswordForm()
     context = {'forgot_password_form': forgot_password_form, 'ldap': ldap}
     return render(request, 'quest_extension/user_forgot_password.html', context)
@@ -857,10 +858,9 @@ def new_password_sent(request, ldap):
 
 def admin_update_project_description(request, ldap,  project_id):
 
-    if not validate_access(request, ldap):
+    if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
-    current_admin = Admin.objects.get(admin_ldap = ldap)
     current_project = Project.objects.get(id = project_id)
     if request.method == 'POST':
         post_request = request.POST
@@ -873,7 +873,8 @@ def admin_update_project_description(request, ldap,  project_id):
 ####################################
 
 def get_user_info(request, ldap):
-    if not validate_access(request, ldap):
+    
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_user = User.objects.get(user_ldap = ldap)
@@ -881,7 +882,8 @@ def get_user_info(request, ldap):
     return render(request, 'quest_extension/user_info.html', context)
 
 def update_user_ldap(request, ldap):
-    if not validate_access(request, ldap):
+    
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_user = User.objects.get(user_ldap = ldap)
@@ -903,7 +905,7 @@ def update_user_ldap(request, ldap):
     return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
 
 def update_user_first_name(request, ldap):
-    if not validate_access(request, ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_user = User.objects.get(user_ldap = ldap)
@@ -918,7 +920,7 @@ def update_user_first_name(request, ldap):
     return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
 
 def update_user_last_name(request, ldap):
-    if not validate_access(request, ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_user = User.objects.get(user_ldap = ldap)
@@ -932,7 +934,7 @@ def update_user_last_name(request, ldap):
     return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
 
 def update_user_email(request, ldap):
-    if not validate_access(request, ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_user = User.objects.get(user_ldap = ldap)
@@ -949,7 +951,7 @@ def update_user_email(request, ldap):
     return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
 
 def update_user_manager_ldap(request, ldap):
-    if not validate_access(request, ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_user = User.objects.get(user_ldap = ldap)
@@ -963,7 +965,7 @@ def update_user_manager_ldap(request, ldap):
     return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
 
 def update_user_director_ldap(request, ldap):
-    if not validate_access(request, ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_user = User.objects.get(user_ldap = ldap)
@@ -979,7 +981,7 @@ def update_user_director_ldap(request, ldap):
 
 #We will need to do more with this one
 def update_user_password(request, ldap):
-    if not validate_access(request, ldap):
+    if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_user = User.objects.get(user_ldap = ldap)
@@ -1002,17 +1004,26 @@ def update_user_password(request, ldap):
 
     ####################################
 
-def get_admin_project_info(request, project_id):
+def get_admin_project_info(request, ldap, project_id):
+    
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
     current_project = Project.objects.get(id = project_id)
-    context = {'current_project': current_project}
+    context = {'current_project': current_project, 'current_admin': current_admin}
     return render(request, 'quest_extension/admin_project_info.html', context)
 
 
-def delete_project(request, project_id):
+def delete_project(request, ldap, project_id):
+
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
     if request.method == 'POST':
         current_project = Project.objects.get(id = project_id)
         current_project.delete()
-        return HttpResponseRedirect('/quest/admin_project_page')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
     return render(request, 'quest_extension/admin_project_info.html')
 
 
@@ -1022,6 +1033,9 @@ def get_admin_login(request):
 
     if 'current_admin_ldap' in request.session:
         del request.session['current_admin_ldap']
+
+    # if 'current_user_ldap' in request.session:
+    #     del request.session['current_user_ldap']
 
     login_form = LoginForm()
     context = {'login_form': login_form}
@@ -1049,6 +1063,47 @@ def admin_login_to_account(request):
     return HttpResponseRedirect('/quest/admin_login')
 
 
+####################################
+
+
+def get_new_admin_page(request):
+
+    user_form = UserForm()
+    context = {'admin_form': user_form}
+    return render(request, 'quest_extension/new_user.html', context)
+
+# def add_new_admin(request):
+#     if request.method == 'POST':
+#         post_request = request.POST
+#         retyped_password = post_request['retyped_password']
+#         user_form = UserForm(request.POST)
+#         if user_form.is_valid():
+#             temp = user_form.save(commit=False)
+#             username = temp.user_email
+#             user_ldap = temp.user_ldap
+
+            
+#             try:
+#                 validate_email(username)
+#                 valid_email = True
+#             except:
+#                 valid_email = False
+#                 print("This is an invalid email")
+#                 messages.success(request, 'Please input a valid email')
+#                 return HttpResponseRedirect('/quest/new_user') 
+
+#             valid_password = (retyped_password == temp.user_password)
+#             new_ldap = user_ldap not in User.objects.all().values_list('user_ldap', flat=True) 
+#             print(User.objects.all().values_list('user_ldap', flat=True) )
+#             if valid_email and new_ldap and valid_password:
+#                 temp.save()
+#                 return HttpResponseRedirect('/quest/user_login')
+#             if not new_ldap:
+#                 messages.success(request, 'There is already an account associated with this LDAP')
+#             if not valid_password:
+#                 messages.success(request, 'Your Password and Retyped Password do not match')
+
+#     return HttpResponseRedirect('/quest/new_user')
 
 
 

@@ -31,7 +31,7 @@ urlpatterns = [
 
     path('admin_quest_page_editable/<ldap>/<quest_id>', views.get_admin_quest_page_editable),
     path('delete_question/<ldap>/<quest_id>', views.delete_question),
-    path('undo_delete_question/<ldap/<quest_id>', views.undo_delete_question),
+    path('undo_delete_question/<ldap>/<quest_id>', views.undo_delete_question),
     path('save_video/<ldap>/<quest_id>', views.save_video),
     path('delete_video/<ldap>/<quest_id>', views.delete_video), 
 
@@ -62,13 +62,15 @@ urlpatterns = [
 
 
     #Admin Edit questions
-    path('admin_edit_fr_question/<ldap>/<question_id>', views.admin_edit_fr_question),
+    path('admin_edit_fr_question/<ldap>/<question_id>', views.get_admin_edit_fr_question),
+    path('save_edit_fr_question/<ldap>/<question_id>', views.save_admin_edit_fr_question),
+
 
 ######################################
 
 
-    path('admin_edit_mc_question/<ldap>/<question_id>', views.get_edit_mc_question),
-    path('save_edit_mc_question/<ldap>/<question_id>', views.save_edit_mc_question),
+    path('admin_edit_mc_question/<ldap>/<question_id>', views.get_admin_edit_mc_question),
+    path('save_edit_mc_question/<ldap>/<question_id>', views.save_admin_edit_mc_question),
 
 
 ######################################
@@ -136,22 +138,19 @@ path('update_user_password/<ldap>', views.update_user_password),
 
 ##############################
 
-path ('admin_project_info/<project_id>', views.get_admin_project_info),
-path ('delete_project/<project_id>', views.delete_project),
+path ('admin_project_info/<ldap>/<project_id>', views.get_admin_project_info),
+path ('delete_project/<ldap>/<project_id>', views.delete_project),
 
 ##############################
 
 path('admin_login', views.get_admin_login),
 path('admin_login_to_account', views.admin_login_to_account),
 
+##############################
+
+# path('new_admin', views.new_admin),
 
 
-
-
-
-
-
-    
 
 
 

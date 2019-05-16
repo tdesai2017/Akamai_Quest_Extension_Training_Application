@@ -35,7 +35,7 @@
         </div>
 
 
-    <form method = 'POST' action = '/quest/delete_project/{{current_project.id}}'>
+    <form method = 'POST' action = '/quest/delete_project/{{current_admin.admin_ldap}}/{{current_project.id}}'>
         {% csrf_token %}
         <br>
         <button id = button3 onclick="return confirm('FINAL WARNING: Removing this project will delete all info regarding this project, and all users will lose access to this project. Are you sure you want to contine?');" > Delete Project </button>

@@ -12,7 +12,7 @@ from datetime import datetime
 import copy
 
 #Saves a free response question to the backend
-def save_fr_question(question_form, answer_form, quest_id, timestamp=datetime.now()):
+def save_fr_question(ldap, question_form, answer_form, quest_id, timestamp=datetime.now()):
     quest = Quest.objects.get(id=quest_id)
     q_form = question_form.save(commit=False)
     q_form.question_type = 'FR'
@@ -27,11 +27,11 @@ def save_fr_question(question_form, answer_form, quest_id, timestamp=datetime.no
     a_form = answer_form.save(commit=False)
     a_form.question = Question.objects.get(id=question_id)
     a_form.save()
-    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + str(quest_id))
+    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
 
 
 #Saves a multiple choice question to the backend
-def save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, timestamp=datetime.now()):
+def save_mc_question(ldap, question_form, answer_form, wrong_answer_form, quest_id, timestamp=datetime.now()):
 
     quest_id = str(quest_id)
     quest = Quest.objects.get(id=quest_id)
@@ -67,13 +67,18 @@ def save_mc_question(question_form, answer_form, wrong_answer_form, quest_id, ti
         w_a_form = IncorrectAnswer(question=Question.objects.get(id=question_id), answer_text= wrong_answer)
         w_a_form.save()
 
-    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + quest_id)
+    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + quest_id)
 
 
 
 #Verifies that you are only trying to access the content for the ldap that you are logged in for
-def validate_access(request, ldap):
-    return 'current_user_ldap' in request.session and request.session['current_user_ldap'] == ldap or 'current_admin_ldap' in request.session and request.session['current_admin_ldap'] == ldap
+def validate_user_access(request, ldap):
+    return 'current_user_ldap' in request.session and request.session['current_user_ldap'] == ldap 
+
+#By having a separate one for admin access instead of using an "or" and one method is that now you MUST
+#have an admin session running to be able to go into Admin Pages
+def validate_admin_access(request, ldap):
+    return 'current_admin_ldap' in request.session and request.session['current_admin_ldap'] == ldap
         
     
 

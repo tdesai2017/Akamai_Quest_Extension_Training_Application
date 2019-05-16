@@ -7,6 +7,6 @@
 {% endblock %}
 
 {% block home %}
-    <form id='home' action = '/quest/admin_home_view_only/{{current_project_id}}' method='GET'></form>
+    <form id='home' action = '/quest/admin_home_view_only/{{current_admin.admin_ldap}}/{{current_project_id}}' method='GET'></form>
     <button form = 'home' type = submit>Home</button>
 {% endblock %}

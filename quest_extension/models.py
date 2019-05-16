@@ -44,8 +44,8 @@ class User(models.Model):
    user_first_name = models.CharField(max_length=45)
    user_last_name = models.CharField(max_length=45)
    user_email = models.CharField(max_length=45)
-   user_manager_ldap = models.CharField(max_length=45)
-   user_director_ldap = models.CharField(max_length=45)
+#    user_manager_ldap = models.CharField(max_length=45)
+#    user_director_ldap = models.CharField(max_length=45)
    user_password = models.CharField(max_length = 45)
    user_reset_password_pin = models.CharField(max_length = 5, null=True, default = None)
    #exempt = models.BooleanField(default=False) (This should go in User_project)
@@ -84,5 +84,23 @@ class Video(models.Model):
     quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
     video_url = models.CharField(max_length = 1000)
     video_type = models.CharField(max_length = 1000, choices = VIDEO_TYPES)
+
+
+class Admin(models.Model):
+    admin_ldap = models.CharField(max_length=45)
+    admin_first_name = models.CharField(max_length=45)
+    admin_last_name = models.CharField(max_length=45)
+    admin_email = models.CharField(max_length=45)
+    admin_password = models.CharField(max_length = 45)
+    admin_reset_password_pin = models.CharField(max_length = 5, null=True)
+
+
+class AdminProject(models.Model):
+    admin = models.ForeignKey(Admin, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+
+
+
 
     

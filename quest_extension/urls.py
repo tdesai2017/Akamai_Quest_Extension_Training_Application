@@ -5,35 +5,35 @@ from django.conf.urls import url
 
 urlpatterns = [
     #Decides what Question Admin wants to create
-    path('mc-create-form/<quest_id>', views.get_mc_question_form),
-    path('create_mc_question/<quest_id>', views.create_mc_question),
+    path('mc-create-form/<ldap>/<quest_id>', views.get_mc_question_form),
+    path('create_mc_question/<ldap>/<quest_id>', views.create_mc_question),
 
 
 
 ######################################
 
 
-    path('fr-create-form/<quest_id>', views.get_fr_question_form),
-    path('create_fr_question/<quest_id>', views.create_fr_question),
+    path('fr-create-form/<ldap>/<quest_id>', views.get_fr_question_form),
+    path('create_fr_question/<ldap>/<quest_id>', views.create_fr_question),
 
 ######################################
 
 
 
     #Admin Pages
-    path('admin_home_editable/<project_id>', views.get_admin_home_editable),
-    path('save_new_quest/<project_id>', views.save_new_quest),
+    path('admin_home_editable/<ldap>/<project_id>', views.get_admin_home_editable),
+    path('save_new_quest/<ldap>/<project_id>', views.save_new_quest),
 
 
 
 ######################################
 
 
-    path('admin_quest_page_editable/<quest_id>', views.get_admin_quest_page_editable),
-    path('delete_question/<quest_id>', views.delete_question),
-    path('undo_delete_question/<quest_id>', views.undo_delete_question),
-    path('save_video/<quest_id>', views.save_video),
-    path('delete_video/<quest_id>', views.delete_video), 
+    path('admin_quest_page_editable/<ldap>/<quest_id>', views.get_admin_quest_page_editable),
+    path('delete_question/<ldap>/<quest_id>', views.delete_question),
+    path('undo_delete_question/<ldap/<quest_id>', views.undo_delete_question),
+    path('save_video/<ldap>/<quest_id>', views.save_video),
+    path('delete_video/<ldap>/<quest_id>', views.delete_video), 
 
 
 
@@ -42,19 +42,19 @@ urlpatterns = [
 ######################################
 
 
-    path('admin_project_page', views.get_admin_project_page),
-    path('add_new_project', views.add_new_project),
+    path('admin_project_page/<ldap>', views.get_admin_project_page),
+    path('add_new_project/<ldap>', views.add_new_project),
 
 
 ######################################
 
 
-    path('admin_home_view_only/<project_id>', views.get_admin_home_view_only),
+    path('admin_home_view_only/<ldap>/<project_id>', views.get_admin_home_view_only),
 
 ######################################
 
 
-    path('admin_quest_page_view_only/<quest_id>', views.get_admin_quest_page_view_only),
+    path('admin_quest_page_view_only/<ldap>/<quest_id>', views.get_admin_quest_page_view_only),
 
 
 ######################################
@@ -62,13 +62,13 @@ urlpatterns = [
 
 
     #Admin Edit questions
-    path('admin_edit_fr_question/<question_id>', views.admin_edit_fr_question),
+    path('admin_edit_fr_question/<ldap>/<question_id>', views.admin_edit_fr_question),
 
 ######################################
 
 
-    path('admin_edit_mc_question/<question_id>', views.get_edit_mc_question),
-    path('save_edit_mc_question/<question_id>', views.save_edit_mc_question),
+    path('admin_edit_mc_question/<ldap>/<question_id>', views.get_edit_mc_question),
+    path('save_edit_mc_question/<ldap>/<question_id>', views.save_edit_mc_question),
 
 
 ######################################
@@ -118,8 +118,8 @@ path('new_password_sent/<ldap>', views.new_password_sent),
 
 ######################################
 
-path('admin_edit_project_description/<project_id>', views.get_admin_edit_project_description),
-path('admin_update_project_description/<project_id>', views.admin_update_project_description),
+# path('admin_edit_project_description/<project_id>', views.get_admin_edit_project_description),
+path('admin_update_project_description/<ldap>/<project_id>', views.admin_update_project_description),
 
 ###########################
 
@@ -131,6 +131,19 @@ path('update_user_email/<ldap>', views.update_user_email),
 path('update_user_manager_ldap/<ldap>', views.update_user_manager_ldap),
 path('update_user_director_ldap/<ldap>', views.update_user_director_ldap),
 path('update_user_password/<ldap>', views.update_user_password),
+
+
+
+##############################
+
+path ('admin_project_info/<project_id>', views.get_admin_project_info),
+path ('delete_project/<project_id>', views.delete_project),
+
+##############################
+
+path('admin_login', views.get_admin_login),
+path('admin_login_to_account', views.admin_login_to_account),
+
 
 
 

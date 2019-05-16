@@ -24,8 +24,8 @@ class UserForm(forms.ModelForm):
     user_password = forms.CharField(widget=forms.PasswordInput(attrs={'autocomplete' : 'new-password'}))
     class Meta:
         model = models.User
-        fields = ['user_ldap', 'user_first_name', 'user_last_name', 'user_email', 'user_manager_ldap', 
-                  'user_director_ldap', 'user_password',]
+        fields = ['user_ldap', 'user_first_name', 'user_last_name', 'user_email', 
+                   'user_password',]
         labels = {'user_ldap': 'LDAP',
                   'user_first_name': 'First Name',
                   'user_last_name': 'Last Name',

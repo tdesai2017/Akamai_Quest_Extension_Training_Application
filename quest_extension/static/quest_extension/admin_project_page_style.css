@@ -33,3 +33,11 @@ height: 200px;
 #hide {
 text-align: right
 }
+
+#editable {
+  color: lightgreen
+}
+
+#not_editable {
+  color: red
+}

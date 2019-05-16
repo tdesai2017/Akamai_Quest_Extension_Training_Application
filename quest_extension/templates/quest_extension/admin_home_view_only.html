@@ -1,16 +1,26 @@
 {% extends 'quest_extension/admin_home_base.html' %}
 
+{% block admin_info %}
+<form method='POST' action ='/quest/admin_project_info/{{current_project.id}}'> 
+    {% csrf_token %}
+    <button type='submit'> Project Info and Settings </button>
+</form>
+{% endblock %}
 
 
 {% block redirect_to_quest_page %}
 
     {% for quest in quests %}
         <br>
-        <form method='GET' action='/quest/admin_quest_page_view_only/{{quest.id}}'>
+        <form method='GET' action='/quest/admin_quest_page_view_only/{{current_admin.admin_ldap}}/{{quest.id}}'>
             <button type='submit'>{{quest.quest_name}} ({{quest.quest_path_number }})</button>
         </form>
 
 
     {% endfor %}
 
+{% endblock %}
+
+{% block back %}
+    <a href= '/quest/admin_project_page/{{current_admin.admin_ldap}}'>Back to Projects Page</a>
 {% endblock %}

@@ -15,6 +15,7 @@ admin.site.register(Project)
 admin.site.register(CorrectlyAnsweredQuestion)
 admin.site.register(UserProject)
 admin.site.register(Video)
-
+admin.site.register(Admin)
+admin.site.register(AdminProject)
 
 

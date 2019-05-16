@@ -9,7 +9,7 @@
     </head>
     <body>
 
-    <form method="POST" action= '/quest/save_edit_mc_question/{{current_question.id}}'>
+    <form method="POST" action= '/quest/save_edit_mc_question/{{current_admin.admin_ldap}}/{{current_question.id}}'>
         {% csrf_token %}
         {{ question_text_form }}
 
@@ -28,7 +28,7 @@
         <input type="submit" value="Submit">
     </form>
 
-    <form method= 'GET' action='/quest/admin_quest_page_editable/{{quest_id}}'>
+    <form method= 'GET' action='/quest/admin_quest_page_editable/{{current_admin.admin_ldap}}/{{quest_id}}'>
         <button > Back </button>
     </form>
 

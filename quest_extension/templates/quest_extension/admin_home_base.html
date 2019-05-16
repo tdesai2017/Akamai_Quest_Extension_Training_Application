@@ -23,6 +23,10 @@
     
 
     <body>
+    
+    {% block admin_info %}
+    {% endblock %}
+
     <div class='not_in_container'>
         <h1>{{ current_project.project_name}}</h1>
     </div>
@@ -54,7 +58,8 @@
 
         
         <br>
-        <a href= '/quest/admin_project_page'>Back to Projects Page</a>
+        {% block back %}
+        {% endblock %}
 
     </div>
     </body>

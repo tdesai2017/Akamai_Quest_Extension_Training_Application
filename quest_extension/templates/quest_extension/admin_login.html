@@ -3,19 +3,19 @@
 
 
 {% block login_welcome %}
-<h1>User Login</h1>
+<h1>Admin Login</h1>
 {% endblock %}
 
 {% block sign_up %}
-<form method='GET' action='/quest/new_user'>
-    <button type = 'submit'> Sign Up! </button>
+<form method='GET' action='/quest/new_admin'>
+    <button type = 'submit'> Admin Sign Up! </button>
 </form>
 {% endblock %}
 
 
 {% block login %}
 <div id= 'container'>
-        <form id='login' method='POST' action ='/quest/user_login_to_account'>
+        <form id='login' method='POST' action ='/quest/admin_login_to_account'>
             {% csrf_token %}
             {{ login_form }}
             <button id = 'submit_login' type="submit">Submit</button>

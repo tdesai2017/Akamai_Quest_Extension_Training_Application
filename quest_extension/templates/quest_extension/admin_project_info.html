@@ -1,0 +1,47 @@
+<!-- {% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Project Info and Settings </title>
+    <link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_project_info_style.css' %}">
+
+
+    <script> function showButton1(){
+            document.getElementById("button1").style.display = "inline";
+            document.getElementById("button0").style.display = "none"
+          } 
+          function showButton2(){
+            document.getElementById("button2").style.display = "inline";
+            document.getElementById("button1").style.display = "none"
+          } 
+          function showButton3(){
+            document.getElementById("button3").style.display = "inline";
+            document.getElementById("button2").style.display = "none"
+          } 
+          </script>
+
+</head>
+<body>
+        <button id ='button0' onclick= 'return showButton1();' > Delete Project </button>
+        
+        <div id= 'button1'>
+                <br>
+                <button onclick='return showButton2()'> Delete Project </button>
+        </div>
+
+        <div id= 'button2'>
+            <br>
+            <button onclick='return showButton3()'> Delete Project </button>
+        </div>
+
+
+    <form method = 'POST' action = '/quest/delete_project/{{current_project.id}}'>
+        {% csrf_token %}
+        <br>
+        <button id = button3 onclick="return confirm('FINAL WARNING: Removing this project will delete all info regarding this project, and all users will lose access to this project. Are you sure you want to contine?');" > Delete Project </button>
+    </form>
+
+
+
+</body>
+</html> -->

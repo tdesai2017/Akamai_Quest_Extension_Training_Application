@@ -1,0 +1,28 @@
+
+#button1 {
+    display: None;
+    background-color: lightgreen; 
+    border: none;
+    padding: 15px 32px;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+#button2 {
+    display: None;
+    background-color: orange; 
+    border: none;
+    padding: 15px 32px;
+    text-decoration: none;
+    font-size: 16px;
+    
+}
+
+#button3 {
+    display: None;
+    background-color: red; 
+    border: none;
+    padding: 15px 32px;
+    text-decoration: none;
+    font-size: 16px;
+}

@@ -43,7 +43,7 @@
 
     <div id = "container">
         <br>
-        <form method='POST' id = 'test_form' action = "/quest/add_new_project">
+        <form method='POST' id = 'test_form' action = "/quest/add_new_project/{{current_admin.admin_ldap}}">
                 {% csrf_token %}
                 {{ project_form }}
                 <br>
@@ -67,17 +67,21 @@
         <br>
         {% if project.project_editable %}
 
-        <form method='GET' action='/quest/admin_home_editable/{{project.id}}'>
+        <form method='GET' action='/quest/admin_home_editable/{{current_admin.admin_ldap}}/{{project.id}}'>
             <button type='submit'>{{project.project_name}}</button>
-            *Project Editable: {{ project.project_editable }}
+            <div id='editable'>
+                Editable
+            </div>
         </form>
 
 
         {% else %}
 
-        <form method='GET' action='/quest/admin_home_view_only/{{project.id}}'>
+        <form method='GET' action='/quest/admin_home_view_only/{{current_admin.admin_ldap}}/{{project.id}}'>
             <button type='submit'>{{project.project_name}}</button>
-            *Project Editable: {{ project.project_editable }}
+            <div id='not_editable'>
+                    Not Editable
+            </div>
         </form>
 
         {% endif %}

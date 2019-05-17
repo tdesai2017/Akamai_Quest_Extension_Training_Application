@@ -1,9 +1,9 @@
 {% extends 'quest_extension/admin_home_base.html' %}
 
 {% block admin_info %}
-<form method='POST' action ='/quest/admin_project_info/{{current_project.id}}'> 
+<form method='GET' action ='/quest/admin_project_settings/{{current_admin.admin_ldap}}/{{current_project.id}}'> 
     {% csrf_token %}
-    <button type='submit'> Project Info and Settings </button>
+    <button type='submit'> Project Settings </button>
 </form>
 {% endblock %}
 

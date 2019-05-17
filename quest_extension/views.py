@@ -618,17 +618,29 @@ def join_project(request, ldap):
     if request.method == 'POST':
         post_request = request.POST
         input_pin = post_request['project_admin_pin']
+        input_name = post_request['project_name']
         list_of_admins_projects = AdminProject.objects.filter(admin = current_admin).values('project')
         list_of_admins_projects = Project.objects.filter(pk__in=list_of_admins_projects)
 
         #To join a project, it cannot already be one you admin, and it must also exist
         if Project.objects.filter(project_admin_pin = input_pin):
             project_to_join = Project.objects.get(project_admin_pin = input_pin)
-            if project_to_join not in list_of_admins_projects:
+            project_name = project_to_join.project_name
+            #We are further validating that they can become an admin of this project
+            #Because they must also know the name of it
+            if project_to_join not in list_of_admins_projects and project_name == input_name:
                 new_admin_project = AdminProject()
                 new_admin_project.admin = current_admin
                 new_admin_project.project = project_to_join
-                new_admin_project.save()        
+                new_admin_project.save()
+                messages.success(request, 'New project has been added!')
+
+
+            else:
+                messages.success(request, 'Invalid Name or Admin Pin')
+        else:
+                messages.success(request, 'Invalid Name or Admin Pin') 
+
 
     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
  
@@ -764,13 +776,13 @@ def add_new_user(request):
                 return HttpResponseRedirect('/quest/new_user') 
 
             valid_password = (retyped_password == temp.user_password)
-            new_ldap = user_ldap not in User.objects.all().values_list('user_ldap', flat=True) 
+            is_new_ldap = user_ldap not in User.objects.all().values_list('user_ldap', flat=True) 
             print(User.objects.all().values_list('user_ldap', flat=True) )
-            if valid_email and new_ldap and valid_password:
+            if valid_email and is_new_ldap and valid_password:
                 temp.save()
                 messages.success(request, 'Your new account was created!')
                 return HttpResponseRedirect('/quest/user_login')
-            if not new_ldap:
+            if not is_new_ldap:
                 messages.success(request, 'There is already an account associated with this LDAP')
             if not valid_password:
                 messages.success(request, 'Your Password and Retyped Password do not match')
@@ -911,14 +923,14 @@ def admin_update_project_description(request, ldap,  project_id):
 
 ####################################
 
-def get_user_info(request, ldap):
+def get_user_settings_info(request, ldap):
     
     if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_user = User.objects.get(user_ldap = ldap)
     context = {'current_user': current_user}
-    return render(request, 'quest_extension/user_info.html', context)
+    return render(request, 'quest_extension/user_settings_info.html', context)
 
 def update_user_ldap(request, ldap):
     
@@ -929,8 +941,8 @@ def update_user_ldap(request, ldap):
     if request.method == 'POST':
         post_request = request.POST
         ldap_input = post_request['user_ldap']
-        new_ldap = ldap_input not in User.objects.all().values_list('user_ldap', flat=True) 
-        if (new_ldap):
+        is_new_ldap = ldap_input not in User.objects.all().values_list('user_ldap', flat=True) 
+        if (is_new_ldap):
             current_user.user_ldap = ldap_input
             current_user.save()
             request.session['current_user_ldap'] = ldap_input
@@ -938,10 +950,7 @@ def update_user_ldap(request, ldap):
 
         else:
              messages.success(request, 'There is already an account associated with this LDAP')
-
-
-    
-    return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
+    return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
 
 def update_user_first_name(request, ldap):
     if not validate_user_access(request, ldap):
@@ -956,7 +965,7 @@ def update_user_first_name(request, ldap):
         messages.success(request, 'Change was successful!')
 
 
-    return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
+    return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
 
 def update_user_last_name(request, ldap):
     if not validate_user_access(request, ldap):
@@ -970,7 +979,7 @@ def update_user_last_name(request, ldap):
         current_user.save()
         messages.success(request, 'Change was successful!')
 
-    return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
+    return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
 
 def update_user_email(request, ldap):
     if not validate_user_access(request, ldap):
@@ -987,7 +996,7 @@ def update_user_email(request, ldap):
             messages.success(request, 'Change was successful!')
         except:
             messages.success(request, 'This is an invalid email')
-    return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
+    return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
 
 def update_user_manager_ldap(request, ldap):
     if not validate_user_access(request, ldap):
@@ -1001,7 +1010,7 @@ def update_user_manager_ldap(request, ldap):
         current_user.save()
         messages.success(request, 'Change was successful!')
     
-    return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
+    return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
 
 def update_user_director_ldap(request, ldap):
     if not validate_user_access(request, ldap):
@@ -1016,7 +1025,7 @@ def update_user_director_ldap(request, ldap):
         messages.success(request, 'Change was successful!')
 
     
-    return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
+    return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
 
 #We will need to do more with this one
 def update_user_password(request, ldap):
@@ -1038,7 +1047,7 @@ def update_user_password(request, ldap):
             current_user.save()
             messages.success(request, 'Change was successful!')
 
-    return HttpResponseRedirect('/quest/user_info/' + current_user.user_ldap)
+    return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
 
 
     #################################################################################
@@ -1047,34 +1056,6 @@ def update_user_password(request, ldap):
     #################################################################################
     #################################################################################
     #All admin views
-
-
-# def get_admin_project_info(request, ldap, project_id):
-
-#     can_admin_access_project
-    
-#     if  validate_admin_access(request, ldap):
-#         return HttpResponseRedirect('/quest/user_login')
-
-#     current_admin = Admin.objects.get(admin_ldap = ldap)
-#     current_project = Project.objects.get(id = project_id)
-#     context = {'current_project': current_project, 'current_admin': current_admin}
-#     return render(request, 'quest_extension/admin_project_info.html', context)
-
-
-# def delete_project(request, ldap, project_id):
-
-#     if not validate_admin_access(request, ldap):
-#         return HttpResponseRedirect('/quest/user_login')
-
-#     if request.method == 'POST':
-#         current_project = Project.objects.get(id = project_id)
-#         current_project.delete()
-#         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
-#     return render(request, 'quest_extension/admin_project_info.html')
-
-
-####################################
 
 def get_admin_login(request):
 
@@ -1163,13 +1144,13 @@ def add_new_admin(request):
                 return HttpResponseRedirect('/quest/new_admin') 
 
             valid_password = (retyped_password == temp.admin_password)
-            new_ldap = admin_ldap not in Admin.objects.all().values_list('admin_ldap', flat=True) 
+            is_new_ldap = admin_ldap not in Admin.objects.all().values_list('admin_ldap', flat=True) 
             print(Admin.objects.all().values_list('admin_ldap', flat=True) )
-            if valid_email and new_ldap and valid_password:
+            if valid_email and is_new_ldap and valid_password:
                 temp.save()
                 messages.success(request, 'Your new account was created!')
                 return HttpResponseRedirect('/quest/admin_login')
-            if not new_ldap:
+            if not is_new_ldap:
                 messages.success(request, 'There is already an account associated with this LDAP')
             if not valid_password:
                 messages.success(request, 'Your Password and Retyped Password do not match')
@@ -1221,6 +1202,89 @@ def admin_go_back_to_login(request, ldap):
 
 
 #########################
+
+
+def get_admin_project_settings(request, ldap, project_id):
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    current_project = Project.objects.get(id = project_id)
+
+    #Represents all admins for this project
+    list_of_admins = AdminProject.objects.filter(project = current_project).values('admin')
+    list_of_admins = Admin.objects.filter(pk__in=list_of_admins)
+
+
+    context = {'current_project': current_project, 'current_admin': current_admin, 'list_of_admins': list_of_admins}
+    return render(request, 'quest_extension/admin_project_settings.html', context)
+
+
+def update_random_phrase(request, ldap, project_id):
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_project = Project.objects.get(id = project_id)
+    if request.method == 'POST':
+        post_request = request.POST
+        random_phrase_input = post_request['project_random_phrase']
+        is_new_random_phrase = random_phrase_input not in Project.objects.all().values_list('project_random_phrase', flat=True) 
+        if (is_new_random_phrase):
+            current_project.project_random_phrase = random_phrase_input
+            current_project.save()
+            messages.success(request, 'Change was successful!')
+
+        else:
+             messages.success(request, 'You must choose a different random phrase')
+    return HttpResponseRedirect('/quest/admin_project_settings/' + ldap + '/' + project_id)
+    
+
+def update_admin_pin(request, ldap, project_id):
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_project = Project.objects.get(id = project_id)
+    if request.method == 'POST':
+        post_request = request.POST
+        admin_pin_input = post_request['project_admin_pin']
+        is_new_admin_pin = admin_pin_input not in Project.objects.all().values_list('project_admin_pin', flat=True) 
+        if (is_new_admin_pin):
+            current_project.project_admin_pin = admin_pin_input
+            current_project.save()
+            messages.success(request, 'Change was successful!')
+
+        else:
+             messages.success(request, 'You must choose a different random phrase')
+    return HttpResponseRedirect('/quest/admin_project_settings/' + ldap + '/' + project_id)
+
+def remove_as_admin(request, ldap, project_id):
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_project = Project.objects.get(id = project_id)
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    AdminProject.objects.get(project = current_project, admin = current_admin).delete()
+    
+    return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
+    
+
+
+def delete_project(request, ldap, project_id):
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    if request.method == 'POST':
+        current_project = Project.objects.get(id = project_id)
+        current_project.delete()
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+    return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
+
+
+    
 
 
 

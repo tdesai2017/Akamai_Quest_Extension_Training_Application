@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title> Project Settings </title>
+    <link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_project_settings_style.css' %}">
+
+    <script> function update(info){
+        document.getElementById("update_" + info + "_button").style.display = "none";
+        document.getElementById("update_" + info + "_form").style.display = "inline"
+      } 
+    </script>
+
+</head>
+
+<body>
+
+  <h1>Project Settings</h1>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <p>Random Phrase: {{current_project.project_random_phrase}}</p>
+    <button id = 'update_random_phrase_button' onclick="update('random_phrase')"> Update Random Phrase</button>
+    <form id = 'update_random_phrase_form' method='POST' action= '/quest/update_project_random_phrase/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+        {% csrf_token %}
+        <input type='text' name = 'project_random_phrase' value = '{{current_project.project_random_phrase}}'>
+        <button type = 'submit'> Confirm Update </button>
+    </form>
+
+    <p>Admin Pin: {{current_project.project_admin_pin}}</p>
+    <button id = 'update_admin_pin_button' onclick="update('admin_pin')"> Update Admin Pin</button>
+    <form id = 'update_admin_pin_form' method='POST' action= '/quest/update_project_admin_pin/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+        {% csrf_token %}
+        <input type='text' name = 'project_admin_pin' value = '{{current_project.project_admin_pin}}'>
+        <button type = 'submit'> Confirm Update </button>
+    </form>
+    <br>
+    <br>
+    <h3> Admins</h3>
+
+    {% for admin in list_of_admins %} 
+    <p> {{ admin.admin_first_name }} {{ admin.admin_last_name }}</p>
+    {% endfor %}
+
+    <form method = 'POST' action = '/quest/remove_as_admin/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+      {% csrf_token %}
+        <button type = 'submit' onclick="return confirm('If you remove yourself as admin, you will need to regain access to edit/view this project as an admin')"> Remove yourself as Admin</button>
+    </form>
+
+    <br>
+
+    <form method = 'POST' action = '/quest/delete_project/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+      {% csrf_token %}
+      <button id = 'delete_project_button' type= 'submit' onclick="return confirm('WARNING: If you delete this project, all data will be lost regarding the project, and all admins and users will lose access!!! ')"> Delete Project </button>
+  </form>
+
+  <br>
+  <br>
+<!-- make sure to differntiate between whether it is an editable or non_editable view -->
+  <form method = 'GET'>
+    <button type='submit'> Back </button>
+</form>
+</body>
+</html>

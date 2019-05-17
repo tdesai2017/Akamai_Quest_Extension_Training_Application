@@ -12,8 +12,8 @@
     
     <body>
 
-    <form method='GET' action = '/quest/user_info/{{current_user.user_ldap}}'>
-        <button type='submit'>Settings/Info</button>
+    <form method='GET' action = '/quest/user_settings_info/{{current_user.user_ldap}}'>
+        <button type='submit'>User's Settings/Info</button>
     </form>
 
     <div id = 'centered'>
@@ -42,7 +42,8 @@
         {% endfor %}
 
         <p> Want to Join Another Project? Type in the Random Phrase for the project, click add, 
-            and your in!</p>
+            and your in!
+        </p>
 
 
             <form id = 'add_new_project' method='POST' action = '/quest/add_user_project_page/{{ current_user.user_ldap }}'>

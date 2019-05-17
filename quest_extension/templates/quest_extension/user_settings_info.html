@@ -5,16 +5,19 @@
 
    
     
-    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_info_style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_settings_info_style.css' %}">
+
+    <script> function update(info){
+            document.getElementById("update_" + info + "_button").style.display = "none";
+            document.getElementById("update_" + info + "_form").style.display = "inline"
+          } 
+    
+          
+        </script>
+    
+    <title> User Settings/Info </title>
+    
 </head>
-
-<script> function update(info){
-        document.getElementById("update_" + info + "_button").style.display = "none";
-        document.getElementById("update_" + info + "_form").style.display = "inline"
-      } 
-
-      
-    </script>
 
 
 <body>

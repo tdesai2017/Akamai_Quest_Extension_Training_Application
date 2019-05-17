@@ -1,0 +1,17 @@
+* {
+    text-align: center;
+}
+
+
+#update_random_phrase_form, #update_admin_pin_form  
+{
+
+    display: none;
+}
+
+#delete_project_button {
+    color: white;
+    background-color: red; 
+    padding: 15px 32px;
+}
+

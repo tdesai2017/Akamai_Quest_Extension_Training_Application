@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from quest_extension import views
 from django.conf.urls import url
 
 

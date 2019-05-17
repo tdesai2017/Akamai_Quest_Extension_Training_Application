@@ -84,6 +84,12 @@ def get_admin_home_editable(request, ldap, project_id):
 
     if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
         return HttpResponseRedirect('/quest/admin_login')
+
+    #I start a session here so that when we go "back" from pages that are common to both
+    #editable and view only pages, we will know if we were in an editable or view_only
+    #page
+    request.session['view_or_editable'] = 'editable'
+
         
     current_admin = Admin.objects.get(admin_ldap = ldap)
     current_project = Project.objects.get(id = project_id)    
@@ -128,6 +134,9 @@ def save_new_quest(request, ldap, project_id):
 
 
 def get_admin_home_view_only(request, ldap,  project_id): 
+
+    request.session['view_or_editable'] = 'view'
+
 
     if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
         return HttpResponseRedirect('/quest/admin_login')
@@ -568,6 +577,10 @@ def get_admin_project_page(request, ldap):
 
     if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
+    
+    #This session will only last while a user is in either an editable or non-editable path
+    if 'view_or_editable' in request.session:
+        del request.session['view_or_editable']
 
     project_form = ProjectForm()
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -1062,6 +1075,11 @@ def get_admin_login(request):
     if 'current_admin_ldap' in request.session:
         del request.session['current_admin_ldap']
 
+    #This session will only last while a user is in either an editable or non-editable path
+    #We use this session to differentiate between viewable or editable paths
+    if 'view_or_editable' in request.session:
+        del request.session['view_or_editable']
+
     login_form = LoginForm()
     context = {'login_form': login_form}
     return render(request, 'quest_extension/admin_login.html', context)
@@ -1209,6 +1227,8 @@ def get_admin_project_settings(request, ldap, project_id):
     if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
         return HttpResponseRedirect('/quest/admin_login')
 
+    view_or_editable = request.session['view_or_editable']
+
     current_admin = Admin.objects.get(admin_ldap = ldap)
     current_project = Project.objects.get(id = project_id)
 
@@ -1217,7 +1237,12 @@ def get_admin_project_settings(request, ldap, project_id):
     list_of_admins = Admin.objects.filter(pk__in=list_of_admins)
 
 
-    context = {'current_project': current_project, 'current_admin': current_admin, 'list_of_admins': list_of_admins}
+    context = {
+    'current_project': current_project, 
+    'current_admin': current_admin, 
+    'list_of_admins': list_of_admins, 
+    'view_or_editable': view_or_editable
+    }
     return render(request, 'quest_extension/admin_project_settings.html', context)
 
 

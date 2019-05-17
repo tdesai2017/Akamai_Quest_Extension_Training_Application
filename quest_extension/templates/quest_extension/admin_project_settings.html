@@ -62,8 +62,18 @@
   <br>
   <br>
 <!-- make sure to differntiate between whether it is an editable or non_editable view -->
-  <form method = 'GET'>
-    <button type='submit'> Back </button>
-</form>
+  
+  {% if view_or_editable == 'view' %}
+    <form method = 'GET' action= '/quest/admin_home_view_only/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+        <button type='submit'> Back </button>
+    </form>
+    {% endif %}
+
+  {% if view_or_editable == 'editable' %}
+    <form method = 'GET' action= '/quest/admin_home_editable/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+        <button type='submit'> Back </button>
+    </form>
+    {% endif %}
+
 </body>
 </html>

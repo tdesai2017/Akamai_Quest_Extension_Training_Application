@@ -674,14 +674,21 @@ def add_user_project_page(request, ldap):
     if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
+    current_user = User.objects.get(user_ldap = ldap)
+
     if request.method == 'POST':
         post_request = request.POST
-        if 'random_phrase' in post_request.keys():
-            inputted_random_phrase = post_request['random_phrase']
-            project_requested = Project.objects.get(id = post_request['project_id'])
+        inputted_random_phrase = post_request['random_phrase']
 
 
-            if inputted_random_phrase == project_requested.project_random_phrase:
+        # input_pin = post_request['project_admin_pin']
+        list_of_user_projects = UserProject.objects.filter(user = current_user).values('project')
+        list_of_user_projects = Project.objects.filter(pk__in=list_of_user_projects)
+
+        # #To join a project, it cannot already be one you are part of, and it must also exist
+        if Project.objects.filter(project_random_phrase = inputted_random_phrase):
+            project_requested = Project.objects.get(project_random_phrase = inputted_random_phrase)
+            if project_to_join not in list_of_user_projects:
                 new_user_project = UserProject()
                 new_user_project.user = User.objects.get(user_ldap = ldap)
                 new_user_project.project = project_requested
@@ -696,7 +703,6 @@ def add_user_project_page(request, ldap):
                 project_requested.project_editable = False
                 project_requested.save()
 
-            return HttpResponseRedirect('/quest/user_project_page/' + ldap)
     
     return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 

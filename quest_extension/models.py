@@ -17,7 +17,7 @@ class Admin(models.Model):
 class Project(models.Model):
     project_name = models.CharField(max_length=1000)
     project_description = models.CharField(max_length=1000)
-    project_random_phrase = models.CharField(max_length = 255)
+    project_random_phrase = models.CharField(max_length = 255, unique = True)
     project_admin_pin = models.CharField(max_length = 255, unique = True)
     project_editable = models.BooleanField()
 

@@ -41,18 +41,18 @@
             
         {% endfor %}
 
-        <h3> All Other Projects </h3>
+        <p> Want to Join Another Project? Type in the Random Phrase for the project, click add, 
+            and your in!</p>
 
-        {% for project in all_other_projects %}
 
             <form id = 'add_new_project' method='POST' action = '/quest/add_user_project_page/{{ current_user.user_ldap }}'>
                 {% csrf_token %}
-                <button type ='submit' name = 'project_id' value = '{{project.id}}'>{{project.project_name}}</button>
                 {{ add_new_project_form }}
+                <button type ='submit' name = 'project_id' value = '{{project.id}}'>Add</button>
+
             </form>
             <br>
             
-        {% endfor %}
             <div id= 'logout'>
             <form method='POST' action = '/quest/user_logout/{{ current_user.user_ldap}}'>
                     {% csrf_token%}

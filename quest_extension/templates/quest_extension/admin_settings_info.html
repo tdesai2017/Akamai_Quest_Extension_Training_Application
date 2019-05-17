@@ -5,7 +5,7 @@
 
    
     
-    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/settings_info/user_settings_info_style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/settings_info/admin_settings_info_style.css' %}">
 
     <script> function update(info){
             document.getElementById("update_" + info + "_button").style.display = "none";
@@ -15,7 +15,7 @@
           
         </script>
     
-    <title> User Settings/Info </title>
+    <title> Admin Settings/Info </title>
     
 </head>
 
@@ -31,45 +31,46 @@
     {% endif %}
     
     
-    <p>LDAP: {{current_user.user_ldap}}</p>
+    <p>LDAP: {{current_admin.admin_ldap}}</p>
     <button id = 'update_ldap_button' onclick="update('ldap')"> Update LDAP</button>
-    <form id = 'update_ldap_form' method='POST' action= '/quest/update_user_ldap/{{current_user.user_ldap}}'>
+    <form id = 'update_ldap_form' method='POST' action= '/quest/update_admin_ldap/{{current_admin.admin_ldap}}'>
         {% csrf_token %}
-        <input type='text' name = 'user_ldap' value = '{{current_user.user_ldap}}'>
+        <input type='text' name = 'admin_ldap' value = '{{current_admin.admin_ldap}}'>
         <button type = 'submit'> Confirm Update </button>
     </form>
 
-    <p> First Name:  {{current_user.user_first_name }} </p>
+    <p> First Name:  {{current_admin.admin_first_name }} </p>
     <button id = 'update_first_name_button' onclick="update('first_name')"> Update First Name</button>
-    <form id = 'update_first_name_form' method='POST' action= '/quest/update_user_first_name/{{current_user.user_ldap}}'>
+    <form id = 'update_first_name_form' method='POST' action= '/quest/update_admin_first_name/{{current_admin.admin_ldap}}'>
         {% csrf_token %}
-        <input type='text' name = 'user_first_name' value = '{{current_user.user_first_name}}'>
+        <input type='text' name = 'admin_first_name' value = '{{current_admin.admin_first_name}}'>
         <button type = 'submit'> Confirm Update </button>
     </form>
 
-    <p> Last Name: {{current_user.user_last_name}} </p>
+    <p> Last Name: {{current_admin.admin_last_name}} </p>
     <button id = 'update_last_name_button' onclick="update('last_name')"> Update Last Name</button>
-    <form id = 'update_last_name_form' method='POST' action= '/quest/update_user_last_name/{{current_user.user_ldap}}'>
+    <form id = 'update_last_name_form' method='POST' action= '/quest/update_admin_last_name/{{current_admin.admin_ldap}}'>
         {% csrf_token %}
-        <input type='text' name = 'user_last_name' value = '{{current_user.user_last_name}}'>
+        <input type='text' name = 'admin_last_name' value = '{{current_admin.admin_last_name}}'>
         <button type = 'submit'> Confirm Update </button>
     </form>
 
-    <p> Email Address: </h3> {{current_user.user_email}} </p>
+    <p> Email Address: </h3> {{current_admin.admin_email}} </p>
     <button id = 'update_email_button' onclick="update('email')"> Update Email</button>
-    <form id = 'update_email_form' method='POST' action= '/quest/update_user_email/{{current_user.user_ldap}}'>
+    <form id = 'update_email_form' method='POST' action= '/quest/update_admin_email/{{current_admin.admin_ldap}}'>
         {% csrf_token %}
-        <input type='text' name = 'user_email' value = '{{current_user.user_email}}'>
+        <input type='text' name = 'admin_email' value = '{{current_admin.admin_email}}'>
         <button type = 'submit'> Confirm Update </button>
     </form>
- 
+
+    
     <br>
     <br>
 
 
     <button id = 'update_password_button' onclick="update('password')"> Update Password</button>
 
-    <form id = 'update_password_form' method='POST' action= '/quest/update_user_password/{{current_user.user_ldap}}'>
+    <form id = 'update_password_form' method='POST' action= '/quest/update_admin_password/{{current_admin.admin_ldap}}'>
         {% csrf_token %}
         <label> Current Password:</label>
         <input type='password' name = 'current_password'  autocomplete="new-password" >
@@ -86,7 +87,7 @@
     <br>
     <br>
     
-    <form method = 'GET' action = '/quest/user_project_page/{{current_user.user_ldap}}'>
+    <form method = 'GET' action = '/quest/admin_project_page/{{current_admin.admin_ldap}}'>
         <button type='submit'> Back </button>
     </form>
 

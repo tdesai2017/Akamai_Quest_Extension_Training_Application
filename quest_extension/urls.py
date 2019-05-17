@@ -131,8 +131,6 @@ path('update_user_ldap/<ldap>', views.update_user_ldap),
 path('update_user_first_name/<ldap>', views.update_user_first_name),
 path('update_user_last_name/<ldap>', views.update_user_last_name),
 path('update_user_email/<ldap>', views.update_user_email),
-path('update_user_manager_ldap/<ldap>', views.update_user_manager_ldap),
-path('update_user_director_ldap/<ldap>', views.update_user_director_ldap),
 path('update_user_password/<ldap>', views.update_user_password),
 
 
@@ -158,11 +156,21 @@ path('admin_go_back_to_login/<ldap>', views.admin_go_back_to_login),
 
 ##############################
 
- path ('admin_project_settings/<ldap>/<project_id>', views.get_admin_project_settings),
- path ('delete_project/<ldap>/<project_id>', views.delete_project),
- path('update_project_random_phrase/<ldap>/<project_id>', views.update_random_phrase),
- path('update_project_admin_pin/<ldap>/<project_id>', views.update_admin_pin),
+path ('admin_project_settings/<ldap>/<project_id>', views.get_admin_project_settings),
+path ('delete_project/<ldap>/<project_id>', views.delete_project),
+path('update_project_random_phrase/<ldap>/<project_id>', views.update_random_phrase),
+path('update_project_admin_pin/<ldap>/<project_id>', views.update_admin_pin),
 path('remove_as_admin/<ldap>/<project_id>', views.remove_as_admin),
+
+##############################
+
+
+path('admin_settings_info/<ldap>',views.get_admin_settings_info),
+path('update_admin_ldap/<ldap>', views.update_admin_ldap),
+path('update_admin_first_name/<ldap>', views.update_admin_first_name),
+path('update_admin_last_name/<ldap>', views.update_admin_last_name),
+path('update_admin_email/<ldap>', views.update_admin_email),
+path('update_admin_password/<ldap>', views.update_admin_password),
 
 
 

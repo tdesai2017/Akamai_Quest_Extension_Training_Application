@@ -1011,36 +1011,7 @@ def update_user_email(request, ldap):
             messages.success(request, 'This is an invalid email')
     return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
 
-def update_user_manager_ldap(request, ldap):
-    if not validate_user_access(request, ldap):
-        return HttpResponseRedirect('/quest/user_login')
 
-    current_user = User.objects.get(user_ldap = ldap)
-    if request.method == 'POST':
-        post_request = request.POST
-        user_manager_ldap_input = post_request['user_manager_ldap']
-        current_user.user_manager_ldap = user_manager_ldap_input
-        current_user.save()
-        messages.success(request, 'Change was successful!')
-    
-    return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
-
-def update_user_director_ldap(request, ldap):
-    if not validate_user_access(request, ldap):
-        return HttpResponseRedirect('/quest/user_login')
-
-    current_user = User.objects.get(user_ldap = ldap)
-    if request.method == 'POST':
-        post_request = request.POST
-        user_director_ldap_input = post_request['user_director_ldap']
-        current_user.user_director_ldap = user_director_ldap_input
-        current_user.save()
-        messages.success(request, 'Change was successful!')
-
-    
-    return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
-
-#We will need to do more with this one
 def update_user_password(request, ldap):
     if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
@@ -1308,6 +1279,109 @@ def delete_project(request, ldap, project_id):
     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
 
+
+#########################
+
+def get_admin_settings_info(request, ldap):
+    
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    context = {'current_admin': current_admin}
+    return render(request, 'quest_extension/admin_settings_info.html', context)
+
+def update_admin_ldap(request, ldap):
+    
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    if request.method == 'POST':
+        post_request = request.POST
+        ldap_input = post_request['admin_ldap']
+        is_new_ldap = ldap_input not in Admin.objects.all().values_list('admin_ldap', flat=True) 
+        if (is_new_ldap):
+            current_admin.admin_ldap = ldap_input
+            current_admin.save()
+            request.session['current_admin_ldap'] = ldap_input
+            messages.success(request, 'Change was successful!')
+
+        else:
+             messages.success(request, 'There is already an account associated with this LDAP')
+    return HttpResponseRedirect('/quest/admin_settings_info/' + current_admin.admin_ldap)
+
+def update_admin_first_name(request, ldap):
+
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    if request.method == 'POST':
+        post_request = request.POST
+        first_name_input = post_request['admin_first_name']
+        current_admin.admin_first_name = first_name_input
+        current_admin.save()
+        messages.success(request, 'Change was successful!')
+
+
+    return HttpResponseRedirect('/quest/admin_settings_info/' + current_admin.admin_ldap)
+
+def update_admin_last_name(request, ldap):
+    
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    if request.method == 'POST':
+        post_request = request.POST
+        last_name_input = post_request['admin_last_name']
+        current_admin.admin_last_name = last_name_input
+        current_admin.save()
+        messages.success(request, 'Change was successful!')
+
+    return HttpResponseRedirect('/quest/admin_settings_info/' + current_admin.admin_ldap)
+
+def update_admin_email(request, ldap):
+    
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    if request.method == 'POST':
+        post_request = request.POST
+        admin_email_input = post_request['admin_email']
+        try:
+            validate_email(admin_email_input)
+            current_admin.admin_email = admin_email_input
+            current_admin.save()
+            messages.success(request, 'Change was successful!')
+        except:
+            messages.success(request, 'This is an invalid email')
+    return HttpResponseRedirect('/quest/admin_settings_info/' + current_admin.admin_ldap)
+
+
+def update_admin_password(request, ldap):
+    
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    if request.method == 'POST':
+        post_request = request.POST
+        admin_current_password = post_request['current_password']
+        admin_new_password = post_request['new_password']
+        admin_new_password_retyped = post_request['retyped_password']
+        if admin_current_password != current_admin.admin_password:
+            messages.success(request, 'Your current password was typed incorrectly')
+        if admin_new_password != admin_new_password_retyped:
+            messages.success(request, 'Your new passwords do not match')
+        else:
+            current_admin.admin_password = admin_new_password
+            current_admin.save()
+            messages.success(request, 'Change was successful!')
+
+    return HttpResponseRedirect('/quest/admin_settings_info/' + current_admin.admin_ldap)
 
     
 

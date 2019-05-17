@@ -28,6 +28,7 @@
     </head>
 
     <body>
+
     {% if messages %}
     <ul class="messages">
         {% for message in messages %}
@@ -35,6 +36,10 @@
         {% endfor %}
     </ul>
     {% endif %}
+
+    <form method='GET' action = '/quest/admin_settings_info/{{current_admin.admin_ldap}}'>
+        <button type='submit'>Admin's Settings/Info</button>
+    </form>
 
 
 
@@ -74,7 +79,7 @@
         <p>
             Project Name: <input type = 'text' name= 'project_name'>
             Admin Pin: <input type = 'text' name= 'project_admin_pin'>
-            
+
             <button type = 'submit'> Join Project </button>
 
         </form>

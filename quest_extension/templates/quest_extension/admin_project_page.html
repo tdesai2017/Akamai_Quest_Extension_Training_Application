@@ -8,17 +8,18 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
     <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script>
+    
 
 
-    <script> function show(){
+    <script> 
+    function show(){
         document.getElementById("container").style.display = "inline";
         document.getElementById("create_new_project").style.display = "none";
       } 
-            function hide(){
-                document.getElementById("container").style.display = "none";
-                document.getElementById("create_new_project").style.display = "inline";
-
-            }
+    function hide(){
+        document.getElementById("container").style.display = "none";
+        document.getElementById("create_new_project").style.display = "inline";
+    }
       
       </script>
 
@@ -88,10 +89,21 @@
 
         {% endfor %}
 
-        <br>
-        <br>
-        <form method = 'POST' action = '/quest/admin_login'>
+        <form method = 'POST' action='/quest/join_project/{{current_admin.admin_ldap}}'>
             {% csrf_token %}
+        <p>Want to become admin for someone else's project?
+            Please be careful when editing!! If both admins are
+            editing at the same time you may get some wonky results :(
+        <p>
+            Admin Pin: <input type = 'text' name= 'project_admin_pin'>
+            <button type = 'submit'> Join Project </button>
+
+        </form>
+
+
+        <br>
+        <br>
+        <form method = 'GET' action = '/quest/admin_login'>
         <button type = 'submit'> Logout </button>
         </form>
 

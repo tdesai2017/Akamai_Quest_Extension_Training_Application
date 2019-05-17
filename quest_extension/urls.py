@@ -44,6 +44,7 @@ urlpatterns = [
 
     path('admin_project_page/<ldap>', views.get_admin_project_page),
     path('add_new_project/<ldap>', views.add_new_project),
+    path('join_project/<ldap>', views.join_project),
 
 
 ######################################
@@ -138,8 +139,8 @@ path('update_user_password/<ldap>', views.update_user_password),
 
 ##############################
 
-path ('admin_project_info/<ldap>/<project_id>', views.get_admin_project_info),
-path ('delete_project/<ldap>/<project_id>', views.delete_project),
+# path ('admin_project_info/<ldap>/<project_id>', views.get_admin_project_info),
+# path ('delete_project/<ldap>/<project_id>', views.delete_project),
 
 ##############################
 

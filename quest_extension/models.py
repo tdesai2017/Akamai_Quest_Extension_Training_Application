@@ -5,11 +5,20 @@ from django.db import models
 
 #CASCADE means that the row will be deleted too if the ForeignKey gets deleted.
 
+class Admin(models.Model):
+    admin_ldap = models.CharField(max_length=45)
+    admin_first_name = models.CharField(max_length=45)
+    admin_last_name = models.CharField(max_length=45)
+    admin_email = models.CharField(max_length=45)
+    admin_password = models.CharField(max_length = 45)
+    admin_reset_password_pin = models.CharField(max_length = 5, null=True)
+
 
 class Project(models.Model):
     project_name = models.CharField(max_length=1000)
     project_description = models.CharField(max_length=1000)
     project_random_phrase = models.CharField(max_length = 255)
+    project_admin_pin = models.CharField(max_length = 255, unique = True)
     project_editable = models.BooleanField()
 
 class Quest(models.Model):
@@ -40,15 +49,16 @@ class IncorrectAnswer(models.Model):
   
 class User(models.Model):
     #Figure out if this on cascade is correct
-   user_ldap = models.CharField(max_length=45)
-   user_first_name = models.CharField(max_length=45)
-   user_last_name = models.CharField(max_length=45)
-   user_email = models.CharField(max_length=45)
-#    user_manager_ldap = models.CharField(max_length=45)
-#    user_director_ldap = models.CharField(max_length=45)
-   user_password = models.CharField(max_length = 45)
-   user_reset_password_pin = models.CharField(max_length = 5, null=True, default = None)
+    user_ldap = models.CharField(max_length=45)
+    user_first_name = models.CharField(max_length=45)
+    user_last_name = models.CharField(max_length=45)
+    user_email = models.CharField(max_length=45)
+    user_password = models.CharField(max_length = 45)
+    user_reset_password_pin = models.CharField(max_length = 5, null=True, default = None)
    #exempt = models.BooleanField(default=False) (This should go in User_project)
+    def convert_ldap(self):
+        ldap = getattr(self, self.user_ldap)
+        return ldap
 
    
 class CorrectAnswer(models.Model):
@@ -86,18 +96,12 @@ class Video(models.Model):
     video_type = models.CharField(max_length = 1000, choices = VIDEO_TYPES)
 
 
-class Admin(models.Model):
-    admin_ldap = models.CharField(max_length=45)
-    admin_first_name = models.CharField(max_length=45)
-    admin_last_name = models.CharField(max_length=45)
-    admin_email = models.CharField(max_length=45)
-    admin_password = models.CharField(max_length = 45)
-    admin_reset_password_pin = models.CharField(max_length = 5, null=True)
-
 
 class AdminProject(models.Model):
     admin = models.ForeignKey(Admin, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+
 
 
 

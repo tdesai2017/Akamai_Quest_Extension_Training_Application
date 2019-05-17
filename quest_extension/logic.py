@@ -110,8 +110,30 @@ def go_to_next_quest(current_quest, current_user, current_project):
             users_user_project_object.completed_project = True
             users_user_project_object.save()
 
-    
+#Checks whether an Admin can access a Quest
+def can_admin_access_quest(ldap, quest_id):
 
+    if not Quest.objects.filter(id = quest_id):
+        return False
 
+    current_quest = Quest.objects.get(id = quest_id)
+    project_id = current_quest.project.id
+
+    return can_admin_access_project(ldap, project_id)
 
             
+
+#Checks whether an Admin can access a Project
+def can_admin_access_project(ldap, project_id):
+
+    if not (Admin.objects.filter(admin_ldap = ldap) and Project.objects.filter(id = project_id)):
+        return False
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    current_project = Project.objects.get(id = project_id)
+
+    list_of_projects = AdminProject.objects.filter(admin = current_admin).values('project')
+    list_of_projects = Project.objects.filter(pk__in=list_of_projects)
+    return current_project in list_of_projects
+    
+

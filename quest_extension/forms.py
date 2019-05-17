@@ -42,7 +42,7 @@ class CorrectAnswerForm(forms.ModelForm):
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = models.Project
-        fields = ['project_name', 'project_random_phrase']
+        fields = ['project_name', 'project_random_phrase', 'project_admin_pin']
         # fields = ['project_name', 'project_description', 'project_random_phrase']
         
 

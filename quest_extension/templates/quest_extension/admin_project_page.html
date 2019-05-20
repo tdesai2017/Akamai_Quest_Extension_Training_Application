@@ -7,18 +7,28 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
-    <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script>
-    
+    <!-- <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script> -->
+    <script type="text/javascript">
+        //<![CDATA[
+        bkLib.onDomLoaded(function() {
+            nicEditors.editors.push(
+                new nicEditor().panelInstance(
+                    document.getElementById('area1')
+                )
+            );
+        });
+        //]]>
+        </script>
 
 
     <script> 
     function show(){
         document.getElementById("container").style.display = "inline";
-        document.getElementById("create_join_new_project").style.display = "none";
+        document.getElementById("create_new_project").style.display = "none";
       } 
     function hide(){
         document.getElementById("container").style.display = "none";
-        document.getElementById("create_join_new_project").style.display = "inline";
+        document.getElementById("create_new_project").style.display = "inline";
     }
       
       </script>
@@ -48,15 +58,15 @@
 
         <p>Welcome Admin to the different Projects!</p>
         <br>
-        <div id='create_join_new_project'>
-        <button onclick="show();">Create/Join New Project</button>
+        <div id='create_new_project'>
+        <button onclick="show();">Create New Project</button>
          </div>
         
     </div>
 
     <div id = "container">
         <br>
-        <form method='POST' id = 'test_form' action = "/quest/add_new_project/{{current_admin.admin_ldap}}">
+        <form method='POST' id = 'new_team_form' action = "/quest/add_new_project/{{current_admin.admin_ldap}}">
                 {% csrf_token %}
                 {{ project_form }}
                 <br>
@@ -65,24 +75,20 @@
                 <br>
 
                 <div id = 'my-text-area'>
-                    <textarea id="area1" name="project_description" form = 'test_form'></textarea>
+                    <textarea id="area1" name="project_description" form = 'new_team_form'></textarea>
+                    <br>
+                    <br>
+                    <p>Teams (If you do not want your project to include teams, leave this section blank):
+                        Also, make sure all of your team names are unique!!!
+                    </p>
+                    <textarea id="teams" name="teams" form = 'new_team_form'></textarea>
+
                 </div>
                 <br>
                 <input type=submit name="submit" value="Submit New Project" onclick="nicEditors.findEditor('area1').saveContent();">
-        </form>
-
-        <form method = 'POST' action='/quest/join_project/{{current_admin.admin_ldap}}'>
-            {% csrf_token %}
-        <p>Want to become a secondary admin for someone else's project?
-            Please be careful when editing!! If both admins are
-            editing at the same time you may get some wonky results :(
-        <p>
-            Project Name: <input type = 'text' name= 'project_name'>
-            Admin Pin: <input type = 'text' name= 'project_admin_pin'>
-
-            <button type = 'submit'> Join Project </button>
 
         </form>
+
         <button id = 'hide' type= submit onclick="hide();"> Hide </button>
     </div>
 
@@ -123,6 +129,19 @@
 
         <br>
         <br>
+
+        <form method = 'POST' action='/quest/join_project/{{current_admin.admin_ldap}}'>
+            {% csrf_token %}
+        <p>Want to become a secondary admin for someone else's project?
+            Please be careful when editing!! If both admins are
+            editing at the same time you may get some wonky results :(
+        <p>
+            Project Name: <input type = 'text' name= 'project_name'>
+            Admin Pin: <input type = 'text' name= 'project_admin_pin'>
+
+            <button type = 'submit'> Join Project </button>
+
+        </form>
 
         
 

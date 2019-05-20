@@ -20,6 +20,7 @@ class Project(models.Model):
     project_random_phrase = models.CharField(max_length = 255, unique = True)
     project_admin_pin = models.CharField(max_length = 255, unique = True)
     project_editable = models.BooleanField()
+    project_has_teams = models.BooleanField(default = False)
 
 class Quest(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -56,10 +57,7 @@ class User(models.Model):
     user_password = models.CharField(max_length = 45)
     user_reset_password_pin = models.CharField(max_length = 5, null=True, default = None)
    #exempt = models.BooleanField(default=False) (This should go in User_project)
-    def convert_ldap(self):
-        ldap = getattr(self, self.user_ldap)
-        return ldap
-
+   
    
 class CorrectAnswer(models.Model):
    question = models.ForeignKey(Question, on_delete=models.CASCADE)
@@ -68,15 +66,20 @@ class CorrectAnswer(models.Model):
    time_modified = models.DateTimeField(auto_now=True)
 
   
-class CompletedQuest(models.Model):
-   user = models.ForeignKey(User, on_delete=models.CASCADE)
-   quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
-   points_earned = models.IntegerField()
-   date_completed = models.DateTimeField()
+# class CompletedQuest(models.Model):
+#    user = models.ForeignKey(User, on_delete=models.CASCADE)
+#    quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
+#    points_earned = models.IntegerField()
+#    date_completed = models.DateTimeField()
 
-class CorrectlyAnsweredQuestion (models.Model):
+class CorrectlyAnsweredQuestion(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+class Team(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    team_name = models.CharField(max_length= 100)
 
 class UserProject(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -85,6 +88,7 @@ class UserProject(models.Model):
     current_quest = models.ForeignKey(Quest, on_delete=models.CASCADE, null=True)
     points = models.IntegerField(default = 0)
     completed_project = models.BooleanField(default=False)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null = True)
     
 
 class Video(models.Model):

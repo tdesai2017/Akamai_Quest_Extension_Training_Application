@@ -12,6 +12,14 @@
     
     <body>
 
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
     <form method='GET' action = '/quest/user_settings_info/{{current_user.user_ldap}}'>
         <button type='submit'>User's Settings/Info</button>
     </form>
@@ -41,7 +49,8 @@
             
         {% endfor %}
 
-        <p> Want to Join Another Project? Type in the Random Phrase for the project, click add, 
+        <p> Want to Join Another Project? Type in the Random Phrase for the project, your team name if 
+            there is one, click add, 
             and your in!
         </p>
 
@@ -49,6 +58,7 @@
             <form id = 'add_new_project' method='POST' action = '/quest/add_user_project_page/{{ current_user.user_ldap }}'>
                 {% csrf_token %}
                 {{ add_new_project_form }}
+                Team: <input type = 'text', name = 'team'>
                 <button type ='submit' name = 'project_id' value = '{{project.id}}'>Add</button>
 
             </form>

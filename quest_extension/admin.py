@@ -6,7 +6,7 @@ from django.contrib.auth.admin import UserAdmin
 
 # Register your models here.
 admin.site.register(User)
-admin.site.register(CompletedQuest)
+# admin.site.register(CompletedQuest)
 admin.site.register(CorrectAnswer)
 admin.site.register(Quest)
 admin.site.register(Question)
@@ -17,5 +17,6 @@ admin.site.register(UserProject)
 admin.site.register(Video)
 admin.site.register(Admin)
 admin.site.register(AdminProject)
+admin.site.register(Team)
 
 

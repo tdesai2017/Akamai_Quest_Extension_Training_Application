@@ -610,9 +610,24 @@ def add_new_project(request, ldap):
             temp = project_form.save(commit=False)
             temp.project_editable = True
             temp.project_description = post_request['project_description']
+            if 'teams' in post_request.keys() and post_request['teams'] != '':
+                temp.project_has_teams = True
             temp.save()
-            project_id = temp.id    
+            project_id = temp.id  
             current_project = Project.objects.get(id = project_id) 
+
+
+            if 'teams' in post_request.keys() and post_request['teams'] != '':
+                teams = post_request['teams'].split('\n')
+                #Removes blank correct answers
+                teams = [x for x in teams if len(x.strip())>0]
+                for team_name in teams:
+                    team_name = str(team_name).strip()
+                    team_object = Team()
+                    team_object.project = current_project
+                    team_object.team_name = team_name
+                    team_object.save()
+
             new_admin_project = AdminProject()
             new_admin_project.admin = current_admin
             new_admin_project.project = current_project
@@ -713,10 +728,25 @@ def add_user_project_page(request, ldap):
         # #To join a project, it cannot already be one you are part of, and it must also exist
         if Project.objects.filter(project_random_phrase = inputted_random_phrase):
             project_requested = Project.objects.get(project_random_phrase = inputted_random_phrase)
-            if project_to_join not in list_of_user_projects:
+            has_teams = project_requested.project_has_teams
+            if has_teams:
+                teams_in_current_project = Team.objects.filter(project = project_requested)
+
+            #If user did not add a team in their request to join the project
+            if has_teams and post_request['team'] not in teams_in_current_project.values_list('team_name', flat=True):
+                print (teams_in_current_project.values_list('team_name', flat=True), post_request['team'])
+                messages.success(request, 'Please include a valid team name')
+                return HttpResponseRedirect('/quest/user_project_page/' + ldap)
+            
+            team_requested_for = Team.objects.get(team_name = post_request['team'], project = project_requested)
+            
+
+            #If you're not already a part of this project
+            if project_requested not in list_of_user_projects:
                 new_user_project = UserProject()
                 new_user_project.user = User.objects.get(user_ldap = ldap)
                 new_user_project.project = project_requested
+                new_user_project.team = team_requested_for
 
                 #Decides what quest the user will begin on (not neccessary since now you can't edit a project after a user joins however - see other comment above)
                 if len(Quest.objects.filter(project = project_requested, quest_path_number = 1)) == 1:
@@ -727,6 +757,8 @@ def add_user_project_page(request, ldap):
                 #Since a user joined, the admin can no longer change the quest
                 project_requested.project_editable = False
                 project_requested.save()
+            else:
+                messages.success(request, 'You are already part of this project')
 
     
     return HttpResponseRedirect('/quest/user_project_page/' + ldap)

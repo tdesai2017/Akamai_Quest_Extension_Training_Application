@@ -14,6 +14,8 @@ from .logic import *
 from django.core.mail import send_mail
 import random
 import json
+from django.db.models import Sum
+
 
 
 
@@ -316,7 +318,38 @@ def get_user_home(request, ldap, project_id):
     current_project = Project.objects.get(id = project_id)
     current_user_project_object = UserProject.objects.get(user = user, project = current_project)
     quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
-    context = {'quests':quests, 'user': user, 'current_project': current_project, 'current_user_project_object': current_user_project_object}
+    current_user_project_team = current_user_project_object.team
+
+    #Points information for teams
+    all_teams_and_points = {}
+    all_teams_in_project = Team.objects.filter(project = current_project)
+    for team in all_teams_in_project:
+        current_points_for_team = UserProject.objects.filter(team = team).aggregate(points = Sum('points'))
+        current_points_for_team = current_points_for_team['points']
+        if current_points_for_team == None:
+            current_points_for_team = 0
+
+        all_points_in_project = Quest.objects.filter(project = current_project).aggregate(total_points_in_quest = Sum('quest_points_earned'))
+        all_points_in_project = all_points_in_project['total_points_in_quest']
+
+        users_on_this_team = UserProject.objects.filter(team = team).count()
+        total_possible_points_for_team = all_points_in_project * users_on_this_team
+        
+        #format = teamname -> (current points earned by team, total points that can be earned by team)
+        all_teams_and_points[team.team_name] = (current_points_for_team, total_possible_points_for_team)
+    print (all_teams_and_points)
+        # all_teams_and_points[team.team_name] = (current_points_for_team, total_possible_points_for_team)
+
+        
+
+    
+
+    context = {'quests':quests, 
+                'user': user, 
+                'current_project': current_project, 
+                'current_user_project_object': current_user_project_object, 
+                'current_user_project_team': current_user_project_team,
+                'all_teams_and_points': all_teams_and_points}
     return render(request, 'quest_extension/user_home.html', context)
 
 
@@ -682,7 +715,6 @@ def get_user_project_page(request, ldap):
 
     if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
-
 
     current_user = User.objects.get(user_ldap = ldap)
     user_projects = [user_project.project for user_project in UserProject.objects.filter(user = current_user)]

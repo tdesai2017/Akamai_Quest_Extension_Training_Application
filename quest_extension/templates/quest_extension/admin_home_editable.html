@@ -1,4 +1,28 @@
 {% extends 'quest_extension/admin_home_base.html' %}
+{% load static %}
+
+{% block style_js %}
+    <script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
+    <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script>
+    <script> function show(){
+            document.getElementById("edit_description_container").style.display = "inline";
+            document.getElementById("edit_description_button").style.display = "none";
+            document.getElementById("my-text-area").style.display = "none";
+          } 
+            function show_update_name(){
+                document.getElementById("edit_name_container").style.display = "inline";
+                document.getElementById('edit_name_button').style.display = 'none';
+            }
+
+            function show_new_quest(){
+                document.getElementById("new_quest").style.display = "inline";
+                document.getElementById('new_quest_button').style.display = 'none';
+            }
+                </script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'quest_extension/admin_home/admin_home_editable_style.css' %}">
+
+{% endblock %}
 
 {% block admin_info %}
 <form method='GET' action ='/quest/admin_project_settings/{{current_admin.admin_ldap}}/{{current_project.id}}'> 
@@ -8,10 +32,24 @@
 {% endblock %}
 
 
+{% block edit_name %}
+<div id = 'edit_name_button'>
+<button onclick="show_update_name();" id = 'edit_name_button'> Edit Name </button>
+</div>
+<div id = 'edit_name_container'>
+<form method = 'POST' action = '/quest/admin_update_project_name/{{current_admin.admin_ldap}}/{{current_project.id}}'> 
+    {% csrf_token %}
+    <input type ='text' name = 'project_name'>
+    <button type = 'submit'> Update Project Name</button>
+</form>
+</div>
+{% endblock %}
+
+
 {% block edit_description %}
 
 
-<div id = 'edit-container'>
+<div id = 'edit_description_container'>
 
         <form method='POST' id = 'test_form' action = "/quest/admin_update_project_description/{{current_admin.admin_ldap}}/{{current_project.id}}">
                 {% csrf_token %}
@@ -33,15 +71,38 @@
 
 {% endblock %}
 
-
-
 {% block quest_create_form %}
-    <form method='POST' action='/quest/save_new_quest/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-        {% csrf_token %}
-        {{ quest_form }}
-        <button type='submit' name= 'new_quest'>Submit</button>
+<div id = "new_quest">
+    <br>
+    <form method='POST' id = 'new_quest_form' action = "/quest/save_new_quest/{{current_admin.admin_ldap}}/{{current_project.id}}">
+            {% csrf_token %}
+            {{ quest_form }}
+            <br>
+            Quest Description: 
+
+            <br>
+
+            <div id = 'my-text-area'>
+                <textarea id="area1" name="quest_description" form = 'new_quest_form'></textarea>
+               
+            </div>
+            <br>
+            <input type=submit name="submit" value="Submit New Quest" onclick="nicEditors.findEditor('area1').saveContent();">
+            <br>
+            <br>
+
     </form>
+</div>
+<div id = new_quest_button>
+    <button onclick="show_new_quest();"> Add New Quest </button>
+    <br>
+    <br>
+</div>
 {% endblock %}
+
+
+
+
 
 {% block redirect_to_quest_page %}
 

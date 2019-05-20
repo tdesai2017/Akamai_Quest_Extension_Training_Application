@@ -2,12 +2,43 @@
 {% load static %}
 
 
+
+
+
 {% block stylesheet_js %}
 <link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_quest_page_style/admin_quest_page_editable_style.css' %}">
 <script> function show(){
         document.getElementById("video_form").style.display = "inline";
         document.getElementById("add_new_video").style.display = "none"
-      } </script>
+      } 
+      function show_update_name(){
+        document.getElementById("edit_name_container").style.display = "inline";
+        document.getElementById("edit_name_button").style.display = "none"
+      }
+
+       function show_edit_description(){
+            document.getElementById("edit_description_container").style.display = "inline";
+            document.getElementById("edit_description_button").style.display = "none";
+            document.getElementById("my-text-area").style.display = "none";
+          } 
+
+      </script>
+      <script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
+      <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script>
+      
+{% endblock %}
+
+{% block edit_name %}
+<div id = 'edit_name_button'>
+<button onclick="show_update_name();" id = 'edit_name_button'> Edit Name </button>
+</div>
+<div id = 'edit_name_container'>
+<form method = 'POST' action = '/quest/admin_update_quest_name/{{current_admin.admin_ldap}}/{{current_quest.id}}'> 
+    {% csrf_token %}
+    <input type ='text' name = 'quest_name'>
+    <button type = 'submit'> Update Quest Name</button>
+</form>
+</div>
 {% endblock %}
 
 {% block forms_and_undo %}
@@ -15,6 +46,7 @@
     <form id = 'multiple_choice' action='/quest/mc-create-form/{{current_admin.admin_ldap}}/{{current_quest.id}}' method = 'GET'></form>
     <form id = 'undo_delete' method = 'POST' action = '/quest/undo_delete_question/{{current_admin.admin_ldap}}/{{current_quest.id}}'> {% csrf_token %} </form>
 {% endblock %}
+
 
 
 {% block delete_video_buttons %}
@@ -29,9 +61,33 @@
 </form>
 {% endblock %}
 
+{% block edit_description %}
+<div id = 'edit_description_container'>
 
+        <form method='POST' id = 'edit_description_form' action = "/quest/admin_update_quest_description/{{current_admin.admin_ldap}}/{{current_quest.id}}">
+                {% csrf_token %}
+                Quest Description: 
+                <br>
+                <div id = 'edit-my-text-area'>
+                    <textarea id="area1" name="quest_description" form = 'edit_description_form'>
+                        {{current_quest.quest_description}}
+                    </textarea>
+                </div>
+            <br>
+                <input type=submit name="submit" value="Update Quest Description" onclick="nicEditors.findEditor('area1').saveContent();">
+        </form>
+        <br>
+</div>
+<div id = 'edit_description_button'>
+    <br>
+    <button onclick="show_edit_description();">Edit Description</button>
+    <br>
+    <br>
+</div>
 
-{% block fr_mc_undodelete %}
+{% endblock %}
+
+{% block fr_mc_undo_delete_video %}
     <div id = 'add_new_video'>
         <button onclick="show();">Include Video</button>
     </div>

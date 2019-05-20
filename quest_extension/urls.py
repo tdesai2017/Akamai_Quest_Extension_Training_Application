@@ -23,6 +23,8 @@ urlpatterns = [
     #Admin Pages
     path('admin_home_editable/<ldap>/<project_id>', views.get_admin_home_editable),
     path('save_new_quest/<ldap>/<project_id>', views.save_new_quest),
+    path('admin_update_project_description/<ldap>/<project_id>', views.admin_update_project_description),
+    path('admin_update_project_name/<ldap>/<project_id>', views.admin_update_project_name),
 
 
 
@@ -34,6 +36,8 @@ urlpatterns = [
     path('undo_delete_question/<ldap>/<quest_id>', views.undo_delete_question),
     path('save_video/<ldap>/<quest_id>', views.save_video),
     path('delete_video/<ldap>/<quest_id>', views.delete_video), 
+    path('admin_update_quest_name/<ldap>/<quest_id>', views.update_quest_name),
+    path('admin_update_quest_description/<ldap>/<quest_id>', views.update_quest_description),
 
 
 
@@ -121,10 +125,7 @@ path('new_password_sent/<ldap>', views.new_password_sent),
 
 ######################################
 
-# path('admin_edit_project_description/<project_id>', views.get_admin_edit_project_description),
-path('admin_update_project_description/<ldap>/<project_id>', views.admin_update_project_description),
 
-###########################
 
 path('user_settings_info/<ldap>',views.get_user_settings_info),
 path('update_user_ldap/<ldap>', views.update_user_ldap),

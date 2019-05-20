@@ -28,16 +28,20 @@
     <p> {{ current_project.project_description|safe }}</p>
 
     <!--format = teamname -> (current points earned by team, total points that can be earned by team)-->
-    Progress:
+  
+    {% if current_user_project_team != None %}
     <br>
     <br>
-    {% for team_data in all_teams_and_points.items %}
-    {{ team_data.0 }}: {{team_data.1.0}} / {{team_data.1.1}}
-    <!-- team_data.0 = team name -->
-    <!-- team_data.1.0 = accumulated points by users on this team -->
-    <!-- team.data.1.1 = total possible points that can be earned by this team if everyone has 100% completion -->
-    <br>
-    {% endfor %}
+        Progress:
+        {% for team_data in all_teams_and_points.items %}
+        {{ team_data.0 }}: {{team_data.1.0}} / {{team_data.1.1}}
+        <!-- team_data.0 = team name -->
+        <!-- team_data.1.0 = accumulated points by users on this team -->
+        <!-- team.data.1.1 = total possible points that can be earned by this team if everyone has 100% completion -->
+        <br>
+        {% endfor %}
+
+    {% endif %}
 
     <br>
     <br>

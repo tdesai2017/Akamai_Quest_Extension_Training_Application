@@ -1,8 +1,8 @@
-.not_in_container {
+.centered {
     text-align: center;
 }
 
-.container {
+.not_centered {
     padding-top: 3%;
     text-align: center;
     width: 100%;
@@ -14,7 +14,7 @@
     width: 700px;
 }
 
-#edit-container {
+#edit_description_container {
     text-align: center;
     display: none;
   }
@@ -34,4 +34,12 @@ textarea {
 #edit_description_button{
     text-align: center;
 
+}
+
+#edit_name_container {
+    display: none;
+}
+
+#new_quest {
+    display: none;
 }

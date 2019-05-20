@@ -10,15 +10,23 @@
 
     </head>
     <body>
+    <div class = 'centered'>
         {% block forms_and_undo %}
         {% endblock %}
 
         <h1> {{ current_quest.quest_name }} </h1>
+        {% block edit_name %}
+        {% endblock %}
+        
+    </div>
+    <br>
+    <div class='container'>
+            <div id='my-text-area'>
+                <html> {{ current_quest.quest_description|safe }} </html>
+            </div>
+    </div>
 
-        <div class="description">
-            <h2>{{ current_quest.quest_description }}</h2>
-        </div>  
-
+    <div class = 'centered'>
         {% for video in all_videos %}
 
             {% if video.video_type == 'Youtube' %}
@@ -38,8 +46,10 @@
 
         <br>
         <br>
-    
-        {% block fr_mc_undodelete %}
+        {% block edit_description %}
+        {% endblock %}
+
+        {% block fr_mc_undo_delete_video %}
         {% endblock %}
 
         <br>
@@ -78,6 +88,6 @@
         {% endblock %}
 
         
-
-    </body>
-</html>
+    </div>
+         </body>
+    </html>

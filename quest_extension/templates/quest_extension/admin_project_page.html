@@ -66,7 +66,7 @@
 
     <div id = "container">
         <br>
-        <form method='POST' id = 'new_team_form' action = "/quest/add_new_project/{{current_admin.admin_ldap}}">
+        <form method='POST' id = 'new_project_form' action = "/quest/add_new_project/{{current_admin.admin_ldap}}">
                 {% csrf_token %}
                 {{ project_form }}
                 <br>
@@ -75,11 +75,11 @@
                 <br>
 
                 <div id = 'my-text-area'>
-                    <textarea id="area1" name="project_description" form = 'new_team_form'></textarea>
+                    <textarea id="area1" name="project_description" form = 'new_project_form'></textarea>
                     <br>
                     <br>
                     <p>Teams (If you do not want your project to include teams, leave this section blank): </p>
-                    <textarea id="teams" name="teams" form = 'new_team_form'></textarea>
+                    <textarea id="teams" name="teams" form = 'new_project_form'></textarea>
 
                 </div>
                 <br>

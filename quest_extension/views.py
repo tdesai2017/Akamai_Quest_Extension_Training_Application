@@ -105,16 +105,21 @@ def save_new_quest(request, ldap, project_id):
     if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
         return HttpResponseRedirect('/quest/admin_login')
 
+
     current_project = Project.objects.get(id = project_id)
     if request.method == 'POST':
         post_request = request.POST
+        print (post_request)
         quest_form = QuestForm(post_request)
         #Two quests cannot have the same path and paths must be greater than 0
         all_quests_in_current_project = Quest.objects.filter(project = current_project)
         all_paths_in_current_project = [quest.quest_path_number for quest in all_quests_in_current_project]
-        if 'new_quest' in post_request and int(post_request['quest_path_number']) > 0 and int(post_request['quest_path_number']) not in all_paths_in_current_project:
+        if int(post_request['quest_path_number']) > 0 and int(post_request['quest_path_number']) not in all_paths_in_current_project:
+            print('I am here 1')
             if quest_form.is_valid():
+                print('I am here 2')
                 temp = quest_form.save(commit=False)
+                temp.quest_description = post_request['quest_description']
                 temp.project = current_project
                 temp.save()
                 quest_id = temp.id
@@ -131,6 +136,36 @@ def save_new_quest(request, ldap, project_id):
                     return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
 
     return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
+
+
+
+
+def admin_update_project_description(request, ldap, project_id):
+
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_project = Project.objects.get(id = project_id)
+    if request.method == 'POST':
+        post_request = request.POST
+        updated_project_description = post_request['project_description']
+        current_project.project_description = updated_project_description
+        current_project.save()
+    return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
+
+def admin_update_project_name (request, ldap, project_id):
+
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_project = Project.objects.get(id = project_id)
+    if request.method == 'POST':
+        post_request = request.POST
+        updated_project_name = post_request['project_name']
+        current_project.project_name = updated_project_name
+        current_project.save()
+    return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
+        
 
 ######################################
 
@@ -267,6 +302,32 @@ def delete_video(request, ldap, quest_id):
             
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
 
+def update_quest_name(request, ldap, quest_id):
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_quest = Quest.objects.get(id = quest_id)
+
+    if request.method == 'POST': 
+            post_request = request.POST
+            updated_quest_name = post_request['quest_name']
+            current_quest.quest_name = updated_quest_name
+            current_quest.save()                
+    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
+
+def update_quest_description(request, ldap, quest_id):
+    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_quest = Quest.objects.get(id = quest_id)
+
+    if request.method == 'POST': 
+            post_request = request.POST
+            updated_quest_description = post_request['quest_description']
+            current_quest.quest_description = updated_quest_description
+            current_quest.save()                
+    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
 
 
         
@@ -756,7 +817,7 @@ def add_user_project_page(request, ldap):
         post_request = request.POST
         inputted_random_phrase = post_request['random_phrase']
 
-
+        # This is a list of the projects you are already a part of
         list_of_user_projects = UserProject.objects.filter(user = current_user).values('project')
         list_of_user_projects = Project.objects.filter(pk__in=list_of_user_projects)
 
@@ -773,7 +834,6 @@ def add_user_project_page(request, ldap):
                 messages.success(request, 'Please include a valid team name')
                 return HttpResponseRedirect('/quest/user_project_page/' + ldap)
             
-            team_requested_for = Team.objects.get(team_name = post_request['team'], project = project_requested)
             
 
             #If you're not already a part of this project
@@ -781,7 +841,9 @@ def add_user_project_page(request, ldap):
                 new_user_project = UserProject()
                 new_user_project.user = User.objects.get(user_ldap = ldap)
                 new_user_project.project = project_requested
-                new_user_project.team = team_requested_for
+                if has_teams:
+                    team_requested_for = Team.objects.get(team_name = post_request['team'], project = project_requested)
+                    new_user_project.team = team_requested_for
 
                 #Decides what quest the user will begin on (not neccessary since now you can't edit a project after a user joins however - see other comment above)
                 if len(Quest.objects.filter(project = project_requested, quest_path_number = 1)) == 1:
@@ -990,19 +1052,7 @@ def go_back_to_login(request, ldap):
 #     context = {'current_project': current_project}
 #     return render(request, 'quest_extension/admin_edit_project_description.html', context)
 
-def admin_update_project_description(request, ldap,  project_id):
 
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
-
-    current_project = Project.objects.get(id = project_id)
-    if request.method == 'POST':
-        post_request = request.POST
-        updated_project_description = post_request['project_description']
-        current_project.project_description = updated_project_description
-        current_project.save()
-    return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
-        
 
 ####################################
 

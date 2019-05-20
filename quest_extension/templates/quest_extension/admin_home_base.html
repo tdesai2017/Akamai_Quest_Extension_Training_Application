@@ -6,18 +6,10 @@
 	<title>Quest home</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
-    <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script>
-    <script> function show(){
-            document.getElementById("edit-container").style.display = "inline";
-            document.getElementById("edit_description_button").style.display = "none";
-            document.getElementById("my-text-area").style.display = "none";
-          } </script>
-    
+    {% block style_js %}
+    {% endblock %}
     
 
-    
-    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/admin_home_base_style.css' %}">
 
     </head>
     
@@ -27,13 +19,16 @@
     {% block admin_info %}
     {% endblock %}
 
-    <div class='not_in_container'>
+    <div class='centered'>
         <h1>{{ current_project.project_name}}</h1>
+
+        {% block edit_name %}
+        {% endblock %}
     </div>
 
-    <div class='container'>
+    <div class='not_centered'>
         <div id='my-text-area'>
-            <html> {{ current_project.project_description|safe }} </html>
+            {{ current_project.project_description|safe }} 
          </div>
     </div>
          {% block edit_description %}
@@ -41,7 +36,7 @@
     
 
 
-    <div class='not_in_container'>
+    <div class='centered'>
 
         <p>Welcome Admin to the Quests!</p>
         <p>You have ___ points!</p>

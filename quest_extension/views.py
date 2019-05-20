@@ -128,7 +128,7 @@ def save_new_quest(request, ldap, project_id):
                         userproject.current_quest = temp
                         userproject.save()
 
-                return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
+                    return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
 
     return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
 
@@ -337,8 +337,6 @@ def get_user_home(request, ldap, project_id):
         
         #format = teamname -> (current points earned by team, total points that can be earned by team)
         all_teams_and_points[team.team_name] = (current_points_for_team, total_possible_points_for_team)
-    print (all_teams_and_points)
-        # all_teams_and_points[team.team_name] = (current_points_for_team, total_possible_points_for_team)
 
         
 
@@ -621,9 +619,6 @@ def get_admin_project_page(request, ldap):
     list_of_projects = AdminProject.objects.filter(admin = current_admin).values('project')
     list_of_projects = Project.objects.filter(pk__in=list_of_projects)
     
-    print (list_of_projects)
-    
-
 
     context = {'project_form': project_form, 'list_of_projects': list_of_projects, 'current_admin': current_admin}
     return render(request, 'quest_extension/admin_project_page.html', context)
@@ -643,30 +638,39 @@ def add_new_project(request, ldap):
             temp = project_form.save(commit=False)
             temp.project_editable = True
             temp.project_description = post_request['project_description']
+            
+            #if the project will have teams, detail this in the project model
             if 'teams' in post_request.keys() and post_request['teams'] != '':
+                teams = post_request['teams'].split('\n')
+                #Removes blank teams
+                teams = [x for x in teams if len(x.strip())>0]
                 temp.project_has_teams = True
-            temp.save()
+
+            #checks if there are duplicates team names, which is not allowed
+            list_of_teams = [x.strip() for x in teams]
+            if len(list_of_teams) != len (set(list_of_teams)):
+                messages.success(request, 'You cannot have teams with the same name')
+                return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
+            temp.save() #saves proejct
             project_id = temp.id  
             current_project = Project.objects.get(id = project_id) 
 
+            for team_name in teams:
+                team_name = str(team_name).strip()
+                team_object = Team()
+                team_object.project = current_project
+                team_object.team_name = team_name
+                team_object.save() #saves teams
+                
 
-            if 'teams' in post_request.keys() and post_request['teams'] != '':
-                teams = post_request['teams'].split('\n')
-                #Removes blank correct answers
-                teams = [x for x in teams if len(x.strip())>0]
-                for team_name in teams:
-                    team_name = str(team_name).strip()
-                    team_object = Team()
-                    team_object.project = current_project
-                    team_object.team_name = team_name
-                    team_object.save()
-
+            #Creates a new AdminProject
             new_admin_project = AdminProject()
             new_admin_project.admin = current_admin
             new_admin_project.project = current_project
-            new_admin_project.save()
+            new_admin_project.save() # saves AdminProject
         
-            return HttpResponseRedirect('/quest/admin_home_editable/'+ ldap + '/' + str(project_id))
+            return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
     
     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
@@ -753,11 +757,10 @@ def add_user_project_page(request, ldap):
         inputted_random_phrase = post_request['random_phrase']
 
 
-        # input_pin = post_request['project_admin_pin']
         list_of_user_projects = UserProject.objects.filter(user = current_user).values('project')
         list_of_user_projects = Project.objects.filter(pk__in=list_of_user_projects)
 
-        # #To join a project, it cannot already be one you are part of, and it must also exist
+        # To join a project, it cannot already be one you are part of, and it must also exist
         if Project.objects.filter(project_random_phrase = inputted_random_phrase):
             project_requested = Project.objects.get(project_random_phrase = inputted_random_phrase)
             has_teams = project_requested.project_has_teams
@@ -785,6 +788,9 @@ def add_user_project_page(request, ldap):
                     new_user_project.current_quest = Quest.objects.get(project = project_requested, quest_path_number = 1)
                 else:
                     new_user_project.current_quest = None
+
+                #If we want to implement this later, we can make sure users can only join projects where
+                #there is already a quest with quest_path_number == 1
                 new_user_project.save() 
                 #Since a user joined, the admin can no longer change the quest
                 project_requested.project_editable = False

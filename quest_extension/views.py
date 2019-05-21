@@ -95,6 +95,7 @@ def get_admin_home_editable(request, ldap, project_id):
     current_project = Project.objects.get(id = project_id)    
     quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
     quest_form = QuestForm()
+    #Only display all_teams_and_points in template if this project does in face use teams
     all_teams_and_points = get_team_points_format(current_project)
 
     

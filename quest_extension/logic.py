@@ -150,8 +150,13 @@ def get_team_points_format(current_project):
 
         all_points_in_project = Quest.objects.filter(project = current_project).aggregate(total_points_in_quest = Sum('quest_points_earned'))
         all_points_in_project = all_points_in_project['total_points_in_quest']
+        
+        # For development purposes (this will never happen if someone joins a completed project)
+        if all_points_in_project == None:
+            all_points_in_project = 0
 
         users_on_this_team = UserProject.objects.filter(team = team).count()
+        print(all_points_in_project, users_on_this_team)
         total_possible_points_for_team = all_points_in_project * users_on_this_team
         
         #format = teamname -> (current points earned by team, total points that can be earned by team)

@@ -70,6 +70,8 @@
 {% endblock %}
 
 {% block edit_description %}
+<br>
+<br>
 <div id = 'edit_description_container'>
 
         <form method='POST' id = 'edit_description_form' action = "/quest/admin_update_quest_description/{{current_admin.admin_ldap}}/{{current_quest.id}}">
@@ -89,8 +91,6 @@
 <div id = 'edit_description_button'>
     <br>
     <button onclick="show_edit_description();">Edit Description</button>
-    <br>
-    <br>
 </div>
 
 {% endblock %}

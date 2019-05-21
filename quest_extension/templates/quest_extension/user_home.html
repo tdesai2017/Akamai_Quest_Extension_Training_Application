@@ -24,24 +24,36 @@
     </head>
 
     <body>
-    <h1>{{ current_project.project_name}}</h1>
-    <p> {{ current_project.project_description|safe }}</p>
+    <div class = centered>
+        <h1>{{ current_project.project_name}}</h1>
+        <!-- these two <br>s are here to make the admin home page most closely replicate that of the user home page -->
+    </div>
+
+    <div class='container'>
+            <div id='my-text-area'>
+                {{ current_project.project_description|safe }} 
+             </div>
+        </div>
 
     <!--format = teamname -> (current points earned by team, total points that can be earned by team)-->
   
-    <br>
-    <br>
-        Progress:
+    <div class = centered>
+        {% if current_project.project_has_teams %}
+        <br>
+        <br>
+        <p>Progress:<p>
         {% for team_data in all_teams_and_points.items %}
         {{ team_data.0 }}: {{team_data.1.0}} / {{team_data.1.1}}
         <!-- team_data.0 = team name -->
         <!-- team_data.1.0 = accumulated points by users on this team -->
         <!-- team.data.1.1 = total possible points that can be earned by this team if everyone has 100% completion -->
         <br>
+        <br>
+        <br>
         {% endfor %}
+        {% endif %}
 
-    <br>
-    <br>
+    
 
     <p>Welcome {{ user.user_first_name }} to the Quests!</p>
     <!-- If you are a part of a team... -->
@@ -61,6 +73,7 @@
     {% endfor %}
     <br>
     <a href = '/quest/user_project_page/{{user.user_ldap}}'>Back to Project Page</a>
+    </div>
     </body>
     
 </html>

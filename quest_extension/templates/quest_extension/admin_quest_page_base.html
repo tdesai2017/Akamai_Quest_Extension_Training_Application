@@ -21,9 +21,8 @@
         <h1> {{ current_quest.quest_name }} </h1>
         {% block edit_name %}
         {% endblock %}
-        
-    </div>
     <br>
+    </div>
     <div class='container'>
             <div id='my-text-area'>
                 <html> {{ current_quest.quest_description|safe }} </html>
@@ -33,6 +32,10 @@
     {% endblock %}
 
     <div class = 'centered'>
+        <br>
+        <br>
+        <br>
+        <br>
         {% for video in all_videos %}
 
             {% if video.video_type == 'Youtube' %}
@@ -45,6 +48,8 @@
             {% endif %}
             {% block delete_video_buttons %}
             {% endblock %}
+            <br>
+            <br>
 
 
         {% endfor %}

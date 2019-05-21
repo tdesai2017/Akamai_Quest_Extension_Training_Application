@@ -7,16 +7,26 @@
         
     </head>
     <body>
+        <div class = centered>
+            <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_quest_page_style.css' %}">
+            <h1> {{ current_quest.quest_name }} </h1>
+        <br>
+        </div>     
 
-        <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_quest_page_style.css' %}">
-        <h1> {{ current_quest.quest_name }} </h1>
+        
+        <div class='container'>
+                <div id='my-text-area'>
+                    {{ current_quest.quest_description|safe }} 
+                 </div>
+            </div>
 
-        <div class="description">
-            <h2>{{ current_quest.quest_description }}</h2>
-        </div>  
+        <div class = centered>
+        <br>
+        <br>
         <br>
         <br>
 
+        
         {% for video in all_videos %}
 
             {% if video.video_type == 'Youtube' %}
@@ -27,10 +37,14 @@
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
                 allowfullscreen></iframe>
             {% endif %}
-
-            
-
+            <br>
+            <br>
         {% endfor %}
+
+        <br>
+        <br>
+        <br>
+        <br>
         
         {% for question, answers, correct_answers in format_2 %}
             <div class='question'>
@@ -88,11 +102,13 @@
 
             <br>
             <br>
+            <br>
+            <br>
         {% endfor %}
         
         <form id='home' action = '/quest/user_home/{{ ldap }}/{{current_project_id}}' method='GET'></form>
         
         <button form = 'home' type = submit>Home</button>
-
+    </div>
     </body>
 </html>

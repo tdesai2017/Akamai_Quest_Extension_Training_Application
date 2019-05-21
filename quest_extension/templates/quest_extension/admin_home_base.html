@@ -8,8 +8,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
     {% block style_js %}
     {% endblock %}
-    
-
 
     </head>
     
@@ -26,31 +24,38 @@
         {% endblock %}
     </div>
 
-    <div class='not_centered'>
+    <div class='container'>
         <div id='my-text-area'>
             {{ current_project.project_description|safe }} 
          </div>
-
-         <br>
-         <br>
-             Progress:
-             {% for team_data in all_teams_and_points.items %}
-             {{ team_data.0 }}: {{team_data.1.0}} / {{team_data.1.1}}
-             <!-- team_data.0 = team name -->
-             <!-- team_data.1.0 = accumulated points by users on this team -->
-             <!-- team.data.1.1 = total possible points that can be earned by this team if everyone has 100% completion -->
-             <br>
-             {% endfor %}
-     
     </div>
-         {% block edit_description %}
-         {% endblock %}
+    {% block edit_description %}
+    {% endblock %}
     
-
-
     <div class='centered'>
 
+
+         {% if current_project.project_has_teams %}
+        <br>
+        <br>
+        <p>Progress:<p>
+        {% for team_data in all_teams_and_points.items %}
+        {{ team_data.0 }}: {{team_data.1.0}} / {{team_data.1.1}}
+        <!-- team_data.0 = team name -->
+        <!-- team_data.1.0 = accumulated points by users on this team -->
+        <!-- team.data.1.1 = total possible points that can be earned by this team if everyone has 100% completion -->
+        <br>
+        <br>
+        <br>
+        {% endfor %}
+        {% endif %}
+     
+         
+
+
+
         <p>Welcome Admin to the Quests!</p>
+        <p> You are on the team ___!!!</p>
         <p>You have ___ points!</p>
             
         

@@ -1,0 +1,47 @@
+{% extends 'quest_extension/admin_quest_settings_base.html' %}
+{% load static %}
+
+    {% block stylesheet_js %}
+    <link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_quest_settings/admin_quest_settings_editable_style.css' %}">
+    <script> function update(info){
+            document.getElementById("update_" + info + "_button").style.display = "none";
+            document.getElementById("update_" + info + "_form").style.display = "inline"
+          } 
+        </script>
+    {% endblock %}
+
+    
+
+    {% block path_number_code %}
+    <button id = 'update_path_number_button' onclick="update('path_number')"> Update Quest Path Number </button>
+    <form id = 'update_path_number_form' method='POST' action= '/quest/update_quest_path_number/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
+        {% csrf_token %}
+        <input type='text' name = 'quest_path_number' value = '{{current_quest.quest_path_number}}'>
+        <button type = 'submit'> Confirm Update </button>
+    </form>
+    {% endblock %}
+    
+    {% block points_earned_code %}
+    <button id = 'update_points_earned_button' onclick="update('points_earned')"> Update Points Earned On Completion</button>
+    <form id = 'update_points_earned_form' method='POST' action= '/quest/update_quest_points_earned/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
+        {% csrf_token %}
+        <input type='text' name = 'quest_points_earned' value = '{{current_quest.quest_points_earned}}'>
+        <button type = 'submit'> Confirm Update </button>
+    </form>
+    {% endblock %}
+    
+
+    {% block delete_quest_code %}
+    <form method = 'POST' action = '/quest/delete_quest/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
+        {% csrf_token %}
+        <button id = 'delete_quest_button' type= 'submit' onclick="return confirm('WARNING: If you delete this quest, all data will be lost regarding the quest! ')"> Delete Quest </button>
+    </form>
+    {% endblock %}
+    
+   
+    {% block back_button %}
+    <form method = 'GET' action= '/quest/admin_quest_page_editable/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
+        <button type='submit'> Back </button>
+    </form>
+    {% endblock %}
+

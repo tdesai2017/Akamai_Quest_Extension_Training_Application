@@ -38,9 +38,17 @@ urlpatterns = [
     path('delete_video/<ldap>/<quest_id>', views.delete_video), 
     path('admin_update_quest_name/<ldap>/<quest_id>', views.update_quest_name),
     path('admin_update_quest_description/<ldap>/<quest_id>', views.update_quest_description),
+    
+######################################
+
+    path('admin_quest_settings_editable/<ldap>/<quest_id>', views.get_admin_quest_settings_editable),
+    path('update_quest_points_earned/<ldap>/<quest_id>', views.update_quest_points_earned),
+    path('update_quest_path_number/<ldap>/<quest_id>', views.update_quest_path_number),
+    path('delete_quest/<ldap>/<quest_id>', views.delete_quest),
+######################################
 
 
-
+path ('admin_quest_settings_view_only/<ldap>/<quest_id>', views.get_admin_quest_settings_view_only),
 
 
 ######################################

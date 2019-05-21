@@ -28,6 +28,14 @@
       
 {% endblock %}
 
+{% block admin_quest_settings %}
+<form method='GET' action ='/quest/admin_quest_settings_editable/{{current_admin.admin_ldap}}/{{current_quest.id}}'> 
+    {% csrf_token %}
+    <button type='submit'> Quest Settings </button>
+</form>
+{% endblock %}
+
+
 {% block edit_name %}
 <div id = 'edit_name_button'>
 <button onclick="show_update_name();" id = 'edit_name_button'> Edit Name </button>

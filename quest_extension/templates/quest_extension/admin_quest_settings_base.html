@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Quest Settings</title>
+    {% block stylesheet_js %}
+    {% endblock %}
+</head>
+<body>
+    <h1>Quest Settings</h1>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+
+    
+    <p>Path Number: {{current_quest.quest_path_number}}</p>
+    {% block path_number_code %}
+    {% endblock %}
+
+    <br> 
+    <p>Points Earned: {{current_quest.quest_points_earned}}</p>
+    {% block points_earned_code %}
+    {% endblock %}
+
+    <br>
+    <br>
+    <br>
+
+    {% block delete_quest_code %}
+    {% endblock %}
+    <br>
+    <br>
+
+
+    {% block back_button %}
+    {% endblock %}
+    
+
+
+</body>
+</html>

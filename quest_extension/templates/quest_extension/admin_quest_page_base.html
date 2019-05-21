@@ -10,6 +10,10 @@
 
     </head>
     <body>
+
+    {% block admin_quest_settings %}
+    {% endblock %}
+
     <div class = 'centered'>
         {% block forms_and_undo %}
         {% endblock %}
@@ -25,6 +29,8 @@
                 <html> {{ current_quest.quest_description|safe }} </html>
             </div>
     </div>
+    {% block edit_description %}
+    {% endblock %}
 
     <div class = 'centered'>
         {% for video in all_videos %}
@@ -37,7 +43,6 @@
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
                 allowfullscreen></iframe>
             {% endif %}
-
             {% block delete_video_buttons %}
             {% endblock %}
 
@@ -46,8 +51,6 @@
 
         <br>
         <br>
-        {% block edit_description %}
-        {% endblock %}
 
         {% block fr_mc_undo_delete_video %}
         {% endblock %}

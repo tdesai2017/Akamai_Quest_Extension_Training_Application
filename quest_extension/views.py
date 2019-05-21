@@ -83,7 +83,6 @@ def create_mc_question(request, ldap, quest_id):
 
 def get_admin_home_editable(request, ldap, project_id): 
 
-
     if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
         return HttpResponseRedirect('/quest/admin_login')
 
@@ -329,8 +328,85 @@ def update_quest_description(request, ldap, quest_id):
             current_quest.save()                
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
 
+######################################
+def get_admin_quest_settings_editable(request, ldap, quest_id):
 
+    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_quest = Quest.objects.get(id = quest_id)
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    context = {'current_quest': current_quest, 'current_admin': current_admin}
+
+    return render (request, 'quest_extension/admin_quest_settings_editable.html', context)
+
+def update_quest_points_earned(request, ldap, quest_id):
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    current_quest = Quest.objects.get(id = quest_id)
+
+    if request.method == 'POST':
+        post_request = request.POST
+        quest_points_earned_input = post_request['quest_points_earned']
+        current_quest.quest_points_earned = quest_points_earned_input
+        current_quest.save()
+        messages.success(request, 'Change was successful!')
+
+
+    return HttpResponseRedirect('/quest/admin_quest_settings_editable/' + current_admin.admin_ldap + '/' + str(quest_id))
+
+def update_quest_path_number(request, ldap, quest_id):
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    current_quest = Quest.objects.get(id = quest_id)
+    all_quest_path_numbers_in_project = Quest.objects.filter(project = current_quest.project).values_list('quest_path_number', flat=True)
+
+    if request.method == 'POST':
+        post_request = request.POST
+        quest_path_number_input = post_request['quest_path_number']
+        if int(quest_path_number_input) not in all_quest_path_numbers_in_project and int(quest_path_number_input) > 0:
+            current_quest.quest_path_number = quest_path_number_input
+            current_quest.save()
+            messages.success(request, 'Change was successful!')
+        else:
+            messages.success(request, 'Please Input a valid path number (greater than 0 and no duplicate path numbers)')
         
+
+
+    return HttpResponseRedirect('/quest/admin_quest_settings_editable/' + current_admin.admin_ldap + '/' + str(quest_id))
+
+
+def delete_quest(request, ldap, quest_id):
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    current_quest = Quest.objects.get(id = quest_id)
+    project_id = current_quest.project.id
+    if request.method == 'POST':
+        current_quest.delete()
+
+    return HttpResponseRedirect('/quest/admin_home_editable/' + current_admin.admin_ldap + '/' + str(project_id))
+######################################
+
+def get_admin_quest_settings_view_only(request, ldap, quest_id):
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    current_quest = Quest.objects.get(id = quest_id)
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    context = {'current_quest': current_quest, 'current_admin': current_admin}
+
+    return render (request, 'quest_extension/admin_quest_settings_view_only.html', context)
+
 
 ######################################
 
@@ -677,7 +753,7 @@ def get_admin_project_page(request, ldap):
     project_form = ProjectForm()
     current_admin = Admin.objects.get(admin_ldap = ldap)
     #Only include projects that there is a AdminProject link for
-    list_of_projects = AdminProject.objects.filter(admin = current_admin).values('project')
+    list_of_projects = AdminProject.objects.filter(admin = current_admin).values_list('project', flat=True)
     list_of_projects = Project.objects.filter(pk__in=list_of_projects)
     
 
@@ -686,33 +762,49 @@ def get_admin_project_page(request, ldap):
 
 def add_new_project(request, ldap):
 
+
     if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     if request.method == 'POST':
         post_request = request.POST
-        print(post_request)
         # form was submitted
         project_form = ProjectForm(request.POST)
+
+
+        #No duplicates allowed for security purposes
+        random_phrase_input = post_request['project_random_phrase']
+        is_new_random_phrase = random_phrase_input not in Project.objects.all().values_list('project_random_phrase', flat=True) 
+        admin_pin_input = post_request['project_admin_pin']
+        is_new_admin_pin = admin_pin_input not in Project.objects.all().values_list('project_admin_pin', flat=True) 
+        if not is_new_random_phrase:
+            messages.success(request, 'Please use a different random phrase for security purposes')
+        if not is_new_admin_pin:
+            messages.success(request, 'Please use a different admin pin for security purposes')
+
+        print(post_request)
         if project_form.is_valid():
             temp = project_form.save(commit=False)
             temp.project_editable = True
             temp.project_description = post_request['project_description']
             
+            teams = []
             #if the project will have teams, detail this in the project model
             if 'teams' in post_request.keys() and post_request['teams'] != '':
                 teams = post_request['teams'].split('\n')
                 #Removes blank teams
                 teams = [x for x in teams if len(x.strip())>0]
+                list_of_teams = [x.strip() for x in teams]
+                
+                if len(list_of_teams) != len (set(list_of_teams)):
+                    messages.success(request, 'You cannot have teams with the same name')
+                    return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+                
                 temp.project_has_teams = True
 
-            #checks if there are duplicates team names, which is not allowed
-            list_of_teams = [x.strip() for x in teams]
-            if len(list_of_teams) != len (set(list_of_teams)):
-                messages.success(request, 'You cannot have teams with the same name')
-                return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
-
+                #checks if there are duplicates team names, which is not allowed
+                
             temp.save() #saves proejct
             project_id = temp.id  
             current_project = Project.objects.get(id = project_id) 
@@ -724,7 +816,7 @@ def add_new_project(request, ldap):
                 team_object.team_name = team_name
                 team_object.save() #saves teams
                 
-
+            print
             #Creates a new AdminProject
             new_admin_project = AdminProject()
             new_admin_project.admin = current_admin
@@ -745,7 +837,7 @@ def join_project(request, ldap):
         post_request = request.POST
         input_pin = post_request['project_admin_pin']
         input_name = post_request['project_name']
-        list_of_admins_projects = AdminProject.objects.filter(admin = current_admin).values('project')
+        list_of_admins_projects = AdminProject.objects.filter(admin = current_admin).values_list('project', flat = True)
         list_of_admins_projects = Project.objects.filter(pk__in=list_of_admins_projects)
 
         #To join a project, it cannot already be one you admin, and it must also exist
@@ -754,7 +846,12 @@ def join_project(request, ldap):
             project_name = project_to_join.project_name
             #We are further validating that they can become an admin of this project
             #Because they must also know the name of it
-            if project_to_join not in list_of_admins_projects and project_name == input_name:
+            if project_to_join in list_of_admins_projects:
+                print (list_of_admins_projects)
+                messages.success(request, 'You cannot join a project that you are already a part of')
+                return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
+            elif project_name == input_name:
                 new_admin_project = AdminProject()
                 new_admin_project.admin = current_admin
                 new_admin_project.project = project_to_join
@@ -818,7 +915,7 @@ def add_user_project_page(request, ldap):
         inputted_random_phrase = post_request['random_phrase']
 
         # This is a list of the projects you are already a part of
-        list_of_user_projects = UserProject.objects.filter(user = current_user).values('project')
+        list_of_user_projects = UserProject.objects.filter(user = current_user).values_list('project', flat=True)
         list_of_user_projects = Project.objects.filter(pk__in=list_of_user_projects)
 
         # To join a project, it cannot already be one you are part of, and it must also exist
@@ -1324,7 +1421,7 @@ def get_admin_project_settings(request, ldap, project_id):
     current_project = Project.objects.get(id = project_id)
 
     #Represents all admins for this project
-    list_of_admins = AdminProject.objects.filter(project = current_project).values('admin')
+    list_of_admins = AdminProject.objects.filter(project = current_project).values_list('admin', flat = True)
     list_of_admins = Admin.objects.filter(pk__in=list_of_admins)
 
 
@@ -1372,7 +1469,7 @@ def update_admin_pin(request, ldap, project_id):
             messages.success(request, 'Change was successful!')
 
         else:
-             messages.success(request, 'You must choose a different random phrase')
+             messages.success(request, 'You must choose a different admin pin')
     return HttpResponseRedirect('/quest/admin_project_settings/' + ldap + '/' + project_id)
 
 def remove_as_admin(request, ldap, project_id):

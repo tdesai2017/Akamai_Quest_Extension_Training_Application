@@ -1,0 +1,14 @@
+{% extends 'quest_extension/admin_quest_settings_base.html' %}
+{% load static %}
+
+{% block stylesheet_js %}
+    <link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_quest_settings/admin_quest_settings_view_only_style.css' %}">
+{% endblock %}
+
+
+{% block back_button %}
+    <form method = 'GET' action= '/quest/admin_quest_page_view_only/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
+        <button type='submit'> Back </button>
+    </form>
+{% endblock %}
+

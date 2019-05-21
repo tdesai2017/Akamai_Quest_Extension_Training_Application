@@ -6,12 +6,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/admin_home/admin_home_view_only_style.css' %}">
 {% endblock %}
 
-{% block admin_info %}
-<form method='GET' action ='/quest/admin_project_settings/{{current_admin.admin_ldap}}/{{current_project.id}}'> 
-    {% csrf_token %}
-    <button type='submit'> Project Settings </button>
-</form>
-{% endblock %}
+
 
 
 {% block redirect_to_quest_page %}
@@ -22,11 +17,7 @@
             <button type='submit'>{{quest.quest_name}} ({{quest.quest_path_number }})</button>
         </form>
 
-
     {% endfor %}
 
 {% endblock %}
 
-{% block back %}
-    <a href= '/quest/admin_project_page/{{current_admin.admin_ldap}}'>Back to Projects Page</a>
-{% endblock %}

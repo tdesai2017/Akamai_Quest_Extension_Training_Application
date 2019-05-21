@@ -6,6 +6,13 @@
 <link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_quest_page_style/admin_quest_page_view_only_style.css' %}">
 {% endblock %}
 
+{% block admin_quest_settings %}
+<form method='GET' action ='/quest/admin_quest_settings_view_only/{{current_admin.admin_ldap}}/{{current_quest.id}}'> 
+    {% csrf_token %}
+    <button type='submit'> Quest Settings (View Only) </button>
+</form>
+{% endblock %}
+
 {% block home %}
     <form id='home' action = '/quest/admin_home_view_only/{{current_admin.admin_ldap}}/{{current_project_id}}' method='GET'></form>
     <button form = 'home' type = submit>Home</button>

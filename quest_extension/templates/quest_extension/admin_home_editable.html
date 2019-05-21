@@ -24,12 +24,6 @@
 
 {% endblock %}
 
-{% block admin_info %}
-<form method='GET' action ='/quest/admin_project_settings/{{current_admin.admin_ldap}}/{{current_project.id}}'> 
-    {% csrf_token %}
-    <button type='submit'> Project Settings </button>
-</form>
-{% endblock %}
 
 
 {% block edit_name %}
@@ -39,7 +33,7 @@
 <div id = 'edit_name_container'>
 <form method = 'POST' action = '/quest/admin_update_project_name/{{current_admin.admin_ldap}}/{{current_project.id}}'> 
     {% csrf_token %}
-    <input type ='text' name = 'project_name'>
+    <input type ='text' name = 'project_name' value = '{{current_project.project_name}}'>
     <button type = 'submit'> Update Project Name</button>
 </form>
 </div>
@@ -101,9 +95,6 @@
 {% endblock %}
 
 
-
-
-
 {% block redirect_to_quest_page %}
 
     {% for quest in quests %}
@@ -118,6 +109,3 @@
 {% endblock %}
 
 
-{% block back %}
-    <a href= '/quest/admin_project_page/{{current_admin.admin_ldap}}'>Back to Projects Page</a>
-{% endblock %}

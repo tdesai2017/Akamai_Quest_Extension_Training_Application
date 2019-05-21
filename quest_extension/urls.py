@@ -165,11 +165,15 @@ path('admin_go_back_to_login/<ldap>', views.admin_go_back_to_login),
 
 ##############################
 
-path ('admin_project_settings/<ldap>/<project_id>', views.get_admin_project_settings),
+path ('admin_project_settings_view_only/<ldap>/<project_id>', views.get_admin_project_settings_view_only),
+path ('admin_project_settings_editable/<ldap>/<project_id>', views.get_admin_project_settings_editable),
+
 path ('delete_project/<ldap>/<project_id>', views.delete_project),
 path('update_project_random_phrase/<ldap>/<project_id>', views.update_random_phrase),
 path('update_project_admin_pin/<ldap>/<project_id>', views.update_admin_pin),
 path('remove_as_admin/<ldap>/<project_id>', views.remove_as_admin),
+path('add_team/<ldap>/<project_id>', views.add_team),
+path('delete_team/<ldap>/<project_id>', views.delete_team),
 
 ##############################
 

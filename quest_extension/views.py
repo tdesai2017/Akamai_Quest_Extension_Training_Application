@@ -10,11 +10,10 @@ from django.core.validators import validate_email
 from django.contrib import messages
 from datetime import datetime
 import copy
-from .logic import *
+from quest_extension.logic import *
 from django.core.mail import send_mail
 import random
 import json
-from django.db.models import Sum
 
 
 
@@ -96,7 +95,15 @@ def get_admin_home_editable(request, ldap, project_id):
     current_project = Project.objects.get(id = project_id)    
     quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
     quest_form = QuestForm()
-    context = {'quests':quests, 'quest_form': quest_form, 'current_project': current_project, 'current_admin': current_admin}
+    all_teams_and_points = get_team_points_format(current_project)
+
+    
+    context = {'quests':quests, 
+    'quest_form': quest_form, 
+    'current_project': current_project, 
+    'current_admin': current_admin, 
+    'all_teams_and_points': all_teams_and_points
+    }
     return render(request, 'quest_extension/admin_home_editable.html', context)
 
 def save_new_quest(request, ldap, project_id): 
@@ -180,7 +187,12 @@ def get_admin_home_view_only(request, ldap,  project_id):
     current_admin = Admin.objects.get(admin_ldap = ldap)
     current_project = Project.objects.get(id = project_id)
     quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
-    context = {'quests':quests, 'current_project': current_project, 'current_admin': current_admin}
+    all_teams_and_points = get_team_points_format(current_project)
+
+    context = {'quests':quests,
+     'current_project': current_project,
+     'current_admin': current_admin,
+      'all_teams_and_points': all_teams_and_points}
     return render(request, 'quest_extension/admin_home_view_only.html', context)
 
 ######################################
@@ -456,24 +468,9 @@ def get_user_home(request, ldap, project_id):
     current_user_project_object = UserProject.objects.get(user = user, project = current_project)
     quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
     current_user_project_team = current_user_project_object.team
-
+    all_teams_and_points = get_team_points_format(current_project)
     #Points information for teams
-    all_teams_and_points = {}
-    all_teams_in_project = Team.objects.filter(project = current_project)
-    for team in all_teams_in_project:
-        current_points_for_team = UserProject.objects.filter(team = team).aggregate(points = Sum('points'))
-        current_points_for_team = current_points_for_team['points']
-        if current_points_for_team == None:
-            current_points_for_team = 0
-
-        all_points_in_project = Quest.objects.filter(project = current_project).aggregate(total_points_in_quest = Sum('quest_points_earned'))
-        all_points_in_project = all_points_in_project['total_points_in_quest']
-
-        users_on_this_team = UserProject.objects.filter(team = team).count()
-        total_possible_points_for_team = all_points_in_project * users_on_this_team
-        
-        #format = teamname -> (current points earned by team, total points that can be earned by team)
-        all_teams_and_points[team.team_name] = (current_points_for_team, total_possible_points_for_team)
+    
 
         
 
@@ -797,13 +794,14 @@ def add_new_project(request, ldap):
                 teams = [x for x in teams if len(x.strip())>0]
                 list_of_teams = [x.strip() for x in teams]
                 
+                #checks if there are duplicates team names, which is not allowed
+
                 if len(list_of_teams) != len (set(list_of_teams)):
                     messages.success(request, 'You cannot have teams with the same name')
                     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
                 
                 temp.project_has_teams = True
 
-                #checks if there are duplicates team names, which is not allowed
                 
             temp.save() #saves proejct
             project_id = temp.id  
@@ -1410,7 +1408,7 @@ def admin_go_back_to_login(request, ldap):
 #########################
 
 
-def get_admin_project_settings(request, ldap, project_id):
+def get_admin_project_settings_editable(request, ldap, project_id):
 
     if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
         return HttpResponseRedirect('/quest/admin_login')
@@ -1423,15 +1421,19 @@ def get_admin_project_settings(request, ldap, project_id):
     #Represents all admins for this project
     list_of_admins = AdminProject.objects.filter(project = current_project).values_list('admin', flat = True)
     list_of_admins = Admin.objects.filter(pk__in=list_of_admins)
+    has_teams = current_project.project_has_teams
+    list_of_teams = Team.objects.filter(project = current_project)
 
 
     context = {
     'current_project': current_project, 
     'current_admin': current_admin, 
     'list_of_admins': list_of_admins, 
-    'view_or_editable': view_or_editable
+    'view_or_editable': view_or_editable,
+    'has_teams': has_teams,
+    'list_of_teams': list_of_teams,
     }
-    return render(request, 'quest_extension/admin_project_settings.html', context)
+    return render(request, 'quest_extension/admin_project_settings_editable.html', context)
 
 
 def update_random_phrase(request, ldap, project_id):
@@ -1451,7 +1453,14 @@ def update_random_phrase(request, ldap, project_id):
 
         else:
              messages.success(request, 'You must choose a different random phrase')
-    return HttpResponseRedirect('/quest/admin_project_settings/' + ldap + '/' + project_id)
+    
+    # To abstract this, I would have to either create a superclass that delegates
+    #or repeat every sinlge method for view_only and editable, so given my time contraints
+    #I opted for this instead
+    if request.session['view_or_editable'] == 'view':
+        return HttpResponseRedirect('/quest/admin_project_settings_view_only/' + ldap + '/' + project_id)
+    else:
+        return HttpResponseRedirect('/quest/admin_project_settings_editable/' + ldap + '/' + project_id)
     
 
 def update_admin_pin(request, ldap, project_id):
@@ -1470,7 +1479,11 @@ def update_admin_pin(request, ldap, project_id):
 
         else:
              messages.success(request, 'You must choose a different admin pin')
-    return HttpResponseRedirect('/quest/admin_project_settings/' + ldap + '/' + project_id)
+    
+    if request.session['view_or_editable'] == 'view':
+        return HttpResponseRedirect('/quest/admin_project_settings_view_only/' + ldap + '/' + project_id)
+    else:
+        return HttpResponseRedirect('/quest/admin_project_settings_editable/' + ldap + '/' + project_id)
 
 def remove_as_admin(request, ldap, project_id):
     if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
@@ -1493,7 +1506,92 @@ def delete_project(request, ldap, project_id):
         current_project = Project.objects.get(id = project_id)
         current_project.delete()
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+    
     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
+
+def add_team(request, ldap, project_id):
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+    
+    current_project = Project.objects.get(id = project_id)
+    list_of_team_names = Team.objects.filter(project = current_project).values_list('team_name', flat=True)
+    if request.method == 'POST':
+        post_request = request.POST
+        team_name_to_add = post_request['add_team_name'].strip()
+        if team_name_to_add in list_of_team_names:
+            messages.success(request, 'You cannot have two teams with the same name')
+        else:
+            if not current_project.project_has_teams:
+                current_project.project_has_teams = True
+                current_project.save()
+            new_team = Team()
+            new_team.team_name = team_name_to_add
+            new_team.project = current_project
+            new_team.save()
+    if request.session['view_or_editable'] == 'view':
+        return HttpResponseRedirect('/quest/admin_project_settings_view_only/' + ldap + '/' + project_id)
+    else:
+        return HttpResponseRedirect('/quest/admin_project_settings_editable/' + ldap + '/' + project_id)
+
+def delete_team(request, ldap, project_id):
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+    
+    current_project = Project.objects.get(id = project_id)
+    list_of_team_names = Team.objects.filter(project = current_project).values_list('team_name', flat=True)
+
+    if request.method == 'POST':
+        post_request = request.POST
+        team_name_to_delete = post_request['delete_team_name'].strip()
+        if team_name_to_delete not in list_of_team_names:
+            messages.success(request, 'There is no team with this name in this project')
+        else:
+            # If we are deleting the last team in this project
+            if len(list_of_team_names) == 1:
+                current_project.project_has_teams = False
+                current_project.save()
+            team_to_delete = Team.objects.get(project = current_project, team_name = team_name_to_delete)
+            team_to_delete.delete()
+    if request.session['view_or_editable'] == 'view':
+        return HttpResponseRedirect('/quest/admin_project_settings_view_only/' + ldap + '/' + project_id)
+    else:
+        return HttpResponseRedirect('/quest/admin_project_settings_editable/' + ldap + '/' + project_id)
+
+
+
+#########################
+
+
+def get_admin_project_settings_view_only(request, ldap, project_id):
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    view_or_editable = request.session['view_or_editable']
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    current_project = Project.objects.get(id = project_id)
+
+    #Represents all admins for this project
+    list_of_admins = AdminProject.objects.filter(project = current_project).values_list('admin', flat = True)
+    list_of_admins = Admin.objects.filter(pk__in=list_of_admins)
+    has_teams = current_project.project_has_teams
+    list_of_teams = Team.objects.filter(project = current_project)
+
+
+    context = {
+    'current_project': current_project, 
+    'current_admin': current_admin, 
+    'list_of_admins': list_of_admins, 
+    'view_or_editable': view_or_editable,
+    'has_teams': has_teams,
+    'list_of_teams': list_of_teams,
+    }
+    return render(request, 'quest_extension/admin_project_settings_view_only.html', context)
+
 
 
 

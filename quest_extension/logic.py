@@ -10,6 +10,8 @@ from django.core.validators import validate_email
 from django.contrib import messages
 from datetime import datetime
 import copy
+from django.db.models import Sum
+
 
 #Saves a free response question to the backend
 def save_fr_question(ldap, question_form, answer_form, quest_id, timestamp=datetime.now()):
@@ -136,4 +138,22 @@ def can_admin_access_project(ldap, project_id):
     list_of_projects = Project.objects.filter(pk__in=list_of_projects)
     return current_project in list_of_projects
     
+#Gets the team and points format that is used in the admin and user home pages
+def get_team_points_format(current_project):
+    all_teams_and_points = {}
+    all_teams_in_project = Team.objects.filter(project = current_project)
+    for team in all_teams_in_project:
+        current_points_for_team = UserProject.objects.filter(team = team).aggregate(points = Sum('points'))
+        current_points_for_team = current_points_for_team['points']
+        if current_points_for_team == None:
+            current_points_for_team = 0
 
+        all_points_in_project = Quest.objects.filter(project = current_project).aggregate(total_points_in_quest = Sum('quest_points_earned'))
+        all_points_in_project = all_points_in_project['total_points_in_quest']
+
+        users_on_this_team = UserProject.objects.filter(team = team).count()
+        total_possible_points_for_team = all_points_in_project * users_on_this_team
+        
+        #format = teamname -> (current points earned by team, total points that can be earned by team)
+        all_teams_and_points[team.team_name] = (current_points_for_team, total_possible_points_for_team)
+    return all_teams_and_points

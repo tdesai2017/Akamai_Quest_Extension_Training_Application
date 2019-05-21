@@ -7,7 +7,12 @@
 {% endblock %}
 
 
-
+{% block project_settings %}
+<form method='GET' action ='/quest/admin_project_settings_view_only/{{current_admin.admin_ldap}}/{{current_project.id}}'> 
+    {% csrf_token %}
+    <button type='submit'> Project Settings </button>
+</form>
+    {% endblock %}
 
 {% block redirect_to_quest_page %}
 

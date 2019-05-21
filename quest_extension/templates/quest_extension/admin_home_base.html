@@ -16,10 +16,8 @@
 
     <body>
     
-    <form method='GET' action ='/quest/admin_project_settings/{{current_admin.admin_ldap}}/{{current_project.id}}'> 
-        {% csrf_token %}
-        <button type='submit'> Project Settings </button>
-    </form>
+        {% block project_settings %}
+        {% endblock %}
 
     <div class='centered'>
         <h1>{{ current_project.project_name}}</h1>
@@ -32,6 +30,18 @@
         <div id='my-text-area'>
             {{ current_project.project_description|safe }} 
          </div>
+
+         <br>
+         <br>
+             Progress:
+             {% for team_data in all_teams_and_points.items %}
+             {{ team_data.0 }}: {{team_data.1.0}} / {{team_data.1.1}}
+             <!-- team_data.0 = team name -->
+             <!-- team_data.1.0 = accumulated points by users on this team -->
+             <!-- team.data.1.1 = total possible points that can be earned by this team if everyone has 100% completion -->
+             <br>
+             {% endfor %}
+     
     </div>
          {% block edit_description %}
          {% endblock %}

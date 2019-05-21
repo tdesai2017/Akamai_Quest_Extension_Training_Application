@@ -1,0 +1,44 @@
+{% extends 'quest_extension/admin_project_settings_base.html' %}
+{% load static %}
+
+{% block stylesheet %}
+<link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_project_settings/admin_project_settings_editable_style.css' %}">
+
+{% endblock %}
+
+
+{% block teams %}
+<h3> Teams </h3>
+  {% for team in list_of_teams %}
+  <p> {{ team.team_name }}</p>
+  {% endfor %}
+
+<!-- I'm using "update" even in the button and form names here just so that I
+can use the js method from above -->
+<button id = 'update_add_team_button' onclick="update('add_team')"> Add another team </button>
+    <form id = 'update_add_team_form' method='POST' action= '/quest/add_team/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+        {% csrf_token %}
+        <label> Team to add: </label>
+        <input type='text' name = 'add_team_name'>
+        <button type = 'submit'> Confirm Update </button>
+    </form>
+<br>
+<br>
+    <button id = 'update_delete_team_button' onclick="update('delete_team')"> Delete a Team </button>
+    <form id = 'update_delete_team_form' method='POST' action= '/quest/delete_team/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+        {% csrf_token %}
+        <lable> Team to delete: </lable>
+        <input type='text' name = 'delete_team_name'>
+        <button type = 'submit'> Confirm Update </button>
+    </form>
+<br>
+<br>
+{% endblock %}
+
+{% block back %}
+
+<form method = 'GET' action= '/quest/admin_home_editable/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+    <button type='submit'> Back </button>
+</form>
+
+{% endblock %}

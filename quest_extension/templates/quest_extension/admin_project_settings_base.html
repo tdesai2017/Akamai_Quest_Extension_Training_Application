@@ -3,7 +3,8 @@
 <html>
 <head>
   <title> Project Settings </title>
-    <link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_project_settings_style.css' %}">
+  {% block stylesheet %}
+  {% endblock %}
 
     <script> function update(info){
         document.getElementById("update_" + info + "_button").style.display = "none";
@@ -54,6 +55,12 @@
 
     <br>
 
+{% block teams %}
+{% endblock %}
+
+
+
+
     <form method = 'POST' action = '/quest/delete_project/{{current_admin.admin_ldap}}/{{current_project.id}}'>
       {% csrf_token %}
       <button id = 'delete_project_button' type= 'submit' onclick="return confirm('WARNING: If you delete this project, all data will be lost regarding the project, and all admins and users will lose access!!! ')"> Delete Project </button>
@@ -63,17 +70,8 @@
   <br>
 <!-- make sure to differntiate between whether it is an editable or non_editable view -->
   
-  {% if view_or_editable == 'view' %}
-    <form method = 'GET' action= '/quest/admin_home_view_only/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-        <button type='submit'> Back </button>
-    </form>
-    {% endif %}
-
-  {% if view_or_editable == 'editable' %}
-    <form method = 'GET' action= '/quest/admin_home_editable/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-        <button type='submit'> Back </button>
-    </form>
-    {% endif %}
+  {% block back %}
+  {% endblock %}
 
 </body>
 </html>

@@ -32,10 +32,15 @@
     
 
     {% block delete_quest_code %}
+    <br>
+    <br>
+    <br>
     <form method = 'POST' action = '/quest/delete_quest/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
         {% csrf_token %}
         <button id = 'delete_quest_button' type= 'submit' onclick="return confirm('WARNING: If you delete this quest, all data will be lost regarding the quest! ')"> Delete Quest </button>
     </form>
+    <br>
+    <br>
     {% endblock %}
     
    

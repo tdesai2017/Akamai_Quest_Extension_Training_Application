@@ -29,7 +29,6 @@
 
     <!--format = teamname -> (current points earned by team, total points that can be earned by team)-->
   
-    {% if current_user_project_team != None %}
     <br>
     <br>
         Progress:
@@ -40,8 +39,6 @@
         <!-- team.data.1.1 = total possible points that can be earned by this team if everyone has 100% completion -->
         <br>
         {% endfor %}
-
-    {% endif %}
 
     <br>
     <br>

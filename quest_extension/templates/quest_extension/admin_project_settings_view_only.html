@@ -1,0 +1,22 @@
+{% extends 'quest_extension/admin_project_settings_base.html' %}
+{% load static %}
+
+{% block stylesheet %}
+<link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_project_settings/admin_project_settings_view_only_style.css' %}">
+{% endblock %}
+
+{% block teams %}
+<h3> Teams (View Only) </h3>
+  {% for team in list_of_teams %}
+  <p> {{ team.team_name }}</p>
+  {% endfor %}
+{% endblock %}
+
+
+{% block back %}
+
+<form method = 'GET' action= '/quest/admin_home_view_only/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+    <button type='submit'> Back </button>
+</form>
+
+{% endblock %}

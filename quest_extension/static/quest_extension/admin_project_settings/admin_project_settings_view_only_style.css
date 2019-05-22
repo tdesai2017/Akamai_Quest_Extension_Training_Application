@@ -15,3 +15,9 @@
     padding: 15px 32px;
 }
 
+#remove_all_users_button {
+    color: white;
+    background-color: orange;
+    padding: 15px 32px;
+
+}

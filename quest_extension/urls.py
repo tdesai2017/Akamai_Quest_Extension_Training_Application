@@ -173,6 +173,7 @@ path('update_project_random_phrase/<ldap>/<project_id>', views.update_random_phr
 path('update_project_admin_pin/<ldap>/<project_id>', views.update_admin_pin),
 path('remove_as_admin/<ldap>/<project_id>', views.remove_as_admin),
 path('add_team/<ldap>/<project_id>', views.add_team),
+path('remove_all_users/<ldap>/<project_id>', views.remove_all_users),
 path('delete_team/<ldap>/<project_id>', views.delete_team),
 
 ##############################

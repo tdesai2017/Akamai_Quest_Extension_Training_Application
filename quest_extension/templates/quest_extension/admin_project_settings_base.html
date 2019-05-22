@@ -58,13 +58,21 @@
 {% block teams %}
 {% endblock %}
 
+{% if not current_project.project_editable %}
+<form method = 'POST' action = '/quest/remove_all_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+  {% csrf_token %}
+  <button id = 'remove_all_users_button' type= 'submit' onclick="return confirm('WARNING: If you remove all users, all data regarding their progress will be lost')"> Remove All Users </button>
+</form>
+{% endif %}
+
+<br>
+<br>
 
 
-
-    <form method = 'POST' action = '/quest/delete_project/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-      {% csrf_token %}
-      <button id = 'delete_project_button' type= 'submit' onclick="return confirm('WARNING: If you delete this project, all data will be lost regarding the project, and all admins and users will lose access!!! ')"> Delete Project </button>
-  </form>
+  <form method = 'POST' action = '/quest/delete_project/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+    {% csrf_token %}
+    <button id = 'delete_project_button' type= 'submit' onclick="return confirm('WARNING: If you delete this project, all data will be lost regarding the project, and all admins and users will lose access!!! ')"> Delete Project </button>
+</form>
 
   <br>
   <br>

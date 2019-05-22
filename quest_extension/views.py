@@ -200,11 +200,8 @@ def admin_update_project_description(request, ldap, project_id):
         current_project.project_description = updated_project_description
         current_project.save()
 
-    if request.session['view_or_editable'] == 'editable':
-        return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
+    return redirect_to_correct_home_page(request.session['view_or_editable'], ldap, project_id)
 
-    else:
-        return HttpResponseRedirect('/quest/admin_home_view_only/' + ldap + '/' + str(project_id))
 
 
 
@@ -221,12 +218,8 @@ def admin_update_project_name (request, ldap, project_id):
         current_project.project_name = updated_project_name
         current_project.save()
 
-    if request.session['view_or_editable'] == 'editable':
-        return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
-
-    else:
-        return HttpResponseRedirect('/quest/admin_home_view_only/' + ldap + '/' + str(project_id))        
-
+    return redirect_to_correct_home_page(request.session['view_or_editable'], ldap, project_id)
+    
 ######################################
 
 
@@ -371,10 +364,7 @@ def save_video(request, ldap, quest_id):
             temp.quest = current_quest
             temp.save()
             
-    if request.session['view_or_editable'] == 'editable':  
-        return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
-    else:
-        return HttpResponseRedirect('/quest/admin_quest_page_view_only/' + ldap + '/' + str(quest_id))
+    return redirect_to_correct_quest_page(request.session['view_or_editable'], ldap, quest_id)
 
 def delete_video(request, ldap, quest_id):
 
@@ -388,10 +378,7 @@ def delete_video(request, ldap, quest_id):
         print("YOU ARE HERE", video_to_delete)
         video_to_delete.delete()
             
-    if request.session['view_or_editable'] == 'editable':  
-        return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
-    else:
-        return HttpResponseRedirect('/quest/admin_quest_page_view_only/' + ldap + '/' + str(quest_id))
+    return redirect_to_correct_quest_page(request.session['view_or_editable'], ldap, quest_id)
 
 def update_quest_name(request, ldap, quest_id):
 
@@ -405,12 +392,9 @@ def update_quest_name(request, ldap, quest_id):
             updated_quest_name = post_request['quest_name']
             current_quest.quest_name = updated_quest_name
             current_quest.save()  
-    if request.session['view_or_editable'] == 'editable':  
-        return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
-    else:
-        return HttpResponseRedirect('/quest/admin_quest_page_view_only/' + ldap + '/' + str(quest_id))
 
-        
+    return redirect_to_correct_quest_page(request.session['view_or_editable'], ldap, quest_id)
+
 
 
 def update_quest_description(request, ldap, quest_id):
@@ -426,10 +410,8 @@ def update_quest_description(request, ldap, quest_id):
             current_quest.quest_description = updated_quest_description
             current_quest.save()                
 
-    if request.session['view_or_editable'] == 'editable':  
-        return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
-    else:
-        return HttpResponseRedirect('/quest/admin_quest_page_view_only/' + ldap + '/' + str(quest_id))
+    return redirect_to_correct_quest_page(request.session['view_or_editable'], ldap, quest_id)
+
 
 ######################################
 
@@ -905,7 +887,6 @@ def get_admin_project_page(request, ldap):
     return render(request, 'quest_extension/admin_project_page.html', context)
 
 def add_new_project(request, ldap):
-
 
     if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
@@ -1641,6 +1622,18 @@ def remove_as_admin(request, ldap, project_id):
     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     
+#Should only be available in the view_only mode, since there's no use in editable
+def remove_all_users(request, ldap, project_id):
+    
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+            return HttpResponseRedirect('/quest/admin_login')
+
+    current_project = Project.objects.get(id = project_id)
+    current_project.project_editable = True
+    current_project.save()
+    delete_all_user_projects = UserProject.objects.filter(project = current_project).delete()
+    messages.success(request, current_project.project_name + ' is now editable!')
+    return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
 
 def delete_project(request, ldap, project_id):

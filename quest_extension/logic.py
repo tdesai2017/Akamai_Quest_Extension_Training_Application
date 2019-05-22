@@ -168,3 +168,16 @@ def get_team_points_format(current_project):
 def is_still_editable(current_project):
     print (len(UserProject.objects.filter(project = current_project)))
     return len(UserProject.objects.filter(project = current_project)) == 0
+
+def redirect_to_correct_home_page(view_or_editable, ldap, project_id):
+    if view_or_editable == 'editable':
+        return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
+
+    else:
+        return HttpResponseRedirect('/quest/admin_home_view_only/' + ldap + '/' + str(project_id)) 
+
+def redirect_to_correct_quest_page(view_or_editable, ldap, quest_id):
+    if view_or_editable == 'editable':  
+        return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
+    else:
+        return HttpResponseRedirect('/quest/admin_quest_page_view_only/' + ldap + '/' + str(quest_id))

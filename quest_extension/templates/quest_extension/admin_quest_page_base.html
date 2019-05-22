@@ -51,16 +51,14 @@
                 <button type = 'submit'> Update Quest Name</button>
             </form>
         </div>
-    <br>
+   
     </div>
     <div class='container'>
-            <div id='my-text-area'>
-                <html> {{ current_quest.quest_description|safe }} </html>
-            </div>
+        <div id='my-text-area'>
+            <br>
+            <html> {{ current_quest.quest_description|safe }} </html>
+        </div>
     </div>
-    
-    <br>
-    <br>
     <div id = 'edit_description_container'>
 
             <form method='POST' id = 'edit_description_form' action = "/quest/admin_update_quest_description/{{current_admin.admin_ldap}}/{{current_quest.id}}">

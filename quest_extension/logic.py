@@ -162,3 +162,9 @@ def get_team_points_format(current_project):
         #format = teamname -> (current points earned by team, total points that can be earned by team)
         all_teams_and_points[team.team_name] = (current_points_for_team, total_possible_points_for_team)
     return all_teams_and_points
+
+#if an admin is inside of a project and changing aspects of it, we want to stop this as 
+#soon as someone joins the proejct
+def is_still_editable(current_project):
+    print (len(UserProject.objects.filter(project = current_project)))
+    return len(UserProject.objects.filter(project = current_project)) == 0

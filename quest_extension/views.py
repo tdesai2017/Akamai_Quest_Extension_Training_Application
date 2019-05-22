@@ -23,8 +23,17 @@ import json
 #For the creation of a FR question (not editing)
 def get_fr_question_form(request, ldap, quest_id):
 
+    current_quest = Quest.objects.get(id = quest_id)
+    current_project = current_quest.project
+
+    
     if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
+
+
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     question_form = QuestionForm()
@@ -33,9 +42,16 @@ def get_fr_question_form(request, ldap, quest_id):
     return render(request, 'quest_extension/fr_question_form.html', context)
 
 def create_fr_question(request, ldap, quest_id):
+    
+    current_quest = Quest.objects.get(id = quest_id)
+    current_project = current_quest.project
 
     if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
+
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     if request.method  == 'POST':
         question_form = QuestionForm(request.POST)
@@ -51,8 +67,16 @@ def create_fr_question(request, ldap, quest_id):
 #For the creation of a free response form (not editing)
 def get_mc_question_form(request, ldap, quest_id):
 
+    current_quest = Quest.objects.get(id = quest_id)
+    current_project = current_quest.project
+
     if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
+
+
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     question_form = QuestionForm()
@@ -64,8 +88,15 @@ def get_mc_question_form(request, ldap, quest_id):
 
 def create_mc_question(request, ldap, quest_id):
 
+    current_quest = Quest.objects.get(id = quest_id)
+    current_project = current_quest.project
+
     if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
+
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     if request.method  == 'POST':
         question_form = QuestionForm(request.POST)
@@ -82,8 +113,14 @@ def create_mc_question(request, ldap, quest_id):
 
 def get_admin_home_editable(request, ldap, project_id): 
 
+    current_project = Project.objects.get(id = project_id)    
+
     if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
         return HttpResponseRedirect('/quest/admin_login')
+
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     #I start a session here so that when we go "back" from pages that are common to both
     #editable and view only pages, we will know if we were in an editable or view_only
@@ -92,7 +129,6 @@ def get_admin_home_editable(request, ldap, project_id):
 
         
     current_admin = Admin.objects.get(admin_ldap = ldap)
-    current_project = Project.objects.get(id = project_id)    
     quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
     quest_form = QuestForm()
     #Only display all_teams_and_points in template if this project does in face use teams
@@ -109,11 +145,15 @@ def get_admin_home_editable(request, ldap, project_id):
 
 def save_new_quest(request, ldap, project_id): 
 
+    current_project = Project.objects.get(id = project_id)
+
     if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
         return HttpResponseRedirect('/quest/admin_login')
 
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
-    current_project = Project.objects.get(id = project_id)
     if request.method == 'POST':
         post_request = request.POST
         print (post_request)
@@ -153,12 +193,20 @@ def admin_update_project_description(request, ldap, project_id):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_project = Project.objects.get(id = project_id)
+
     if request.method == 'POST':
         post_request = request.POST
         updated_project_description = post_request['project_description']
         current_project.project_description = updated_project_description
         current_project.save()
-    return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
+
+    if request.session['view_or_editable'] == 'editable':
+        return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
+
+    else:
+        return HttpResponseRedirect('/quest/admin_home_view_only/' + ldap + '/' + str(project_id))
+
+
 
 def admin_update_project_name (request, ldap, project_id):
 
@@ -166,13 +214,18 @@ def admin_update_project_name (request, ldap, project_id):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_project = Project.objects.get(id = project_id)
+
     if request.method == 'POST':
         post_request = request.POST
         updated_project_name = post_request['project_name']
         current_project.project_name = updated_project_name
         current_project.save()
-    return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
-        
+
+    if request.session['view_or_editable'] == 'editable':
+        return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
+
+    else:
+        return HttpResponseRedirect('/quest/admin_home_view_only/' + ldap + '/' + str(project_id))        
 
 ######################################
 
@@ -202,6 +255,13 @@ def get_admin_quest_page_editable(request, ldap, quest_id):
 
     if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
         return HttpResponseRedirect('/quest/admin_login')
+
+
+    current_quest = Quest.objects.get(id = quest_id)
+    current_project = current_quest.project
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     current_quest = Quest.objects.get(id = quest_id)
@@ -245,6 +305,13 @@ def delete_question(request, ldap, quest_id):
     if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
         return HttpResponseRedirect('/quest/admin_login')
 
+
+    current_quest = Quest.objects.get(id = quest_id)
+    current_project = current_quest.project
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
     if request.method == 'POST':
         post_request = request.POST
         current_question = Question.objects.get(id = post_request['deleted'])
@@ -262,7 +329,13 @@ def undo_delete_question(request, ldap, quest_id):
     if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
         return HttpResponseRedirect('/quest/admin_login')
 
+
     current_quest = Quest.objects.get(id = quest_id)
+    current_project = current_quest.project
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
     if request.method == 'POST':        
         if Question.objects.filter(quest = current_quest, deleted = True):
             object_to_reappear = Question.objects.filter(quest = current_quest, deleted = True).latest('time_modified')
@@ -282,6 +355,7 @@ def save_video(request, ldap, quest_id):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_quest = Quest.objects.get(id = quest_id)
+    
     if request.method == 'POST': 
         post_request = request.POST
         video_form = VideoForm(post_request)
@@ -297,8 +371,10 @@ def save_video(request, ldap, quest_id):
             temp.quest = current_quest
             temp.save()
             
-    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
-
+    if request.session['view_or_editable'] == 'editable':  
+        return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
+    else:
+        return HttpResponseRedirect('/quest/admin_quest_page_view_only/' + ldap + '/' + str(quest_id))
 
 def delete_video(request, ldap, quest_id):
 
@@ -312,7 +388,10 @@ def delete_video(request, ldap, quest_id):
         print("YOU ARE HERE", video_to_delete)
         video_to_delete.delete()
             
-    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
+    if request.session['view_or_editable'] == 'editable':  
+        return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
+    else:
+        return HttpResponseRedirect('/quest/admin_quest_page_view_only/' + ldap + '/' + str(quest_id))
 
 def update_quest_name(request, ldap, quest_id):
 
@@ -325,29 +404,46 @@ def update_quest_name(request, ldap, quest_id):
             post_request = request.POST
             updated_quest_name = post_request['quest_name']
             current_quest.quest_name = updated_quest_name
-            current_quest.save()                
-    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
+            current_quest.save()  
+    if request.session['view_or_editable'] == 'editable':  
+        return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
+    else:
+        return HttpResponseRedirect('/quest/admin_quest_page_view_only/' + ldap + '/' + str(quest_id))
+
+        
+
 
 def update_quest_description(request, ldap, quest_id):
     if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_quest = Quest.objects.get(id = quest_id)
+    
 
     if request.method == 'POST': 
             post_request = request.POST
             updated_quest_description = post_request['quest_description']
             current_quest.quest_description = updated_quest_description
             current_quest.save()                
-    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
+
+    if request.session['view_or_editable'] == 'editable':  
+        return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
+    else:
+        return HttpResponseRedirect('/quest/admin_quest_page_view_only/' + ldap + '/' + str(quest_id))
 
 ######################################
+
 def get_admin_quest_settings_editable(request, ldap, quest_id):
 
     if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_quest = Quest.objects.get(id = quest_id)
+    current_project = current_quest.project
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
     current_admin = Admin.objects.get(admin_ldap = ldap)
     context = {'current_quest': current_quest, 'current_admin': current_admin}
 
@@ -359,7 +455,12 @@ def update_quest_points_earned(request, ldap, quest_id):
         return HttpResponseRedirect('/quest/admin_login')
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
+    
     current_quest = Quest.objects.get(id = quest_id)
+    current_project = current_quest.project
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     if request.method == 'POST':
         post_request = request.POST
@@ -379,6 +480,11 @@ def update_quest_path_number(request, ldap, quest_id):
     current_admin = Admin.objects.get(admin_ldap = ldap)
     current_quest = Quest.objects.get(id = quest_id)
     all_quest_path_numbers_in_project = Quest.objects.filter(project = current_quest.project).values_list('quest_path_number', flat=True)
+    
+    current_project = current_quest.project
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     if request.method == 'POST':
         post_request = request.POST
@@ -400,8 +506,13 @@ def delete_quest(request, ldap, quest_id):
     if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
         return HttpResponseRedirect('/quest/admin_login')
 
-    current_admin = Admin.objects.get(admin_ldap = ldap)
     current_quest = Quest.objects.get(id = quest_id)
+    current_project = current_quest.project
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
     project_id = current_quest.project.id
     if request.method == 'POST':
         current_quest.delete()
@@ -434,6 +545,7 @@ def get_admin_quest_page_view_only(request, ldap, quest_id):
     list_of_questions = Question.objects.filter(quest = current_quest, deleted=False).order_by('time_modified')
     fr_input_form = TakeInFreeResponseForm()
     all_videos = Video.objects.filter(quest = current_quest)
+    video_form = VideoForm()
 
 
     format = {}
@@ -454,7 +566,13 @@ def get_admin_quest_page_view_only(request, ldap, quest_id):
         #Combines wrong answers with correct answer
         format[question] = all_answers 
 
-    context = {'current_quest': current_quest, 'format': format, 'fr_input_form': fr_input_form, 'current_project_id': current_project_id, 'all_videos': all_videos, 'current_admin': current_admin}
+    context = {'current_quest': current_quest,
+    'format': format,
+    'fr_input_form': fr_input_form,
+    'current_project_id': current_project_id,
+    'all_videos': all_videos,
+    'current_admin': current_admin,
+    'video_form': video_form}
     return render(request, 'quest_extension/admin_quest_page_view_only.html', context)
 
 ######################################
@@ -635,8 +753,14 @@ def get_admin_edit_fr_question(request, ldap, question_id):
     if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
-    current_admin = Admin.objects.get(admin_ldap = ldap)
     current_question = Question.objects.get(id = question_id)
+    current_quest = current_question.quest
+    current_project = current_quest.project
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
     current_questions_answers = CorrectAnswer.objects.filter(question = current_question)
     question_text_form = QuestionForm(initial={'question_text': current_question.question_text})
 
@@ -656,7 +780,15 @@ def get_admin_edit_fr_question(request, ldap, question_id):
 
 
 def save_admin_edit_fr_question(request, ldap, question_id):
+
     current_question = Question.objects.get(id = question_id)
+
+    current_quest = current_question.quest
+    current_project = current_quest.project
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
     if request.method == 'POST':
         question_form = QuestionForm(request.POST)
         answer_form = CorrectAnswerForm(request.POST)
@@ -684,8 +816,15 @@ def get_admin_edit_mc_question(request, ldap, question_id):
     if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
-    current_admin = Admin.objects.get(admin_ldap = ldap)
+
     current_question = Question.objects.get(id = question_id)
+    current_quest = current_question.quest
+    current_project = current_quest.project
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
     correct_answers = CorrectAnswer.objects.filter(question = current_question)
     wrong_answers = IncorrectAnswer.objects.filter(question= current_question)
     question_text_form = QuestionForm(initial={'question_text': current_question.question_text})
@@ -719,7 +858,14 @@ def save_admin_edit_mc_question (request, ldap, question_id):
     if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
+
     current_question = Question.objects.get(id = question_id)
+    current_quest = current_question.quest
+    current_project = current_quest.project
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
     quest_id = current_question.quest.id
     if request.method == 'POST':
         question_form = QuestionForm(request.POST)
@@ -1141,14 +1287,6 @@ def go_back_to_login(request, ldap):
         current_user.save()
     return HttpResponseRedirect('/quest/user_login')
 
-####################################
-
-# def get_admin_edit_project_description(request, ldap, project_id):
-#     current_project = Project.objects.get(id = project_id)
-#     context = {'current_project': current_project}
-#     return render(request, 'quest_extension/admin_edit_project_description.html', context)
-
-
 
 ####################################
 
@@ -1414,10 +1552,16 @@ def get_admin_project_settings_editable(request, ldap, project_id):
     if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
         return HttpResponseRedirect('/quest/admin_login')
 
+    current_project = Project.objects.get(id = project_id)
+
+
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
     view_or_editable = request.session['view_or_editable']
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
-    current_project = Project.objects.get(id = project_id)
 
     #Represents all admins for this project
     list_of_admins = AdminProject.objects.filter(project = current_project).values_list('admin', flat = True)
@@ -1510,13 +1654,19 @@ def delete_project(request, ldap, project_id):
     
     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
-
+#Only allowable in editable mode
 def add_team(request, ldap, project_id):
 
     if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
         return HttpResponseRedirect('/quest/admin_login')
-    
+
     current_project = Project.objects.get(id = project_id)
+
+    if not is_still_editable(current_project):
+        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
+    
     list_of_team_names = Team.objects.filter(project = current_project).values_list('team_name', flat=True)
     if request.method == 'POST':
         post_request = request.POST

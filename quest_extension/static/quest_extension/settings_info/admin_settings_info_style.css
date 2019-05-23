@@ -14,3 +14,17 @@
 height: 50px;
 width: 100px;
 }
+
+
+/* Message classes */
+.success {
+    color: lightgreen;
+}
+
+.warning {
+    color: orange;
+}
+
+.error {
+    color: red;
+}

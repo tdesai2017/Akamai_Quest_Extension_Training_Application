@@ -181,3 +181,9 @@ def redirect_to_correct_quest_page(view_or_editable, ldap, quest_id):
         return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
     else:
         return HttpResponseRedirect('/quest/admin_quest_page_view_only/' + ldap + '/' + str(quest_id))
+
+def redirect_to_correct_project_settings_page(view_or_editable, ldap, project_id):
+    if view_or_editable == 'view':
+        return HttpResponseRedirect('/quest/admin_project_settings_view_only/' + ldap + '/' + project_id)
+    else:
+        return HttpResponseRedirect('/quest/admin_project_settings_editable/' + ldap + '/' + project_id)

@@ -32,7 +32,7 @@ def get_fr_question_form(request, ldap, quest_id):
 
 
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -50,7 +50,7 @@ def create_fr_question(request, ldap, quest_id):
         return HttpResponseRedirect('/quest/admin_login')
 
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     if request.method  == 'POST':
@@ -75,7 +75,7 @@ def get_mc_question_form(request, ldap, quest_id):
 
 
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -95,7 +95,7 @@ def create_mc_question(request, ldap, quest_id):
         return HttpResponseRedirect('/quest/admin_login')
 
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     if request.method  == 'POST':
@@ -119,7 +119,7 @@ def get_admin_home_editable(request, ldap, project_id):
         return HttpResponseRedirect('/quest/admin_login')
 
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     #I start a session here so that when we go "back" from pages that are common to both
@@ -151,7 +151,7 @@ def save_new_quest(request, ldap, project_id):
         return HttpResponseRedirect('/quest/admin_login')
 
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     if request.method == 'POST':
@@ -169,7 +169,7 @@ def save_new_quest(request, ldap, project_id):
                 temp.quest_description = post_request['quest_description']
                 temp.project = current_project
                 temp.save()
-                quest_id = temp.id
+                messages.success(request, 'New quest added successfully!')
 
                 # If a user has no current quest for a certain project since the admin never created a quest with path 1 until
                 # now, the user's current quest will be updated here to the inputted quest with id = 1
@@ -179,8 +179,9 @@ def save_new_quest(request, ldap, project_id):
                     for userproject in all_users_without_current_quests:
                         userproject.current_quest = temp
                         userproject.save()
+        else:
+            messages.error(request, 'Duplicate or invalid path number!')
 
-                    return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
 
     return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
 
@@ -199,6 +200,9 @@ def admin_update_project_description(request, ldap, project_id):
         updated_project_description = post_request['project_description']
         current_project.project_description = updated_project_description
         current_project.save()
+        messages.success(request, 'Description successfully updated!')
+
+
 
     return redirect_to_correct_home_page(request.session['view_or_editable'], ldap, project_id)
 
@@ -217,6 +221,8 @@ def admin_update_project_name (request, ldap, project_id):
         updated_project_name = post_request['project_name']
         current_project.project_name = updated_project_name
         current_project.save()
+        messages.success(request, 'Name successfully updated!')
+
 
     return redirect_to_correct_home_page(request.session['view_or_editable'], ldap, project_id)
     
@@ -253,7 +259,7 @@ def get_admin_quest_page_editable(request, ldap, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
     current_project = current_quest.project
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -302,7 +308,7 @@ def delete_question(request, ldap, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
     current_project = current_quest.project
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     if request.method == 'POST':
@@ -313,6 +319,7 @@ def delete_question(request, ldap, quest_id):
         current_time_modified = copy.deepcopy(current_question.time_modified)
         current_question.deleted = True
         current_question.save()
+        messages.success(request, 'Question successfully deleted!')
         Question.objects.filter(id = post_request['deleted']).update(time_modified = current_time_modified)
 
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
@@ -326,7 +333,7 @@ def undo_delete_question(request, ldap, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
     current_project = current_quest.project
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     if request.method == 'POST':        
@@ -337,6 +344,7 @@ def undo_delete_question(request, ldap, quest_id):
             current_time_modified = copy.deepcopy(object_to_reappear.time_modified)
             object_to_reappear.deleted = False
             object_to_reappear.save()
+            messages.success(request, 'Successful Undo!')
             Question.objects.filter(id = object_to_reappear_id).update(time_modified = current_time_modified)
 
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
@@ -363,7 +371,8 @@ def save_video(request, ldap, quest_id):
             temp.video_url = video_identifier
             temp.quest = current_quest
             temp.save()
-            
+            messages.success(request, 'Video successfully added!')
+
     return redirect_to_correct_quest_page(request.session['view_or_editable'], ldap, quest_id)
 
 def delete_video(request, ldap, quest_id):
@@ -377,6 +386,7 @@ def delete_video(request, ldap, quest_id):
         video_to_delete = Video.objects.get(id = video_id)
         print("YOU ARE HERE", video_to_delete)
         video_to_delete.delete()
+        messages.success(request, 'Video successfully deleted!')
             
     return redirect_to_correct_quest_page(request.session['view_or_editable'], ldap, quest_id)
 
@@ -392,6 +402,8 @@ def update_quest_name(request, ldap, quest_id):
             updated_quest_name = post_request['quest_name']
             current_quest.quest_name = updated_quest_name
             current_quest.save()  
+            messages.success(request, 'Name successfully updated!')
+
 
     return redirect_to_correct_quest_page(request.session['view_or_editable'], ldap, quest_id)
 
@@ -408,7 +420,9 @@ def update_quest_description(request, ldap, quest_id):
             post_request = request.POST
             updated_quest_description = post_request['quest_description']
             current_quest.quest_description = updated_quest_description
-            current_quest.save()                
+            current_quest.save() 
+            messages.success(request, 'Description successfully updated!')
+               
 
     return redirect_to_correct_quest_page(request.session['view_or_editable'], ldap, quest_id)
 
@@ -423,7 +437,7 @@ def get_admin_quest_settings_editable(request, ldap, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
     current_project = current_quest.project
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -441,7 +455,7 @@ def update_quest_points_earned(request, ldap, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
     current_project = current_quest.project
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     if request.method == 'POST':
@@ -449,7 +463,7 @@ def update_quest_points_earned(request, ldap, quest_id):
         quest_points_earned_input = post_request['quest_points_earned']
         current_quest.quest_points_earned = quest_points_earned_input
         current_quest.save()
-        messages.success(request, 'Change was successful!')
+        messages.success(request, 'Quest points successfully updated!')
 
 
     return HttpResponseRedirect('/quest/admin_quest_settings_editable/' + current_admin.admin_ldap + '/' + str(quest_id))
@@ -465,7 +479,7 @@ def update_quest_path_number(request, ldap, quest_id):
     
     current_project = current_quest.project
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     if request.method == 'POST':
@@ -474,9 +488,9 @@ def update_quest_path_number(request, ldap, quest_id):
         if int(quest_path_number_input) not in all_quest_path_numbers_in_project and int(quest_path_number_input) > 0:
             current_quest.quest_path_number = quest_path_number_input
             current_quest.save()
-            messages.success(request, 'Change was successful!')
+            messages.success(request, 'Quest path number successfully updated!')
         else:
-            messages.success(request, 'Please Input a valid path number (greater than 0 and no duplicate path numbers)')
+            messages.error(request, 'Please Input a valid path number (greater than 0 and no duplicate path numbers)')
         
 
 
@@ -491,7 +505,7 @@ def delete_quest(request, ldap, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
     current_project = current_quest.project
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -499,6 +513,7 @@ def delete_quest(request, ldap, quest_id):
     if request.method == 'POST':
         current_quest.delete()
 
+    messages.success(request, 'Quest "' + current_quest.quest_name + '" successfully deleted!')
     return HttpResponseRedirect('/quest/admin_home_editable/' + current_admin.admin_ldap + '/' + str(project_id))
 ######################################
 
@@ -573,10 +588,6 @@ def get_user_home(request, ldap, project_id):
     #Points information for teams
     
 
-        
-
-    
-
     context = {'quests':quests, 
                 'user': user, 
                 'current_project': current_project, 
@@ -610,8 +621,9 @@ def get_user_quest_page(request, ldap, quest_id):
 
     list_of_questions = Question.objects.filter(quest = current_quest, deleted=False).order_by('time_modified')
     fr_input_form = TakeInFreeResponseForm()
-    have_correct_answer = [i.question.id for i in CorrectlyAnsweredQuestion.objects.filter(user = current_user)]
-
+    
+    #"question" also returns the primary id of the question
+    have_correct_answer = CorrectlyAnsweredQuestion.objects.filter(user = current_user).values_list('question', flat = True)
 
     format_2 = []
     for question in list_of_questions:
@@ -673,13 +685,18 @@ def validate_fr_question_response(request, ldap, quest_id):
             correctly_answered_question.user = User.objects.get(user_ldap = ldap)
             correctly_answered_question.save()
             go_to_next_quest(current_quest, current_user, current_project)
+        else:
+            print ('You are wrong')
+            # messages.error(request, 'Sorry, that\'s not the right answer :(', extra_tags = str(current_question.question_id))
 
-            return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
+    return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + str(quest_id))
 
-        print('You are wrong')
-        return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
-    
-    return HttpResponseRedirect('/quest/user_quest_page/' + ldap + str(quest_id))
+
+
+
+
+############################
+
 
 
 def validate_mc_question_response(request, ldap, quest_id):
@@ -719,12 +736,10 @@ def validate_mc_question_response(request, ldap, quest_id):
             correctly_answered_question.user = User.objects.get(user_ldap = ldap)
             correctly_answered_question.save()
             go_to_next_quest(current_quest, current_user, current_project)
-            return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
-
-        print('You are wrong')
-        return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + quest_id)
+        else:
+            print('You are wrong')
         
-    return HttpResponseRedirect('/quest/user_quest_page/' + ldap + str(quest_id))
+    return HttpResponseRedirect('/quest/user_quest_page/' + ldap +'/' + str(quest_id))
 
 
 ######################################
@@ -739,7 +754,7 @@ def get_admin_edit_fr_question(request, ldap, question_id):
     current_quest = current_question.quest
     current_project = current_quest.project
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -768,7 +783,7 @@ def save_admin_edit_fr_question(request, ldap, question_id):
     current_quest = current_question.quest
     current_project = current_quest.project
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     if request.method == 'POST':
@@ -803,7 +818,7 @@ def get_admin_edit_mc_question(request, ldap, question_id):
     current_quest = current_question.quest
     current_project = current_quest.project
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -845,7 +860,7 @@ def save_admin_edit_mc_question (request, ldap, question_id):
     current_quest = current_question.quest
     current_project = current_quest.project
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     quest_id = current_question.quest.id
@@ -904,9 +919,9 @@ def add_new_project(request, ldap):
         admin_pin_input = post_request['project_admin_pin']
         is_new_admin_pin = admin_pin_input not in Project.objects.all().values_list('project_admin_pin', flat=True) 
         if not is_new_random_phrase:
-            messages.success(request, 'Please use a different random phrase for security purposes')
+            messages.error(request, 'Please use a different random phrase for security purposes')
         if not is_new_admin_pin:
-            messages.success(request, 'Please use a different admin pin for security purposes')
+            messages.error(request, 'Please use a different admin pin for security purposes')
 
         print(post_request)
         if project_form.is_valid():
@@ -925,13 +940,14 @@ def add_new_project(request, ldap):
                 #checks if there are duplicates team names, which is not allowed
 
                 if len(list_of_teams) != len (set(list_of_teams)):
-                    messages.success(request, 'You cannot have teams with the same name')
+                    messages.error(request, 'You cannot have teams with the same name')
                     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
                 
                 temp.project_has_teams = True
 
                 
             temp.save() #saves proejct
+            messages.success(request, 'You have successfully created a new project!')
             project_id = temp.id  
             current_project = Project.objects.get(id = project_id) 
 
@@ -949,7 +965,6 @@ def add_new_project(request, ldap):
             new_admin_project.project = current_project
             new_admin_project.save() # saves AdminProject
         
-            return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
     
     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
@@ -972,9 +987,9 @@ def join_project(request, ldap):
             project_name = project_to_join.project_name
             #We are further validating that they can become an admin of this project
             #Because they must also know the name of it
-            if project_to_join in list_of_admins_projects:
+            if project_to_join in list_of_admins_projects and project_name == input_name:
                 print (list_of_admins_projects)
-                messages.success(request, 'You cannot join a project that you are already a part of')
+                messages.error(request, 'You cannot join a project that you are already a part of')
                 return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
             elif project_name == input_name:
@@ -986,9 +1001,9 @@ def join_project(request, ldap):
 
 
             else:
-                messages.success(request, 'Invalid Name or Admin Pin')
+                messages.error(request, 'Invalid Name or Admin Pin')
         else:
-                messages.success(request, 'Invalid Name or Admin Pin') 
+                messages.error(request, 'Invalid Name or Admin Pin') 
 
 
     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
@@ -1054,7 +1069,7 @@ def add_user_project_page(request, ldap):
             #If user did not add a team in their request to join the project
             if has_teams and post_request['team'] not in teams_in_current_project.values_list('team_name', flat=True):
                 print (teams_in_current_project.values_list('team_name', flat=True), post_request['team'])
-                messages.success(request, 'Please include a valid team name')
+                messages.error(request, 'Please include a valid team name')
                 return HttpResponseRedirect('/quest/user_project_page/' + ldap)
             
             
@@ -1080,8 +1095,9 @@ def add_user_project_page(request, ldap):
                 #Since a user joined, the admin can no longer change the quest
                 project_requested.project_editable = False
                 project_requested.save()
+                messages.success(request, 'Successfully joined "' + project_requested.project_name + '"!')
             else:
-                messages.success(request, 'You are already part of this project')
+                messages.error(request, 'You are already part of this project')
 
     
     return HttpResponseRedirect('/quest/user_project_page/' + ldap)
@@ -1140,7 +1156,7 @@ def add_new_user(request):
             except:
                 valid_email = False
                 print("This is an invalid email")
-                messages.success(request, 'Please input a valid email')
+                messages.error(request, 'Please input a valid email')
                 return HttpResponseRedirect('/quest/new_user') 
 
             valid_password = (retyped_password == temp.user_password)
@@ -1151,9 +1167,9 @@ def add_new_user(request):
                 messages.success(request, 'Your new account was created!')
                 return HttpResponseRedirect('/quest/user_login')
             if not is_new_ldap:
-                messages.success(request, 'There is already an account associated with this LDAP')
+                messages.error(request, 'There is already an account associated with this LDAP')
             if not valid_password:
-                messages.success(request, 'Your Password and Retyped Password do not match')
+                messages.error(request, 'Your Password and Retyped Password do not match')
 
     return HttpResponseRedirect('/quest/new_user')
 
@@ -1182,14 +1198,14 @@ def user_login_to_account(request):
         if User.objects.filter(user_ldap = ldap):
             #If incorrect password
             if not User.objects.get(user_ldap = ldap).user_password == password:
-                messages.success(request, 'Invalid Password')
+                messages.error(request, 'Invalid Password')
             #If correct password for ldap - creates a session for the user
             else: 
                 request.session['current_user_ldap'] = post_request['ldap']
                 return HttpResponseRedirect('/quest/user_project_page/' + request.session['current_user_ldap'])
         #If LDAP is not associated with an account
         else:
-            messages.success(request, 'There is no account associated with this LDAP')
+            messages.error(request, 'There is no account associated with this LDAP')
     
     return HttpResponseRedirect('/quest/user_login')
 
@@ -1200,11 +1216,11 @@ def user_change_password_request(request):
         ldap = post_request['ldap']
         #only proceed if there is a user with this ldap
         if not User.objects.filter(user_ldap = ldap):
-            messages.success(request, 'There is no account with this ldap')
+            messages.error(request, 'There is no account with this ldap')
             return HttpResponseRedirect('/quest/user_login')
         current_user = User.objects.get(user_ldap = ldap)
         if ldap not in User.objects.all().values_list('user_ldap', flat=True):
-            messages.success(request, 'There is no account created for that LDAP')
+            messages.error(request, 'There is no account created for that LDAP')
         else:
             pin = str(random.randint(99999, 999999))
             current_user.user_reset_password_pin = pin
@@ -1244,10 +1260,10 @@ def new_password_sent(request, ldap):
             retype_new_password = forgot_password_form.cleaned_data['retype_new_password']
 
             if (current_user.user_reset_password_pin != pin):
-                messages.success(request,'Pin does not match the sent pin')
+                messages.error(request,'Pin does not match the sent pin')
                 return HttpResponseRedirect ('/quest/user_forgot_password/' + ldap)
             elif (new_password != retype_new_password):
-                messages.success(request, 'Your Passwords do not match')
+                messages.error(request, 'Your Passwords do not match')
                 return HttpResponseRedirect ('/quest/user_forgot_password/' + ldap)
             else:
                 current_user.user_password = new_password
@@ -1297,7 +1313,7 @@ def update_user_ldap(request, ldap):
             messages.success(request, 'Change was successful!')
 
         else:
-             messages.success(request, 'There is already an account associated with this LDAP')
+             messages.error(request, 'There is already an account associated with this LDAP')
     return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
 
 def update_user_first_name(request, ldap):
@@ -1343,7 +1359,7 @@ def update_user_email(request, ldap):
             current_user.save()
             messages.success(request, 'Change was successful!')
         except:
-            messages.success(request, 'This is an invalid email')
+            messages.error(request, 'This is an invalid email')
     return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
 
 
@@ -1358,9 +1374,9 @@ def update_user_password(request, ldap):
         user_new_password = post_request['new_password']
         user_new_password_retyped = post_request['retyped_password']
         if user_current_password != current_user.user_password:
-            messages.success(request, 'Your current password was typed incorrectly')
+            messages.error(request, 'Your current password was typed incorrectly')
         if user_new_password != user_new_password_retyped:
-            messages.success(request, 'Your new passwords do not match')
+            messages.error(request, 'Your new passwords do not match')
         else:
             current_user.user_password = user_new_password
             current_user.save()
@@ -1400,14 +1416,14 @@ def admin_login_to_account(request):
         if Admin.objects.filter(admin_ldap = ldap):
             #If incorrect password
             if not Admin.objects.get(admin_ldap = ldap).admin_password == password:
-                messages.success(request, 'Invalid Password')
+                messages.error(request, 'Invalid Password')
             #If correct password for ldap
             else: 
                 request.session['current_admin_ldap'] = post_request['ldap']
                 return HttpResponseRedirect('/quest/admin_project_page/' + request.session['current_admin_ldap'])
         #If LDAP is not associated with an account
         else:
-            messages.success(request, 'There is no Admin account associated with this LDAP')
+            messages.error(request, 'There is no Admin account associated with this LDAP')
     
     return HttpResponseRedirect('/quest/admin_login')
 
@@ -1417,11 +1433,11 @@ def admin_change_password_request(request):
         ldap = post_request['ldap']
         #only proceed if there is an Admin with this ldap
         if not Admin.objects.filter(admin_ldap = ldap):
-            messages.success(request, 'There is no account with this ldap')
+            messages.error(request, 'There is no account with this ldap')
             return HttpResponseRedirect('/quest/admin_login')
         current_admin = Admin.objects.get(admin_ldap = ldap)
         if ldap not in Admin.objects.all().values_list('admin_ldap', flat=True):
-            messages.success(request, 'There is no account created for that LDAP')
+            messages.error(request, 'There is no account created for that LDAP')
         else:
             pin = str(random.randint(99999, 999999))
             current_admin.admin_reset_password_pin = pin
@@ -1464,7 +1480,7 @@ def add_new_admin(request):
             except:
                 valid_email = False
                 print("This is an invalid email")
-                messages.success(request, 'Please input a valid email')
+                messages.error(request, 'Please input a valid email')
                 return HttpResponseRedirect('/quest/new_admin') 
 
             valid_password = (retyped_password == temp.admin_password)
@@ -1475,9 +1491,9 @@ def add_new_admin(request):
                 messages.success(request, 'Your new account was created!')
                 return HttpResponseRedirect('/quest/admin_login')
             if not is_new_ldap:
-                messages.success(request, 'There is already an account associated with this LDAP')
+                messages.error(request, 'There is already an account associated with this LDAP')
             if not valid_password:
-                messages.success(request, 'Your Password and Retyped Password do not match')
+                messages.error(request, 'Your Password and Retyped Password do not match')
 
     return HttpResponseRedirect('/quest/new_admin')
 
@@ -1499,10 +1515,10 @@ def admin_new_password_sent(request, ldap):
             retype_new_password = forgot_password_form.cleaned_data['retype_new_password']
 
             if (current_admin.admin_reset_password_pin != pin):
-                messages.success(request,'Pin does not match the sent pin')
+                messages.error(request,'Pin does not match the sent pin')
                 return HttpResponseRedirect ('/quest/admin_forgot_password/' + ldap)
             elif (new_password != retype_new_password):
-                messages.success(request, 'Your Passwords do not match')
+                messages.error(request, 'Your Passwords do not match')
                 return HttpResponseRedirect ('/quest/admin_forgot_password/' + ldap)
             else:
                 current_admin.admin_password = new_password
@@ -1537,7 +1553,7 @@ def get_admin_project_settings_editable(request, ldap, project_id):
 
 
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     view_or_editable = request.session['view_or_editable']
@@ -1575,18 +1591,13 @@ def update_random_phrase(request, ldap, project_id):
         if (is_new_random_phrase):
             current_project.project_random_phrase = random_phrase_input
             current_project.save()
-            messages.success(request, 'Change was successful!')
+            messages.success(request, 'Random phrase updated successfully!')
 
         else:
-             messages.success(request, 'You must choose a different random phrase')
+             messages.error(request, 'You must choose a different random phrase')
     
-    # To abstract this, I would have to either create a superclass that delegates
-    #or repeat every sinlge method for view_only and editable, so given my time contraints
-    #I opted for this instead
-    if request.session['view_or_editable'] == 'view':
-        return HttpResponseRedirect('/quest/admin_project_settings_view_only/' + ldap + '/' + project_id)
-    else:
-        return HttpResponseRedirect('/quest/admin_project_settings_editable/' + ldap + '/' + project_id)
+    return redirect_to_correct_project_settings_page(request.session['view_or_editable'], ldap, project_id)
+
     
 
 def update_admin_pin(request, ldap, project_id):
@@ -1601,15 +1612,13 @@ def update_admin_pin(request, ldap, project_id):
         if (is_new_admin_pin):
             current_project.project_admin_pin = admin_pin_input
             current_project.save()
-            messages.success(request, 'Change was successful!')
+            messages.success(request, 'Admin pin updated successfully!')
 
         else:
-             messages.success(request, 'You must choose a different admin pin')
+             messages.error(request, 'You must choose a different admin pin')
     
-    if request.session['view_or_editable'] == 'view':
-        return HttpResponseRedirect('/quest/admin_project_settings_view_only/' + ldap + '/' + project_id)
-    else:
-        return HttpResponseRedirect('/quest/admin_project_settings_editable/' + ldap + '/' + project_id)
+    return redirect_to_correct_project_settings_page(request.session['view_or_editable'], ldap, project_id)
+
 
 def remove_as_admin(request, ldap, project_id):
     if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
@@ -1618,6 +1627,7 @@ def remove_as_admin(request, ldap, project_id):
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     AdminProject.objects.get(project = current_project, admin = current_admin).delete()
+    messages.success(request, 'You are no longer an admin of ' + current_project.project_name + '!')
     
     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
@@ -1632,7 +1642,7 @@ def remove_all_users(request, ldap, project_id):
     current_project.project_editable = True
     current_project.save()
     delete_all_user_projects = UserProject.objects.filter(project = current_project).delete()
-    messages.success(request, current_project.project_name + ' is now editable!')
+    messages.success(request, 'All users from "' + current_project.project_name + '" were removed, and the project is now editable!')
     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
 
@@ -1643,7 +1653,8 @@ def delete_project(request, ldap, project_id):
     if request.method == 'POST':
         current_project = Project.objects.get(id = project_id)
         current_project.delete()
-        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+        messages.success(request, 'You have successfully deleted the project "' + current_project.project_name + '"')
+
     
     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
@@ -1656,7 +1667,7 @@ def add_team(request, ldap, project_id):
     current_project = Project.objects.get(id = project_id)
 
     if not is_still_editable(current_project):
-        messages.success(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     
@@ -1665,7 +1676,7 @@ def add_team(request, ldap, project_id):
         post_request = request.POST
         team_name_to_add = post_request['add_team_name'].strip()
         if team_name_to_add in list_of_team_names:
-            messages.success(request, 'You cannot have two teams with the same name')
+            messages.error(request, 'You cannot have two teams with the same name')
         else:
             if not current_project.project_has_teams:
                 current_project.project_has_teams = True
@@ -1674,11 +1685,9 @@ def add_team(request, ldap, project_id):
             new_team.team_name = team_name_to_add
             new_team.project = current_project
             new_team.save()
-    if request.session['view_or_editable'] == 'view':
-        return HttpResponseRedirect('/quest/admin_project_settings_view_only/' + ldap + '/' + project_id)
-    else:
-        return HttpResponseRedirect('/quest/admin_project_settings_editable/' + ldap + '/' + project_id)
-
+    messages.success(request, 'New team successfully added!')
+    return redirect_to_correct_project_settings_page(request.session['view_or_editable'], ldap, project_id)
+    
 def delete_team(request, ldap, project_id):
 
     if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
@@ -1691,7 +1700,7 @@ def delete_team(request, ldap, project_id):
         post_request = request.POST
         team_name_to_delete = post_request['delete_team_name'].strip()
         if team_name_to_delete not in list_of_team_names:
-            messages.success(request, 'There is no team with this name in this project')
+            messages.error(request, 'There is no team with this name in this project')
         else:
             # If we are deleting the last team in this project
             if len(list_of_team_names) == 1:
@@ -1699,10 +1708,9 @@ def delete_team(request, ldap, project_id):
                 current_project.save()
             team_to_delete = Team.objects.get(project = current_project, team_name = team_name_to_delete)
             team_to_delete.delete()
-    if request.session['view_or_editable'] == 'view':
-        return HttpResponseRedirect('/quest/admin_project_settings_view_only/' + ldap + '/' + project_id)
-    else:
-        return HttpResponseRedirect('/quest/admin_project_settings_editable/' + ldap + '/' + project_id)
+    messages.success(request, 'Team successfully deleted!')
+    return redirect_to_correct_project_settings_page(request.session['view_or_editable'], ldap, project_id)
+
 
 
 
@@ -1764,10 +1772,10 @@ def update_admin_ldap(request, ldap):
             current_admin.admin_ldap = ldap_input
             current_admin.save()
             request.session['current_admin_ldap'] = ldap_input
-            messages.success(request, 'Change was successful!')
+            messages.success(request, 'LDAP updated successfully!')
 
         else:
-             messages.success(request, 'There is already an account associated with this LDAP')
+             messages.error(request, 'There is already an account associated with this LDAP')
     return HttpResponseRedirect('/quest/admin_settings_info/' + current_admin.admin_ldap)
 
 def update_admin_first_name(request, ldap):
@@ -1781,7 +1789,7 @@ def update_admin_first_name(request, ldap):
         first_name_input = post_request['admin_first_name']
         current_admin.admin_first_name = first_name_input
         current_admin.save()
-        messages.success(request, 'Change was successful!')
+        messages.success(request, 'First name updated successfully!')
 
 
     return HttpResponseRedirect('/quest/admin_settings_info/' + current_admin.admin_ldap)
@@ -1797,7 +1805,7 @@ def update_admin_last_name(request, ldap):
         last_name_input = post_request['admin_last_name']
         current_admin.admin_last_name = last_name_input
         current_admin.save()
-        messages.success(request, 'Change was successful!')
+        messages.success(request, 'Last name updated successfully!')
 
     return HttpResponseRedirect('/quest/admin_settings_info/' + current_admin.admin_ldap)
 
@@ -1814,9 +1822,9 @@ def update_admin_email(request, ldap):
             validate_email(admin_email_input)
             current_admin.admin_email = admin_email_input
             current_admin.save()
-            messages.success(request, 'Change was successful!')
+            messages.success(request, 'Email updated successfully!')
         except:
-            messages.success(request, 'This is an invalid email')
+            messages.error(request, 'This is an invalid email')
     return HttpResponseRedirect('/quest/admin_settings_info/' + current_admin.admin_ldap)
 
 
@@ -1832,13 +1840,13 @@ def update_admin_password(request, ldap):
         admin_new_password = post_request['new_password']
         admin_new_password_retyped = post_request['retyped_password']
         if admin_current_password != current_admin.admin_password:
-            messages.success(request, 'Your current password was typed incorrectly')
+            messages.error(request, 'Your current password was typed incorrectly')
         if admin_new_password != admin_new_password_retyped:
-            messages.success(request, 'Your new passwords do not match')
+            messages.error(request, 'Your new passwords do not match')
         else:
             current_admin.admin_password = admin_new_password
             current_admin.save()
-            messages.success(request, 'Change was successful!')
+            messages.success(request, 'Password updated successfully!')
 
     return HttpResponseRedirect('/quest/admin_settings_info/' + current_admin.admin_ldap)
 

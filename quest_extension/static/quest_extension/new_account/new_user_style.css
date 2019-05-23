@@ -20,3 +20,16 @@ label, button {
     width: 10em;
     float: left;
   }
+
+  /* Message classes */
+.success {
+  color: lightgreen;
+}
+
+.warning {
+  color: orange;
+}
+
+.error {
+  color: red;
+}

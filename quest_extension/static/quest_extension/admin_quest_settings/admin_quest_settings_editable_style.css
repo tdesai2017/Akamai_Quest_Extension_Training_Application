@@ -12,3 +12,16 @@
     background-color: red; 
     padding: 15px 32px;
 }
+
+/* Message classes */
+.success {
+    color: lightgreen;
+}
+
+.warning {
+    color: orange;
+}
+
+.error {
+    color: red;
+}

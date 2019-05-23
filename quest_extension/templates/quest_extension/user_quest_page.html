@@ -4,11 +4,12 @@
     <head>
         
         <title> {{ current_quest.quest_name }} </title>
-        
+        <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_quest_page_style.css' %}">
+
     </head>
     <body>
+
         <div class = centered>
-            <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_quest_page_style.css' %}">
             <h1> {{ current_quest.quest_name }} </h1>
         <br>
         </div>     

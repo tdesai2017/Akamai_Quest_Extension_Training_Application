@@ -53,3 +53,17 @@ textarea {
     text-align: center;
 
 }
+
+
+/* Message classes */
+.success {
+    color: lightgreen;
+}
+
+.warning {
+    color: orange;
+}
+
+.error {
+    color: red;
+}

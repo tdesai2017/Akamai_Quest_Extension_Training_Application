@@ -16,3 +16,16 @@
     display: inline-block;
     width: 700px;
 }
+
+/* Message classes */
+.success {
+    color: lightgreen;
+}
+
+.warning {
+    color: orange;
+}
+
+.error {
+    color: red;
+}

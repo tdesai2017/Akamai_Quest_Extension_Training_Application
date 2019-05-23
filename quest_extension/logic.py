@@ -68,7 +68,7 @@ def save_mc_question(ldap, question_form, answer_form, wrong_answer_form, quest_
         wrong_answer = str(wrong_answer).strip()
         w_a_form = IncorrectAnswer(question=Question.objects.get(id=question_id), answer_text= wrong_answer)
         w_a_form.save()
-
+    
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + quest_id)
 
 

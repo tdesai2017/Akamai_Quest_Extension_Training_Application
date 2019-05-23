@@ -57,6 +57,7 @@ def create_fr_question(request, ldap, quest_id):
         question_form = QuestionForm(request.POST)
         answer_form = CorrectAnswerForm(request.POST)
         if question_form.is_valid() and answer_form.is_valid():
+            messages.success(request, 'New question successfully created!')
             return save_fr_question(ldap, question_form, answer_form, quest_id)
     
     return HttpResponseRedirect('/quest/fr-create-form/' + ldap + '/' + str(quest_id))
@@ -103,6 +104,7 @@ def create_mc_question(request, ldap, quest_id):
         answer_form = RightAnswerForm(request.POST)
         wrong_answer_form = WrongAnswerForm(request.POST)
         if question_form.is_valid() and answer_form.is_valid() and wrong_answer_form.is_valid():
+            messages.success(request, 'New question successfully created!')
             return save_mc_question(ldap, question_form, answer_form, wrong_answer_form, quest_id)
         
     return HttpResponseRedirect('/quest/mc-create-form/' + ldap + '/' + str(quest_id))
@@ -410,6 +412,7 @@ def update_quest_name(request, ldap, quest_id):
 
 
 def update_quest_description(request, ldap, quest_id):
+
     if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
         return HttpResponseRedirect('/quest/admin_login')
 
@@ -686,8 +689,7 @@ def validate_fr_question_response(request, ldap, quest_id):
             correctly_answered_question.save()
             go_to_next_quest(current_quest, current_user, current_project)
         else:
-            print ('You are wrong')
-            # messages.error(request, 'Sorry, that\'s not the right answer :(', extra_tags = str(current_question.question_id))
+             messages.error(request, 'Sorry, that\'s not the right answer :(', extra_tags = str(current_question.id))
 
     return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + str(quest_id))
 
@@ -737,7 +739,8 @@ def validate_mc_question_response(request, ldap, quest_id):
             correctly_answered_question.save()
             go_to_next_quest(current_quest, current_user, current_project)
         else:
-            print('You are wrong')
+            messages.error(request, 'Sorry, that\'s not the right answer :(', extra_tags = str(current_question.id))
+
         
     return HttpResponseRedirect('/quest/user_quest_page/' + ldap +'/' + str(quest_id))
 
@@ -798,6 +801,7 @@ def save_admin_edit_fr_question(request, ldap, question_id):
             #If you want to undo the deletion of the previous version of the question, it will pop up back in
             #it's original place
             Question.objects.filter(id = question_id).update(time_modified = timestamp)
+            messages.success(request, 'Question successfully updated!')
             return save_fr_question(ldap, question_form, answer_form, quest_id, timestamp)
 
     return HttpResponseRedirect('/quest/admin_edit_fr_question/' + ldap + '/' + str(question_id))
@@ -876,6 +880,7 @@ def save_admin_edit_mc_question (request, ldap, question_id):
             #If you want to undo the deletion of the previous version of the question, it will pop up back in
             #it's original place
             Question.objects.filter(id = question_id).update(time_modified = timestamp)
+            messages.success(request, 'Question successfully updated!')
             return save_mc_question(ldap, question_form, answer_form, wrong_answer_form, quest_id, timestamp)
 
     return HttpResponseRedirect('/quest/admin_edit_mc_question/' + ldap + '/' + str(question_id))
@@ -1059,7 +1064,6 @@ def add_user_project_page(request, ldap):
         list_of_user_projects = UserProject.objects.filter(user = current_user).values_list('project', flat=True)
         list_of_user_projects = Project.objects.filter(pk__in=list_of_user_projects)
 
-        # To join a project, it cannot already be one you are part of, and it must also exist
         if Project.objects.filter(project_random_phrase = inputted_random_phrase):
             project_requested = Project.objects.get(project_random_phrase = inputted_random_phrase)
             has_teams = project_requested.project_has_teams
@@ -1069,7 +1073,7 @@ def add_user_project_page(request, ldap):
             #If user did not add a team in their request to join the project
             if has_teams and post_request['team'] not in teams_in_current_project.values_list('team_name', flat=True):
                 print (teams_in_current_project.values_list('team_name', flat=True), post_request['team'])
-                messages.error(request, 'Please include a valid team name')
+                messages.error(request, 'Please include a valid team name!')
                 return HttpResponseRedirect('/quest/user_project_page/' + ldap)
             
             
@@ -1097,7 +1101,9 @@ def add_user_project_page(request, ldap):
                 project_requested.save()
                 messages.success(request, 'Successfully joined "' + project_requested.project_name + '"!')
             else:
-                messages.error(request, 'You are already part of this project')
+                messages.error(request, 'You are already part of this project!')
+        else:
+            messages.error(request, 'Please input a valid random phrase!')
 
     
     return HttpResponseRedirect('/quest/user_project_page/' + ldap)

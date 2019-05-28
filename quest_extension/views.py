@@ -13,7 +13,6 @@ import copy
 from quest_extension.logic import *
 from django.core.mail import send_mail
 import random
-from django.db.models import Q
 
 
 
@@ -1148,13 +1147,14 @@ def get_new_user_page(request):
 def add_new_user(request):
     if request.method == 'POST':
         post_request = request.POST
-        retyped_password = post_request['retyped_password']
+        retyped_password = make_hash(post_request['retyped_password'])
         user_form = UserForm(request.POST)
         if user_form.is_valid():
             temp = user_form.save(commit=False)
             email = temp.user_email
             user_ldap = temp.user_ldap
-
+            user_password = temp.user_password
+            temp.user_password = make_hash(user_password)
             try:
                 validate_email(email)
                 valid_email = True
@@ -1197,7 +1197,7 @@ def user_login_to_account(request):
     if request.method == 'POST':
         post_request = request.POST
         ldap = post_request['ldap']
-        password = post_request['password']
+        password = make_hash(post_request['password'])
         print (post_request)
 
         if User.objects.filter(user_ldap = ldap):
@@ -1219,14 +1219,14 @@ def user_change_password_request(request):
     if request.method == 'POST':
         post_request = request.POST
         ldap = post_request['ldap']
+
         #only proceed if there is a user with this ldap
         if not User.objects.filter(user_ldap = ldap):
             messages.error(request, 'There is no account with this ldap')
             return HttpResponseRedirect('/quest/user_login')
-        current_user = User.objects.get(user_ldap = ldap)
-        if ldap not in User.objects.all().values_list('user_ldap', flat=True):
-            messages.error(request, 'There is no account created for that LDAP')
+        
         else:
+            current_user = User.objects.get(user_ldap = ldap)
             pin = str(random.randint(99999, 999999))
             current_user.user_reset_password_pin = pin
             current_user.save()
@@ -1261,8 +1261,8 @@ def new_password_sent(request, ldap):
         forgot_password_form = ForgotPasswordForm(request.POST)
         if forgot_password_form.is_valid():
             pin = forgot_password_form.cleaned_data['pin']
-            new_password = forgot_password_form.cleaned_data['new_password']
-            retype_new_password = forgot_password_form.cleaned_data['retype_new_password']
+            new_password = make_hash(forgot_password_form.cleaned_data['new_password'])
+            retype_new_password = make_hash(forgot_password_form.cleaned_data['retype_new_password'])
 
             if (current_user.user_reset_password_pin != pin):
                 messages.error(request,'Pin does not match the sent pin')
@@ -1277,7 +1277,6 @@ def new_password_sent(request, ldap):
                 current_user.user_reset_password_pin = None
                 current_user.save()
                 messages.success(request, 'Your new password was saved!')
-                del request.session['current_user_ldap']
                 return HttpResponseRedirect('/quest/user_login')
 
     return HttpResponseRedirect('/quest/user_forgot_password/' + ldap)
@@ -1375,12 +1374,12 @@ def update_user_password(request, ldap):
     current_user = User.objects.get(user_ldap = ldap)
     if request.method == 'POST':
         post_request = request.POST
-        user_current_password = post_request['current_password']
-        user_new_password = post_request['new_password']
-        user_new_password_retyped = post_request['retyped_password']
+        user_current_password = make_hash(post_request['current_password'])
+        user_new_password = make_hash(post_request['new_password'])
+        user_new_password_retyped = make_hash(post_request['retyped_password'])
         if user_current_password != current_user.user_password:
             messages.error(request, 'Your current password was typed incorrectly')
-        if user_new_password != user_new_password_retyped:
+        elif user_new_password != user_new_password_retyped:
             messages.error(request, 'Your new passwords do not match')
         else:
             current_user.user_password = user_new_password
@@ -1415,7 +1414,7 @@ def admin_login_to_account(request):
     if request.method == 'POST':
         post_request = request.POST
         ldap = post_request['ldap']
-        password = post_request['password']
+        password = make_hash(post_request['password'])
         print (post_request)
 
         if Admin.objects.filter(admin_ldap = ldap):
@@ -1436,14 +1435,14 @@ def admin_change_password_request(request):
     if request.method == 'POST':
         post_request = request.POST
         ldap = post_request['ldap']
+
         #only proceed if there is an Admin with this ldap
         if not Admin.objects.filter(admin_ldap = ldap):
             messages.error(request, 'There is no account with this ldap')
             return HttpResponseRedirect('/quest/admin_login')
-        current_admin = Admin.objects.get(admin_ldap = ldap)
-        if ldap not in Admin.objects.all().values_list('admin_ldap', flat=True):
-            messages.error(request, 'There is no account created for that LDAP')
+
         else:
+            current_admin = Admin.objects.get(admin_ldap = ldap)
             pin = str(random.randint(99999, 999999))
             current_admin.admin_reset_password_pin = pin
             current_admin.save()
@@ -1473,12 +1472,15 @@ def get_new_admin_page(request):
 def add_new_admin(request):
     if request.method == 'POST':
         post_request = request.POST
-        retyped_password = post_request['retyped_password']
+        retyped_password = make_hash(post_request['retyped_password'])
         admin_form = AdminForm(request.POST)
         if admin_form.is_valid():
             temp = admin_form.save(commit=False)
             email = temp.admin_email
             admin_ldap = temp.admin_ldap
+            admin_password = temp.admin_password
+            admin_password = make_hash(admin_password)
+            temp.admin_password = admin_password
             try:
                 validate_email(email)
                 valid_email = True
@@ -1490,7 +1492,6 @@ def add_new_admin(request):
 
             valid_password = (retyped_password == temp.admin_password)
             is_new_ldap = admin_ldap not in Admin.objects.all().values_list('admin_ldap', flat=True) 
-            print(Admin.objects.all().values_list('admin_ldap', flat=True) )
             if valid_email and is_new_ldap and valid_password:
                 temp.save()
                 messages.success(request, 'Your new account was created!')
@@ -1516,8 +1517,8 @@ def admin_new_password_sent(request, ldap):
         forgot_password_form = ForgotPasswordForm(request.POST)
         if forgot_password_form.is_valid():
             pin = forgot_password_form.cleaned_data['pin']
-            new_password = forgot_password_form.cleaned_data['new_password']
-            retype_new_password = forgot_password_form.cleaned_data['retype_new_password']
+            new_password = make_hash(forgot_password_form.cleaned_data['new_password'])
+            retype_new_password = make_hash(forgot_password_form.cleaned_data['retype_new_password'])
 
             if (current_admin.admin_reset_password_pin != pin):
                 messages.error(request,'Pin does not match the sent pin')
@@ -1841,12 +1842,12 @@ def update_admin_password(request, ldap):
     current_admin = Admin.objects.get(admin_ldap = ldap)
     if request.method == 'POST':
         post_request = request.POST
-        admin_current_password = post_request['current_password']
-        admin_new_password = post_request['new_password']
-        admin_new_password_retyped = post_request['retyped_password']
+        admin_current_password = make_hash(post_request['current_password'])
+        admin_new_password = make_hash(post_request['new_password'])
+        admin_new_password_retyped = make_hash(post_request['retyped_password'])
         if admin_current_password != current_admin.admin_password:
             messages.error(request, 'Your current password was typed incorrectly')
-        if admin_new_password != admin_new_password_retyped:
+        elif admin_new_password != admin_new_password_retyped:
             messages.error(request, 'Your new passwords do not match')
         else:
             current_admin.admin_password = admin_new_password

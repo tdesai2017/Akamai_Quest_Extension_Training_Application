@@ -11,6 +11,7 @@ from django.contrib import messages
 from datetime import datetime
 import copy
 from django.db.models import Sum
+import hashlib
 
 
 #Saves a free response question to the backend
@@ -189,20 +190,11 @@ def redirect_to_correct_project_settings_page(view_or_editable, ldap, project_id
         return HttpResponseRedirect('/quest/admin_project_settings_editable/' + ldap + '/' + project_id)
 
 
-# def does_user_project_exist(request, ldap, current_project, post_request):
-#     if User.objects.filter(user_ldap = ldap):
-#             user_requested_for = User.objects.get(user_ldap = ldap)
-#     else:
-#         messages.warning(request, 'User with ldap "' + post_request['user'] + '" does not exist')
-#         return False
+def make_hash(password):
+    return hashlib.sha256(str.encode(password)).hexdigest()
 
-#     if UserProject.objects.filter(user = user_requested_for, project = current_project):
-#         messages.success(request, 'User information found!')
-#         return True
+def check_hash(password, hash):
+    if make_hash(password) == hash:
+        return True
 
-#     else:
-#         messages.warning(request, 'User with ldap "' + post_request['user'] + '" is not a part of this project')
-#         return False
-
-
-    
+    return False

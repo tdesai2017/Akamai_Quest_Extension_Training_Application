@@ -10,8 +10,8 @@ class Admin(models.Model):
     admin_first_name = models.CharField(max_length=45)
     admin_last_name = models.CharField(max_length=45)
     admin_email = models.CharField(max_length=45)
-    admin_password = models.CharField(max_length = 45)
-    admin_reset_password_pin = models.CharField(max_length = 5, null=True)
+    admin_password = models.CharField(max_length = 100)
+    admin_reset_password_pin = models.CharField(max_length = 100, null=True)
 
 
 class Project(models.Model):
@@ -58,8 +58,8 @@ class User(models.Model):
     user_first_name = models.CharField(max_length=45)
     user_last_name = models.CharField(max_length=45)
     user_email = models.CharField(max_length=45)
-    user_password = models.CharField(max_length = 45)
-    user_reset_password_pin = models.CharField(max_length = 5, null=True, default = None)
+    user_password = models.CharField(max_length = 100)
+    user_reset_password_pin = models.CharField(max_length = 100, null=True, default = None)
    #exempt = models.BooleanField(default=False) (This should go in )
    
    

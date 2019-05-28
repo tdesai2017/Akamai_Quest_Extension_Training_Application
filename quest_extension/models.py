@@ -32,20 +32,24 @@ class Quest(models.Model):
     #Path number determines the order that you want quests to be accessed
     quest_path_number = models.IntegerField()
 
-   
+
 class Question(models.Model):
     quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=1000, blank=True, null=True)
     question_type = models.CharField(max_length=45)
     deleted = models.BooleanField(default=False)
+    # The advantage of having both time_modified and delete_time -> when we undo a delete,
+    # the most recently deleted item will be returned at it's original position (we save the 
+    # old timestamp when items are deleted)
     time_modified = models.DateTimeField(auto_now=True)
+    delete_time = models.DateTimeField(auto_now = True)
 
 class IncorrectAnswer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     answer_text = models.CharField(max_length=1000)
     deleted = models.BooleanField(default=False)
     time_modified = models.DateTimeField(auto_now=True)
-
+ 
 
   
 class User(models.Model):
@@ -56,7 +60,7 @@ class User(models.Model):
     user_email = models.CharField(max_length=45)
     user_password = models.CharField(max_length = 45)
     user_reset_password_pin = models.CharField(max_length = 5, null=True, default = None)
-   #exempt = models.BooleanField(default=False) (This should go in User_project)
+   #exempt = models.BooleanField(default=False) (This should go in )
    
    
 class CorrectAnswer(models.Model):

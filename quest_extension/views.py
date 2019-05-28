@@ -339,7 +339,7 @@ def undo_delete_question(request, ldap, quest_id):
 
     if request.method == 'POST':        
         if Question.objects.filter(quest = current_quest, deleted = True):
-            object_to_reappear = Question.objects.filter(quest = current_quest, deleted = True).latest('time_modified')
+            object_to_reappear = Question.objects.filter(quest = current_quest, deleted = True).latest('delete_time')
             #We want to not let the time_modified increase, so we save it here and assign it to the question after we save it
             object_to_reappear_id = object_to_reappear.id
             current_time_modified = copy.deepcopy(object_to_reappear.time_modified)
@@ -1858,14 +1858,16 @@ def update_admin_password(request, ldap):
 
 #########################
 
-def get_project_info_page(request, ldap, project_id):
+def get_admin_project_info_page(request, ldap, project_id):
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
+    view_or_editable = request.session['view_or_editable'] 
+
 
     if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
         return HttpResponseRedirect('/quest/admin_login')
 
-    context = {'current_project': current_project, 'current_admin': current_admin}
+    context = {'current_project': current_project, 'current_admin': current_admin, 'view_or_editable': view_or_editable}
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
@@ -1873,10 +1875,13 @@ def search_by_user_ldap(request, ldap, project_id):
     print('I AM HERE')
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
+    view_or_editable = request.session['view_or_editable'] 
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
     if request.method == 'POST':
         post_request = request.POST
-
-
         user_requested_for = post_request['user']
         if User.objects.filter(user_ldap = user_requested_for):
             user_requested_for = User.objects.get(user_ldap = user_requested_for)
@@ -1893,19 +1898,31 @@ def search_by_user_ldap(request, ldap, project_id):
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
     
     query = 'LDAP = ' + post_request['user']
-    context = {'current_project': current_project, 'current_admin': current_admin, 'user_project_info': user_project_info, 'query': query}
+    context = {
+    'current_project': current_project, 
+    'current_admin': current_admin, 
+    'user_project_info': user_project_info, 
+    'query': query,
+    'view_or_editable': view_or_editable
+    }
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
 def search_above(request, ldap, project_id):
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
+    view_or_editable = request.session['view_or_editable'] 
+
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
     highest_quest_path_number = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat = True))
     if request.method == 'POST':
         post_request = request.POST
         above = post_request ['above']
 
-        if Quest.objects.filter(project = current_project, quest_path_number__gt = int(above)):
+        if Quest.objects.filter(project = current_project, quest_path_number__gt = above):
             valid_quests = Quest.objects.filter(project = current_project, quest_path_number__gt = int(above))
             messages.success(request, 'Users\' information found!')
         else:
@@ -1916,10 +1933,169 @@ def search_above(request, ldap, project_id):
         user_project_info = UserProject.objects.filter(current_quest__in = valid_quests, project = current_project)
 
     query = 'Quest Path Number > ' + str(above)
-    context = {'current_project': current_project, 'current_admin': current_admin, 'user_project_info': user_project_info, 'query': query}
+    context = {
+    'current_project': current_project,
+    'current_admin': current_admin, 
+    'user_project_info': user_project_info, 
+    'query': query,
+    'view_or_editable': view_or_editable
+    }
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
- 
+
+def search_below(request, ldap, project_id):
+    current_project = Project.objects.get(id = project_id)
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    view_or_editable = request.session['view_or_editable'] 
+
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    lowest_quest_path_number = min(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat = True))
+    if request.method == 'POST':
+        post_request = request.POST
+        below = post_request ['below']
+
+        if Quest.objects.filter(project = current_project, quest_path_number__lt = below):
+            valid_quests = Quest.objects.filter(project = current_project, quest_path_number__lt = int(below))
+            messages.success(request, 'Users\' information found!')
+        else:
+            messages.warning(request, 'There are no quests that have a path lower than ' + below  
+            + ' (the lowest quest path number in this project is ' + str(lowest_quest_path_number) + ')')
+            return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
+
+        user_project_info = UserProject.objects.filter(current_quest__in = valid_quests, project = current_project)
+
+    query = 'Quest Path Number > ' + str(below)
+    context = {
+        'current_project': current_project, 
+        'current_admin': current_admin, 
+        'user_project_info': user_project_info, 
+        'query': query,
+        'view_or_editable': view_or_editable
+        }
+    return render(request, 'quest_extension/admin_project_info_page.html', context)
+
+
+
+def search_at(request, ldap, project_id):
+    current_project = Project.objects.get(id = project_id)
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    view_or_editable = request.session['view_or_editable'] 
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    if request.method == 'POST':
+        post_request = request.POST
+        at = post_request ['at']
+
+        if Quest.objects.filter(project = current_project, quest_path_number = at):
+            valid_quests = Quest.objects.filter(project = current_project, quest_path_number = at)
+            messages.success(request, 'Users\' information found!')
+        else:
+            messages.warning(request, 'There are no quests with the path number ' + str(at))
+            return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
+
+        user_project_info = UserProject.objects.filter(current_quest__in = valid_quests, project = current_project)
+
+    query = 'Quest Path Number = ' + str(at)
+    context = {
+    'current_project': current_project, 
+    'current_admin': current_admin, 
+    'user_project_info': user_project_info, 
+    'query': query,
+    'view_or_editable': view_or_editable,
+    }
+    return render(request, 'quest_extension/admin_project_info_page.html', context)
+
+
+def search_all_users(request, ldap, project_id):
+
+    current_project = Project.objects.get(id = project_id)
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    view_or_editable = request.session['view_or_editable'] 
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    if request.method == 'POST':
+        post_request = request.POST
+
+        user_project_info = UserProject.objects.filter(project = current_project)
+        messages.success(request, 'Users\' information found')
+
+    query = 'All Users'
+    context = {
+    'current_project': current_project, 
+    'current_admin': current_admin, 
+    'user_project_info': user_project_info, 
+    'query': query,
+    'view_or_editable': view_or_editable
+    }
+    return render(request, 'quest_extension/admin_project_info_page.html', context)
+
+
+
+def search_completed_users(request, ldap, project_id):
+    current_project = Project.objects.get(id = project_id)
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    view_or_editable = request.session['view_or_editable'] 
+
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    if request.method == 'POST':
+        post_request = request.POST
+
+        user_project_info = UserProject.objects.filter(project = current_project, completed_project = True)
+        messages.success(request, 'Users\' information found')
+
+
+    query = 'All Users that completed the project'
+    context = {
+        'current_project': current_project, 
+        'current_admin': current_admin, 
+        'user_project_info': user_project_info, 
+        'query': query,
+        'view_or_editable': view_or_editable
+        }
+    return render(request, 'quest_extension/admin_project_info_page.html', context)
+
+
+
+def search_not_completed_users(request, ldap, project_id):
+    current_project = Project.objects.get(id = project_id)
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    view_or_editable = request.session['view_or_editable'] 
+
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    if request.method == 'POST':
+        post_request = request.POST
+
+        user_project_info = UserProject.objects.filter(project = current_project, completed_project = False)
+        messages.success(request, 'Users\' information found')
+
+
+    query = 'All Users that have not completed the project'
+    context = {
+    'current_project': current_project, 
+    'current_admin': current_admin, 
+    'user_project_info': user_project_info, 
+    'query': query,
+    'view_or_editable': view_or_editable
+    }
+    return render(request, 'quest_extension/admin_project_info_page.html', context)
+
+
+
+
+
 
 
 

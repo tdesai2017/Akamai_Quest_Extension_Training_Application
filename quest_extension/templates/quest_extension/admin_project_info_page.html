@@ -9,15 +9,28 @@
 </head>
 <body>
 
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 
+    <!-- The "Back" button location is determined on whether the project is editable or only viewable  -->
+    {% if view_or_editable == 'view' %}
+    <form method = 'GET' action = '/quest/admin_home_view_only/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+        <button type = 'submit'> Back </button>
+    </form>
+    {% endif %}
 
+    {% if view_or_editable == 'editable' %}
+    <form method = 'GET' action = '/quest/admin_home_editable/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+        <button type = 'submit'> Back </button>
+    </form>
+
+    {% endif %}
+    
     <div class = 'centered'>
         <h1> Project Information </h1>
 
@@ -29,14 +42,14 @@
         </form>
     
         <p>Find people below (exclusive) ___ current quest:</p>
-        <form method = 'POST'>
+        <form method = 'POST' action = '/quest/search_below/{{current_admin.admin_ldap}}/{{current_project.id}}'>
             {% csrf_token %}
             <input type = 'number' name = 'below'>
             <button type = 'submit'> Submit </button>
         </form>
 
         <p>Find people at ___ current quest:</p>
-        <form method = 'POST'>
+        <form method = 'POST' action = '/quest/search_at/{{current_admin.admin_ldap}}/{{current_project.id}}'>
             {% csrf_token %}
             <input type = 'number' name = 'at'>
             <button type = 'submit'> Submit </button>
@@ -57,6 +70,13 @@
 
         <p> See the information for all users who have completed the project: </p>
         <form method = 'POST' action = '/quest/search_completed_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+            {% csrf_token %} 
+            <button type = 'submit'> Submit </button>
+        </form>
+
+
+        <p> See the information for all users who have not completed the project: </p>
+        <form method = 'POST' action = '/quest/search_not_completed_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
             {% csrf_token %} 
             <button type = 'submit'> Submit </button>
         </form>
@@ -114,6 +134,8 @@
         </div>
     </div>
 {% endfor %}
+
+
 
 
 

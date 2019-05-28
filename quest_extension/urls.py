@@ -189,12 +189,14 @@ path('update_admin_password/<ldap>', views.update_admin_password),
 
 ##############################
 
-path('admin_project_info_page/<ldap>/<project_id>', views.get_project_info_page),
+path('admin_project_info_page/<ldap>/<project_id>', views.get_admin_project_info_page),
 path('search_above/<ldap>/<project_id>', views.search_above),
-# path('search_below/<ldap>/<project_id>', views.search_below), 
-# path('search_at/<ldap>/<project_id>', views.search_at),
+path('search_below/<ldap>/<project_id>', views.search_below), 
+path('search_at/<ldap>/<project_id>', views.search_at),
 path('search_by_user_ldap/<ldap>/<project_id>', views.search_by_user_ldap),
-
+path('search_all_users/<ldap>/<project_id>', views.search_all_users),
+path('search_completed_users/<ldap>/<project_id>', views.search_completed_users),
+path('search_not_completed_users/<ldap>/<project_id>', views.search_not_completed_users),
 
 
 ]

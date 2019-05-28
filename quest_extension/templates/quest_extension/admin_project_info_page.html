@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <title>Project Info</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/admin_project_info_page_style.css' %}">
+    
+</head>
+<body>
+
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+
+    <div class = 'centered'>
+        <h1> Project Information </h1>
+
+        <p>Find people above (exclusive) ___ current quest:</p>
+        <form method = 'POST' action = '/quest/search_above/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+            {% csrf_token %}
+            <input type = 'number' name = 'above'>
+            <button type = 'submit'> Submit </button>
+        </form>
+    
+        <p>Find people below (exclusive) ___ current quest:</p>
+        <form method = 'POST'>
+            {% csrf_token %}
+            <input type = 'number' name = 'below'>
+            <button type = 'submit'> Submit </button>
+        </form>
+
+        <p>Find people at ___ current quest:</p>
+        <form method = 'POST'>
+            {% csrf_token %}
+            <input type = 'number' name = 'at'>
+            <button type = 'submit'> Submit </button>
+        </form>
+
+        <p>Find person's information (ldap):</p>
+        <form method = 'POST' action = '/quest/search_by_user_ldap/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+            {% csrf_token %}
+            <input type = 'text' name = 'user'>
+            <button type = 'submit'> Submit </button>
+        </form>
+
+        <p> See the information for all users in this project: </p>
+        <form method = 'POST' action = '/quest/search_all_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+            {% csrf_token %}
+            <button type = 'submit'> Submit </button>
+        </form>
+
+        <p> See the information for all users who have completed the project: </p>
+        <form method = 'POST' action = '/quest/search_completed_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+            {% csrf_token %} 
+            <button type = 'submit'> Submit </button>
+        </form>
+    <br>
+    <br>
+    <br>
+
+
+    <h4>Query: {{query}}</h4>
+
+    <p class = 'block1'> Name: </p>
+    <p class = 'block2'> LDAP: </p>
+
+    {% if current_project.project_has_teams %}
+    <p class = 'block3'> Team: </p>
+    {% endif %}
+
+    <p class = 'block4'> User Email:  </p>
+    <p class = 'block5'> Current Quest Name: </p>
+    <p class = 'block6'> Current Quest Path Number: </p>
+    <p class = 'block7'> Points: </p>
+
+
+</div>
+{% for user_project_record in user_project_info %}
+    <div class = 'container'>
+        <div class = 'block1'>
+            <p>{{user_project_record.user.user_first_name}} {{user_project_record.user.user_last_name}}<p>
+        </div>
+
+        <div class = 'block2'>
+            <p>{{user_project_record.user.user_ldap}}</p>
+        </div>
+
+        {% if current_project.project_has_teams %}
+        <div class = 'block3'>
+            <p>{{user_project_record.team.team_name}}</p>
+        </div>
+        {% endif %}
+
+        <div class = 'block4'>
+            <p>{{user_project_record.user.user_email}}</p>
+        </div>
+
+        <div class = 'block5'>
+            <p>{{user_project_record.current_quest.quest_name}}</p>
+        </div>
+
+        <div class = 'block6'>
+            <p>{{user_project_record.current_quest.quest_path_number}}</p>
+        </div>
+
+        <div class = 'block7'>
+            <p>{{user_project_record.points}}</p>
+        </div>
+    </div>
+{% endfor %}
+
+
+
+ 
+</body>
+</html>

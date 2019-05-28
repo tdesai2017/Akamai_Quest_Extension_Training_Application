@@ -13,8 +13,7 @@ import copy
 from quest_extension.logic import *
 from django.core.mail import send_mail
 import random
-import json
-
+from django.db.models import Q
 
 
 
@@ -1856,7 +1855,80 @@ def update_admin_password(request, ldap):
 
     return HttpResponseRedirect('/quest/admin_settings_info/' + current_admin.admin_ldap)
 
+
+#########################
+
+def get_project_info_page(request, ldap, project_id):
+    current_project = Project.objects.get(id = project_id)
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    context = {'current_project': current_project, 'current_admin': current_admin}
+    return render(request, 'quest_extension/admin_project_info_page.html', context)
+
+
+def search_by_user_ldap(request, ldap, project_id):
+    print('I AM HERE')
+    current_project = Project.objects.get(id = project_id)
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    if request.method == 'POST':
+        post_request = request.POST
+
+
+        user_requested_for = post_request['user']
+        if User.objects.filter(user_ldap = user_requested_for):
+            user_requested_for = User.objects.get(user_ldap = user_requested_for)
+        else:
+            messages.warning(request, 'User with ldap "' + post_request['user'] + '" does not exist')
+            return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
+
+        if UserProject.objects.filter(user = user_requested_for, project = current_project):
+            user_project_info = UserProject.objects.filter(user = user_requested_for, project = current_project)
+            messages.success(request, 'User information found!')
+
+        else:
+            messages.warning(request, 'User with ldap "' + post_request['user'] + '" is not a part of this project')
+            return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
+    
+    query = 'LDAP = ' + post_request['user']
+    context = {'current_project': current_project, 'current_admin': current_admin, 'user_project_info': user_project_info, 'query': query}
+    return render(request, 'quest_extension/admin_project_info_page.html', context)
+
+
+def search_above(request, ldap, project_id):
+    current_project = Project.objects.get(id = project_id)
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    highest_quest_path_number = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat = True))
+    if request.method == 'POST':
+        post_request = request.POST
+        above = post_request ['above']
+
+        if Quest.objects.filter(project = current_project, quest_path_number__gt = int(above)):
+            valid_quests = Quest.objects.filter(project = current_project, quest_path_number__gt = int(above))
+            messages.success(request, 'Users\' information found!')
+        else:
+            messages.warning(request, 'There are no quests that have a path greater than ' + above  
+            + ' (the highest quest path number in this project is ' + str(highest_quest_path_number) + ')')
+            return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
+
+        user_project_info = UserProject.objects.filter(current_quest__in = valid_quests, project = current_project)
+
+    query = 'Quest Path Number > ' + str(above)
+    context = {'current_project': current_project, 'current_admin': current_admin, 'user_project_info': user_project_info, 'query': query}
+    return render(request, 'quest_extension/admin_project_info_page.html', context)
+
+ 
+
+
+
+
+
+
     
 
+    
+ 
 
 

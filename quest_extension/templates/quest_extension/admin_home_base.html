@@ -45,6 +45,10 @@
         {% block project_settings %}
         {% endblock %}
 
+        <form method = 'GET' action = '/quest/admin_project_info_page/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+            <button type = 'submit'> Project Info</button>
+        </form>
+
     <div class='centered'>
         <h1>{{ current_project.project_name}}</h1>
 

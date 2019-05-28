@@ -187,3 +187,22 @@ def redirect_to_correct_project_settings_page(view_or_editable, ldap, project_id
         return HttpResponseRedirect('/quest/admin_project_settings_view_only/' + ldap + '/' + project_id)
     else:
         return HttpResponseRedirect('/quest/admin_project_settings_editable/' + ldap + '/' + project_id)
+
+
+# def does_user_project_exist(request, ldap, current_project, post_request):
+#     if User.objects.filter(user_ldap = ldap):
+#             user_requested_for = User.objects.get(user_ldap = ldap)
+#     else:
+#         messages.warning(request, 'User with ldap "' + post_request['user'] + '" does not exist')
+#         return False
+
+#     if UserProject.objects.filter(user = user_requested_for, project = current_project):
+#         messages.success(request, 'User information found!')
+#         return True
+
+#     else:
+#         messages.warning(request, 'User with ldap "' + post_request['user'] + '" is not a part of this project')
+#         return False
+
+
+    

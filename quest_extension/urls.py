@@ -1,8 +1,9 @@
 from django.urls import path
 from quest_extension import views
-from django.conf.urls import url
+from django.conf.urls import url, include
 
 
+app_name = 'quest'
 urlpatterns = [
     #Decides what Question Admin wants to create
     path('mc-create-form/<ldap>/<quest_id>', views.get_mc_question_form),
@@ -186,6 +187,13 @@ path('update_admin_last_name/<ldap>', views.update_admin_last_name),
 path('update_admin_email/<ldap>', views.update_admin_email),
 path('update_admin_password/<ldap>', views.update_admin_password),
 
+##############################
+
+path('admin_project_info_page/<ldap>/<project_id>', views.get_project_info_page),
+path('search_above/<ldap>/<project_id>', views.search_above),
+# path('search_below/<ldap>/<project_id>', views.search_below), 
+# path('search_at/<ldap>/<project_id>', views.search_at),
+path('search_by_user_ldap/<ldap>/<project_id>', views.search_by_user_ldap),
 
 
 

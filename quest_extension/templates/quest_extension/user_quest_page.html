@@ -103,7 +103,12 @@
         <br>
         <br>
         <br>
+
+       
         
+        <form id = 'validate_user_input_form' method = 'POST' action = '/quest/validate_user_input/{{ldap}}/{{current_quest.id}}'>
+        {% csrf_token %}
+
         {% for question, answers, correct_answers in format_2 %}
             <div class='question'>
                 <p>{{ question.question_text }}</p>
@@ -113,11 +118,12 @@
 
 
                     {% if question.id not in have_correct_answer %}
-                         <form method = "POST" id = 'form_{{question.id}}' onsubmit = "return validate_fr_answer('{{question.id}}')" action = '/quest/validate_fr_question_response/{{ldap}}/{{current_quest.id}}'>
-                            {% csrf_token %}
-                            Answer: <input type = 'text' id = 'input_{{question.id}}' name = 'answer'>
-                             <button type= 'submit' name='FR_response_id' value = '{{ question.id }}'>Submit</button>
-                        </form>
+                         <!-- <form method = "POST" id = 'form_{{question.id}}' onsubmit = "return validate_fr_answer('{{question.id}}')" action = '/quest/validate_fr_question_response/{{ldap}}/{{current_quest.id}}'> -->
+                            <!-- {% csrf_token %} -->
+                            Answer: <input form = 'validate_user_input_form' type = 'text' id = 'input_{{question.id}}' name = 'answer_{{question.id}}'>
+                             <button type= 'submit' onclick = 'return validate_fr_answer("{{question.id}}")' name='FR_response_id' value = '{{ question.id }}'>Check Answer!</button>
+                        <!-- </form> -->
+                        <br>
 
                         <p id = 'wrong_{{question.id}}' style = "display: none; color: red"> Sorry that's wrong, please try again! </p>
                         <p id = 'correct_{{question.id}}' style = "display: none; color: green"> You are correct! </p>
@@ -148,15 +154,16 @@
                 {% if question.question_type == 'MC' %}
                      {% if question.id not in have_correct_answer %}
 
-                        <form method = "POST" id = 'form_{{question.id}}' onsubmit = "return validate_mc_answer('{{question.id}}')" action = '/quest/validate_mc_question_response/{{ldap}}/{{current_quest.id}}'>
-                            {% csrf_token %}
+                        <!-- <form method = "POST" id = 'form_{{question.id}}' onsubmit = "return validate_mc_answer('{{question.id}}')" action = '/quest/validate_mc_question_response/{{ldap}}/{{current_quest.id}}'>
+                            {% csrf_token %} -->
                             {% for a in answers %}
                             <!-- Make both incorrect and correct answers have the same filed called answer_text so that it can easily be passed as a value -->
-                                <input type="checkbox" class= "input_{{question.id}}" name= "answer" value="{{ a.answer_text }}">{{ a.answer_text }}<br>
+                                <input form = 'validate_user_input_form' type="checkbox" class= "input_{{question.id}}" name= "answer_{{question.id}}" value="{{ a.answer_text }}">{{ a.answer_text }}<br>
                             {% endfor %}
                             <br>
-                            <button type= 'submit' name= 'MC_response_id' value= '{{ question.id }}'>Submit</button>
-                        </form>
+                            <button type= 'submit' onclick ="return validate_mc_answer('{{question.id}}')" name= 'MC_response_id' value= '{{ question.id }}'>Check Answer!</button>
+                        <!-- </form> -->
+                        <br>
                         <p id = 'wrong_{{question.id}}' style = "display: none; color: red"> Sorry that's wrong, please try again! </p>
                         <p id = 'correct_{{question.id}}' style = "display: none; color: green"> You are correct! </p>
                         
@@ -185,7 +192,11 @@
             <br>
             <br>
         {% endfor %}
-        
+
+    <button type = 'submit'> Save Answers </button>
+    </form>
+    <br>
+    <br>
         <form id='home' action = '/quest/user_home/{{ ldap }}/{{current_project_id}}' method='GET'></form>
         
         <button form = 'home' type = submit>Home</button>

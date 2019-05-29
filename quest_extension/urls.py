@@ -101,7 +101,7 @@ path ('admin_quest_settings_view_only/<ldap>/<quest_id>', views.get_admin_quest_
     path('user_quest_page/<ldap>/<quest_id>', views.get_user_quest_page),
     path('validate_fr_question_response/<ldap>/<quest_id>', views.validate_fr_question_response),
     path('validate_mc_question_response/<ldap>/<quest_id>', views.validate_mc_question_response),
-
+    path('validate_user_input/<ldap>/<quest_id>', views.validate_user_input),
 
 
 ######################################

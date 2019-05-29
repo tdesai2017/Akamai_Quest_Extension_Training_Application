@@ -654,7 +654,6 @@ def get_user_quest_page(request, ldap, quest_id):
         list_of_correct_answers = [ans.answer_text for ans in correct_answers]
         question_to_answers[question.id] = list_of_correct_answers
     question_to_answers = json.dumps(question_to_answers)
-    print (question_to_answers)
 
 
     context = {'current_quest': current_quest, 
@@ -752,6 +751,17 @@ def validate_mc_question_response(request, ldap, quest_id):
 
         
     return HttpResponseRedirect('/quest/user_quest_page/' + ldap +'/' + str(quest_id))
+
+
+
+
+
+def validate_user_input(request, ldap, quest_id):
+    if request.method == 'POST':
+        post_request = request.POST
+        print (post_request)
+    return HttpResponseRedirect('/quest/user_quest_page/' + ldap +'/' + str(quest_id))
+
 
 
 ######################################

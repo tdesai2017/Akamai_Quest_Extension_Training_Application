@@ -13,6 +13,7 @@ import copy
 from quest_extension.logic import *
 from django.core.mail import send_mail
 import random
+import json
 
 
 
@@ -610,8 +611,6 @@ def get_user_quest_page(request, ldap, quest_id):
     current_user = User.objects.get(user_ldap = ldap)
     current_project = current_quest.project
     all_videos = Video.objects.filter(quest = current_quest)
-
-
     current_user_project = UserProject.objects.get(user = current_user, project = current_project)
 
     # Ensures that you cannot move to a quest you are not allowed to be in just by altering the 
@@ -624,8 +623,9 @@ def get_user_quest_page(request, ldap, quest_id):
     fr_input_form = TakeInFreeResponseForm()
     
     #"question" also returns the primary id of the question
-    have_correct_answer = CorrectlyAnsweredQuestion.objects.filter(user = current_user).values_list('question', flat = True)
+    have_correct_answer = CorrectlyAnsweredQuestion.objects.filter(userproject = current_user_project).values_list('question', flat = True)
 
+    #Creates the format for the questions to be in
     format_2 = []
     for question in list_of_questions:
         correct_answer = CorrectAnswer.objects.filter(question = question)
@@ -647,13 +647,24 @@ def get_user_quest_page(request, ldap, quest_id):
         #Combines wrong answers with correct answer
         format_2.append(format_2_tuple)
 
+    #attempt to map quesitons to correct answers
+    question_to_answers = {}
+    for question in list_of_questions:
+        correct_answers = CorrectAnswer.objects.filter(question = question, deleted = False)
+        list_of_correct_answers = [ans.answer_text for ans in correct_answers]
+        question_to_answers[question.id] = list_of_correct_answers
+    question_to_answers = json.dumps(question_to_answers)
+    print (question_to_answers)
+
+
     context = {'current_quest': current_quest, 
             'fr_input_form': fr_input_form, 
             'ldap': ldap, 
             'current_project_id': current_project_id, 
             'have_correct_answer': have_correct_answer,
             'format_2': format_2,
-            'all_videos': all_videos}
+            'all_videos': all_videos,
+            'question_to_answers': question_to_answers}
 
     return render(request, 'quest_extension/user_quest_page.html', context)
 
@@ -672,6 +683,8 @@ def validate_fr_question_response(request, ldap, quest_id):
         user_answer = post_request['answer']
         current_question = Question.objects.get(id = post_request['FR_response_id'])
         correct_answers = CorrectAnswer.objects.filter(question = current_question)
+        current_user_project = UserProject.objects.get(user = current_user, project = current_project)
+
         
         correct_answers_texts = []
         for answer in correct_answers:
@@ -683,7 +696,7 @@ def validate_fr_question_response(request, ldap, quest_id):
             correctly_answered_question = CorrectlyAnsweredQuestion()
             #Adds a new correctly answer question
             correctly_answered_question.question = current_question
-            correctly_answered_question.user = User.objects.get(user_ldap = ldap)
+            correctly_answered_question.userproject = current_user_project
             correctly_answered_question.save()
             go_to_next_quest(current_quest, current_user, current_project)
         else:
@@ -707,6 +720,8 @@ def validate_mc_question_response(request, ldap, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
     current_project = current_quest.project
     current_user = User.objects.get(user_ldap = ldap)
+    current_user_project = UserProject.objects.get(user = current_user, project = current_project)
+
     
 
     if request.method == 'POST':
@@ -715,6 +730,7 @@ def validate_mc_question_response(request, ldap, quest_id):
         user_answer = post_request.getlist('answer')
         current_question = Question.objects.get(id = post_request['MC_response_id'])
         correct_answers = CorrectAnswer.objects.filter(question = current_question)
+
 
 
         correct_answers_texts = []
@@ -733,7 +749,7 @@ def validate_mc_question_response(request, ldap, quest_id):
             correctly_answered_question = CorrectlyAnsweredQuestion()
             #Adds a new correctly answer question
             correctly_answered_question.question = current_question
-            correctly_answered_question.user = User.objects.get(user_ldap = ldap)
+            correctly_answered_question.userproject = current_user_project
             correctly_answered_question.save()
             go_to_next_quest(current_quest, current_user, current_project)
         else:
@@ -1117,13 +1133,14 @@ def remove_user_project(request, ldap):
         post_request = request.POST
         #We aren't actually deleting the project, don't worry
         project_to_delete = Project.objects.get(id = post_request['remove_project'])
+        current_user_project = UserProject.objects.get(project = project_to_delete, user = current_user )
 
         user_project_to_delete = UserProject.objects.get(user = current_user, project= project_to_delete)
         user_project_to_delete.delete()
         
         quests = Quest.objects.filter(project = project_to_delete)
         questions = Question.objects.filter(quest__in= quests)
-        correctly_answered_questions = CorrectlyAnsweredQuestion.objects.filter(user = current_user, question__in = questions)
+        correctly_answered_questions = CorrectlyAnsweredQuestion.objects.filter(userproject = current_user_project, question__in = questions)
         correctly_answered_questions.delete()
         
         #If no users are on this project anymore, you can once again edit the project

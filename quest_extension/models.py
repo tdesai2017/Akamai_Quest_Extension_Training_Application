@@ -76,9 +76,6 @@ class CorrectAnswer(models.Model):
 #    points_earned = models.IntegerField()
 #    date_completed = models.DateTimeField()
 
-class CorrectlyAnsweredQuestion(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class Team(models.Model):
@@ -93,6 +90,12 @@ class UserProject(models.Model):
     points = models.IntegerField(default = 0)
     completed_project = models.BooleanField(default=False)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null = True)
+
+
+class CorrectlyAnsweredQuestion(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    userproject = models.ForeignKey(UserProject, on_delete=models.CASCADE, null=True)
+
     
 
 class Video(models.Model):

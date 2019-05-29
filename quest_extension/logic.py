@@ -89,9 +89,10 @@ def validate_admin_access(request, ldap):
 def go_to_next_quest(current_quest, current_user, current_project):
     num_questions_in_quest = len(Question.objects.filter(quest = current_quest, deleted = False))
     all_questions_in_quest = [question for question in Question.objects.filter(quest = current_quest, deleted = False)]
+    current_user_project = UserProject(user = current_user, project = current_project)
     count_of_correctly_answered_questions = 0
     for question in all_questions_in_quest:
-        if (CorrectlyAnsweredQuestion.objects.filter(question = question, user = current_user)):
+        if (CorrectlyAnsweredQuestion.objects.filter(question = question, userproject = current_user_project)):
             count_of_correctly_answered_questions += 1
             
     print(count_of_correctly_answered_questions, num_questions_in_quest)

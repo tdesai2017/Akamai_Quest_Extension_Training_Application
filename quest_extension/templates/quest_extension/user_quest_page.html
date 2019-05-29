@@ -5,14 +5,25 @@
         
         <title> {{ current_quest.quest_name }} </title>
         <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_quest_page_style.css' %}">
+        <script> 
 
+        // function validate_answer(){
+        //     var question_to_answers = "{{ question_to_answers|escapejs }}";
+        //     var answer = toString(document.getElementById('id_answer'));
+        //     console.log(JSON.parse(question_to_answers));
+        //     console.log(answer);
+        //     return false;
+        // }
+
+
+        </script>
     </head>
     <body>
 
         <div class = centered>
             <h1> {{ current_quest.quest_name }} </h1>
         <br>
-        </div>     
+        </div>    
 
         
         <div class='container'>
@@ -56,7 +67,7 @@
 
 
                     {% if question.id not in have_correct_answer %}
-                         <form method = "POST" action = '/quest/validate_fr_question_response/{{ldap}}/{{current_quest.id}}'>
+                         <form method = "POST"  action = '/quest/validate_fr_question_response/{{ldap}}/{{current_quest.id}}'>
                             {% csrf_token %}
                             {{ fr_input_form }}
                              <button type= 'submit' name='FR_response_id' value = '{{ question.id }}'>Submit</button>

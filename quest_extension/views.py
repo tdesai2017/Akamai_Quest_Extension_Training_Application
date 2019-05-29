@@ -708,10 +708,6 @@ def validate_fr_question_response(request, ldap, quest_id):
 
 
 
-############################
-
-
-
 def validate_mc_question_response(request, ldap, quest_id):
 
     if not validate_user_access(request, ldap):
@@ -722,12 +718,13 @@ def validate_mc_question_response(request, ldap, quest_id):
     current_user = User.objects.get(user_ldap = ldap)
     current_user_project = UserProject.objects.get(user = current_user, project = current_project)
 
-    
-
     if request.method == 'POST':
         #When do I check here whether the form is valid
         post_request = request.POST
         user_answer = post_request.getlist('answer')
+        print('I AM HERE')
+        print (post_request)
+        print (user_answer)
         current_question = Question.objects.get(id = post_request['MC_response_id'])
         correct_answers = CorrectAnswer.objects.filter(question = current_question)
 
@@ -736,8 +733,6 @@ def validate_mc_question_response(request, ldap, quest_id):
         correct_answers_texts = []
         for answer in correct_answers:
             correct_answers_texts.append(answer.answer_text)
-
-        print (user_answer, correct_answers_texts)
 
         user_answer.sort()
         correct_answers_texts.sort()

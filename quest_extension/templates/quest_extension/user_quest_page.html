@@ -9,9 +9,10 @@
 
         function validate_fr_answer(question_id){
             var question_to_answers = "{{ question_to_answers|escapejs }}";
-            var user_answer = document.getElementById('id_answer').value;
+            var user_answer = document.getElementById('input_'+ question_id).value;
             var question_to_answers_json = JSON.parse(question_to_answers);
-            console.log(question_to_answers_json)
+            console.log (user_answer)
+            console.log (question_id)
             var answer_to_this_question = question_to_answers_json[question_id]
                 if (user_answer == answer_to_this_question) {
                     document.getElementById('correct_' + question_id).style.display = 'inline'
@@ -27,13 +28,18 @@
             return false;
         }
         
-        function validate_mc_answer(){
+        function validate_mc_answer(question_id){
             var question_to_answers = "{{ question_to_answers|escapejs }}";
-            var answer = document.getElementById("mc_answer").value;
-            console.log(JSON.parse(question_to_answers));
-            console.log(answer);
+            // For some reason this is only returning the top option
+            var user_answer = document.getElementsByClassName('input_'+ question_id).value;
+            console.log('input_' + question_id)
+            console.log(document.getElementsByClassName('input_' + question_id))
+            
+            console.log(user_answer)
+
             return false;
         }
+        
 
 
         </script>
@@ -87,9 +93,10 @@
 
 
                     {% if question.id not in have_correct_answer %}
-                         <form method = "POST" onsubmit = "return validate_fr_answer('{{question.id}}')" action = '/quest/validate_fr_question_response/{{ldap}}/{{current_quest.id}}'>
+                         <form method = "POST" id = 'form_{{question.id}}' onsubmit = "return validate_fr_answer('{{question.id}}')" action = '/quest/validate_fr_question_response/{{ldap}}/{{current_quest.id}}'>
                             {% csrf_token %}
-                            {{ fr_input_form }}
+                            <!-- {{ fr_input_form }} -->
+                            Answer: <input type = 'text' id = 'input_{{question.id}}'' name = 'answer'>
                              <button type= 'submit' name='FR_response_id' value = '{{ question.id }}'>Submit</button>
                         </form>
 
@@ -123,11 +130,11 @@
                 {% if question.question_type == 'MC' %}
                      {% if question.id not in have_correct_answer %}
 
-                        <form method = "POST" onsubmit = "return validate_mc_answer()" action = '/quest/validate_mc_question_response/{{ldap}}/{{current_quest.id}}'>
+                        <form method = "POST" onsubmit = "return validate_mc_answer('{{question.id}}')" action = '/quest/validate_mc_question_response/{{ldap}}/{{current_quest.id}}'>
                             {% csrf_token %}
                             {% for a in answers %}
                             <!-- Make both incorrect and correct answers have the same filed called answer_text so that it can easily be passed as a value -->
-                                <input type="checkbox" id= "mc_answer" name= "answer" value="{{ a.answer_text }}">{{ a.answer_text }}<br>
+                                <input type="checkbox" class= "input_{{question.id}}" name= "answer" value="{{ a.answer_text }}">{{ a.answer_text }}<br>
                             {% endfor %}
                             <br>
                             <button type= 'submit' name= 'MC_response_id' value= '{{ question.id }}'>Submit</button>

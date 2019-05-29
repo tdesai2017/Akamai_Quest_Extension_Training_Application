@@ -658,7 +658,7 @@ def get_user_quest_page(request, ldap, quest_id):
 
 
     context = {'current_quest': current_quest, 
-            'fr_input_form': fr_input_form, 
+            # 'fr_input_form': fr_input_form, 
             'ldap': ldap, 
             'current_project_id': current_project_id, 
             'have_correct_answer': have_correct_answer,

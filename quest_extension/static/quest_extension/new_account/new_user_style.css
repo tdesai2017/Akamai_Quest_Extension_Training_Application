@@ -21,6 +21,14 @@ label, button {
     float: left;
   }
 
+
+  /* Password Warnings */
+  #low, #up, #num, #char, #same, #email {
+    display: None;
+    color: red;
+
+  }
+
   /* Message classes */
 .success {
   color: lightgreen;

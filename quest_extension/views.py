@@ -1142,7 +1142,6 @@ def add_new_user(request):
                 valid_email = True
             except:
                 valid_email = False
-                print("This is an invalid email")
                 messages.error(request, 'Please input a valid email')
                 return HttpResponseRedirect('/quest/new_user') 
 
@@ -1192,7 +1191,7 @@ def user_login_to_account(request):
                 return HttpResponseRedirect('/quest/user_project_page/' + request.session['current_user_ldap'])
         #If LDAP is not associated with an account
         else:
-            messages.error(request, 'There is no account associated with this LDAP')
+            messages.error(request, 'There is no user account associated with this LDAP')
     
     return HttpResponseRedirect('/quest/user_login')
 
@@ -1204,7 +1203,7 @@ def user_change_password_request(request):
 
         #only proceed if there is a user with this ldap
         if not User.objects.filter(user_ldap = ldap):
-            messages.error(request, 'There is no account with this ldap')
+            messages.error(request, 'There is no user account with this ldap')
             return HttpResponseRedirect('/quest/user_login')
         
         else:
@@ -1409,7 +1408,7 @@ def admin_login_to_account(request):
                 return HttpResponseRedirect('/quest/admin_project_page/' + request.session['current_admin_ldap'])
         #If LDAP is not associated with an account
         else:
-            messages.error(request, 'There is no Admin account associated with this LDAP')
+            messages.error(request, 'There is no admin account associated with this LDAP')
     
     return HttpResponseRedirect('/quest/admin_login')
 
@@ -1420,7 +1419,7 @@ def admin_change_password_request(request):
 
         #only proceed if there is an Admin with this ldap
         if not Admin.objects.filter(admin_ldap = ldap):
-            messages.error(request, 'There is no account with this ldap')
+            messages.error(request, 'There is no admin account with this ldap')
             return HttpResponseRedirect('/quest/admin_login')
 
         else:

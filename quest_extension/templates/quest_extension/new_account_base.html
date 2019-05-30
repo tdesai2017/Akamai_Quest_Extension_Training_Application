@@ -3,8 +3,9 @@
 <html>
 <head>
    <title> New Account </title>
-   {% block stylesheet %}
+   {% block stylesheet_js %}
    {% endblock %}
+
 
 </head>
 <body>
@@ -14,7 +15,7 @@
     
         {% block login %}
         {% endblock %}
-
+        <br>
         {% if messages %}
         <ul class="messages">
             {% for message in messages %}
@@ -23,20 +24,39 @@
         </ul>
         {% endif %}
 
+        <br>
+    <ul>
+        <li id = 'low'> - Please include a lowercase letter </li>
+    </ul>
+    <ul>
+        <li id = 'up'> - Please include an uppercase letter </li>
+    </ul>
+    <ul>
+        <li id = 'num'> - Please include a number </li>
+    </ul>
+    <ul>
+        <li id = 'char'>- Please make sure that your password is at least 8 characters long</li>
+    </ul>
+
+    <ul>
+        <li id = 'same'>- Please make sure that your passwords match</li>
+    </ul>
+
+    <ul>
+        <li id = 'email'>- Please make sure that your email is valid </li>
+    </ul>
+               
+
     <br>
     <br>
     <br>
 
     <div id = 'container'>
         
-
+        <!-- "account_form" has the beginning of the form -->
             {% block account_form %}
             {% endblock %}
-
-            <label for="retyped_password">Retype Password:</label>
-            <input type="password" name="retyped_password" maxlength="200" >
-            <button form = 'user_form' type= 'submit'> Submit </button> 
-        </form>
+        
     </div>  
 
    

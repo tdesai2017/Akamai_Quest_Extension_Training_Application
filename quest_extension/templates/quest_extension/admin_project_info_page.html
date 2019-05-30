@@ -62,6 +62,14 @@
             <button type = 'submit'> Submit </button>
         </form>
 
+        <p>Find person's information (Name):</p>
+        <form method = 'POST' action = '/quest/search_by_user_name/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+            {% csrf_token %}
+            First name: <input type = 'text' name = 'first' required>
+            Last name: <input type = 'text' name = 'last' required>
+            <button type = 'submit'> Submit </button>
+        </form>
+
         <p> See the information for all users in this project: </p>
         <form method = 'POST' action = '/quest/search_all_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
             {% csrf_token %}

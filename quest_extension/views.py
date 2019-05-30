@@ -1891,6 +1891,43 @@ def search_by_user_ldap(request, ldap, project_id):
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
+def search_by_user_name(request, ldap, project_id):
+    current_project = Project.objects.get(id = project_id)
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    view_or_editable = request.session['view_or_editable'] 
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    if request.method == 'POST':
+        post_request = request.POST
+        user_first_name = post_request['first']
+        user_last_name = post_request['last']
+        if User.objects.filter(user_first_name = user_first_name, user_last_name = user_last_name):
+            user_requested_for = User.objects.get(user_first_name = user_first_name, user_last_name = user_last_name)
+        else:
+            messages.warning(request,  'User with name ' + user_first_name + ' ' + user_last_name +  ' does not exist')
+            return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
+
+        if UserProject.objects.filter(user = user_requested_for, project = current_project):
+            user_project_info = UserProject.objects.filter(user = user_requested_for, project = current_project)
+            messages.success(request, 'User information found!')
+
+        else:
+            messages.warning(request, 'User with name ' + user_first_name + ' ' +  user_last_name + ' is not a part of this project')
+            return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
+    
+    query = 'Name  = ' + user_first_name +  ' ' + user_last_name
+    context = {
+    'current_project': current_project, 
+    'current_admin': current_admin, 
+    'user_project_info': user_project_info, 
+    'query': query,
+    'view_or_editable': view_or_editable
+    }
+    return render(request, 'quest_extension/admin_project_info_page.html', context)
+
+
 def search_above(request, ldap, project_id):
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)

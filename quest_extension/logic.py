@@ -199,3 +199,37 @@ def check_hash(password, hash):
         return True
 
     return False
+
+
+#Validates whether a question is correctly answered
+def validate_question_response(request, ldap, question, user_answer):
+
+   
+    current_quest = question.quest
+    current_project = current_quest.project
+    current_user = User.objects.get(user_ldap = ldap)
+    current_user_project = UserProject.objects.get(user = current_user, project = current_project)
+    current_question = question
+    correct_answers = CorrectAnswer.objects.filter(question = current_question)
+
+    correct_answers_texts = []
+    for answer in correct_answers:
+        correct_answers_texts.append(answer.answer_text)
+
+    user_answer.sort()
+    correct_answers_texts.sort()
+
+
+    #Even if we need to select multiple answers to get the correct response, this will now work
+    if user_answer == correct_answers_texts:
+    #Creates a new MODEL INSTANCE of CorrectlyAnswerQuestions
+        correctly_answered_question = CorrectlyAnsweredQuestion()
+        #Adds a new correctly answer question
+        correctly_answered_question.question = current_question
+        correctly_answered_question.userproject = current_user_project
+        correctly_answered_question.save()
+        go_to_next_quest(current_quest, current_user, current_project)
+        messages.success(request, 'That\'s correct!!' , extra_tags = str(current_question.id))
+    else:
+        messages.error(request, 'Sorry, that\'s not the right answer :(', extra_tags = str(current_question.id))
+

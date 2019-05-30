@@ -23,12 +23,12 @@
 /* Message classes */
 .success {
     color: lightgreen;
-}
-
-.warning {
+  }
+  
+  .warning {
     color: orange;
-}
-
-.error {
+  }
+  
+  .error {
     color: red;
-}
+  }

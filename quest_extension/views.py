@@ -667,101 +667,61 @@ def get_user_quest_page(request, ldap, quest_id):
 
     return render(request, 'quest_extension/user_quest_page.html', context)
 
-def validate_fr_question_response(request, ldap, quest_id):
+# def validate_fr_question_response(request, ldap, question, user_answer):
 
-    if not validate_user_access(request, ldap):
-        return HttpResponseRedirect('/quest/user_login')
+#     if not validate_user_access(request, ldap):
+#         return HttpResponseRedirect('/quest/user_login')
 
-    current_quest = Quest.objects.get(id = quest_id)
-    current_project = current_quest.project
-    current_user = User.objects.get(user_ldap = ldap)
+#     current_quest = Quest.objects.get(id = quest_id)
+#     current_project = current_quest.project
+#     current_user = User.objects.get(user_ldap = ldap)
 
-    if request.method == 'POST':
-        #When do I check here whether the form is valid
-        post_request = request.POST
-        user_answer = post_request['answer']
-        current_question = Question.objects.get(id = post_request['FR_response_id'])
-        correct_answers = CorrectAnswer.objects.filter(question = current_question)
-        current_user_project = UserProject.objects.get(user = current_user, project = current_project)
-
-        
-        correct_answers_texts = []
-        for answer in correct_answers:
-            correct_answers_texts.append(answer.answer_text)
-
-        if user_answer in correct_answers_texts:
-            print("You are correct")
-            #Creates a new MODEL INSTANCE of CorrectlyAnswerQuestions
-            correctly_answered_question = CorrectlyAnsweredQuestion()
-            #Adds a new correctly answer question
-            correctly_answered_question.question = current_question
-            correctly_answered_question.userproject = current_user_project
-            correctly_answered_question.save()
-            go_to_next_quest(current_quest, current_user, current_project)
-        else:
-             messages.error(request, 'Sorry, that\'s not the right answer :(', extra_tags = str(current_question.id))
-
-    return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + str(quest_id))
-
-
-
-
-
-def validate_mc_question_response(request, ldap, quest_id):
-
-    if not validate_user_access(request, ldap):
-        return HttpResponseRedirect('/quest/user_login')
-
-    current_quest = Quest.objects.get(id = quest_id)
-    current_project = current_quest.project
-    current_user = User.objects.get(user_ldap = ldap)
-    current_user_project = UserProject.objects.get(user = current_user, project = current_project)
-
-    if request.method == 'POST':
-        #When do I check here whether the form is valid
-        post_request = request.POST
-        user_answer = post_request.getlist('answer')
-        print('I AM HERE')
-        print (post_request)
-        print (user_answer)
-        current_question = Question.objects.get(id = post_request['MC_response_id'])
-        correct_answers = CorrectAnswer.objects.filter(question = current_question)
-
-
-
-        correct_answers_texts = []
-        for answer in correct_answers:
-            correct_answers_texts.append(answer.answer_text)
-
-        user_answer.sort()
-        correct_answers_texts.sort()
-
-
-        #Even if we need to select multiple answers to get the correct response, this will now work
-        if user_answer == correct_answers_texts:
-        #Creates a new MODEL INSTANCE of CorrectlyAnswerQuestions
-            correctly_answered_question = CorrectlyAnsweredQuestion()
-            #Adds a new correctly answer question
-            correctly_answered_question.question = current_question
-            correctly_answered_question.userproject = current_user_project
-            correctly_answered_question.save()
-            go_to_next_quest(current_quest, current_user, current_project)
-        else:
-            messages.error(request, 'Sorry, that\'s not the right answer :(', extra_tags = str(current_question.id))
+#     if request.method == 'POST':
+#         #When do I check here whether the form is valid
+#         post_request = request.POST
+#         user_answer = post_request['answer']
+#         current_question = Question.objects.get(id = post_request['FR_response_id'])
+#         correct_answers = CorrectAnswer.objects.filter(question = current_question)
+#         current_user_project = UserProject.objects.get(user = current_user, project = current_project)
 
         
-    return HttpResponseRedirect('/quest/user_quest_page/' + ldap +'/' + str(quest_id))
+#         correct_answers_texts = []
+#         for answer in correct_answers:
+#             correct_answers_texts.append(answer.answer_text)
+
+#         if user_answer in correct_answers_texts:
+#             print("You are correct")
+#             #Creates a new MODEL INSTANCE of CorrectlyAnswerQuestions
+#             correctly_answered_question = CorrectlyAnsweredQuestion()
+#             #Adds a new correctly answer question
+#             correctly_answered_question.question = current_question
+#             correctly_answered_question.userproject = current_user_project
+#             correctly_answered_question.save()
+#             go_to_next_quest(current_quest, current_user, current_project)
+#         else:
+#              messages.error(request, 'Sorry, that\'s not the right answer :(', extra_tags = str(current_question.id))
+
+#     return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + str(quest_id))
+
 
 
 
 
 
 def validate_user_input(request, ldap, quest_id):
+
+    if not validate_user_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
     if request.method == 'POST':
         post_request = request.POST
-        print (post_request)
-    return HttpResponseRedirect('/quest/user_quest_page/' + ldap +'/' + str(quest_id))
+        print(post_request)
+        for key, value in post_request.items():
+            if 'answer' in key and post_request.getlist(key)[0] != '':
+                question = Question.objects.get (id = key[key.index('_') + 1:])
+                validate_question_response (request, ldap, question, post_request.getlist(key))
 
+    return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + str(quest_id))
 
 
 ######################################

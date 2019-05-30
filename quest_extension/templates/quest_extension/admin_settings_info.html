@@ -11,6 +11,80 @@
             document.getElementById("update_" + info + "_button").style.display = "none";
             document.getElementById("update_" + info + "_form").style.display = "inline"
           } 
+
+    function validate_email() {
+
+        document.getElementById('email').style.display = 'none'; 
+
+        email = document.getElementById("account_email").value
+        var email_re = /^\S+@\S+$/;
+
+        if (email_re.test(String(email).toLowerCase())) {
+            return true;
+        }
+
+        else {
+            document.getElementById('email').style.display = 'inline'
+            return false;
+        }
+    }
+
+    function validate_password() {
+        document.getElementById('low').style.display = 'none'; 
+        document.getElementById('up').style.display = 'none'; 
+        document.getElementById('num').style.display = 'none'; 
+        document.getElementById('char').style.display = 'none'; 
+        document.getElementById('same').style.display = 'none'; 
+        document.getElementById('email').style.display = 'none'; 
+
+
+        password = document.getElementById("password").value
+        retyped_password = document.getElementById("retyped_password").value
+        var count = 0;
+
+        
+
+        if (password == retyped_password) { 
+            count += 1;
+        }
+
+        else {
+            document.getElementById('same').style.display = 'inline'; 
+        }
+
+        if (/[a-z]/.test(password)) { 
+            count += 1;
+        }
+
+        else {
+            document.getElementById('low').style.display = 'inline'; 
+        }
+        
+        if (/[A-Z]/.test(password)) {
+            count += 1;
+            } 
+
+        else {
+            document.getElementById('up').style.display = 'inline';
+        }
+        
+        if (/\d/.test(password)) {
+            count += 1;
+        }   
+        else {
+            document.getElementById('num').style.display = 'inline';
+        }
+
+        if (password.length >= 8) { 
+            count += 1
+        }
+        else {
+            document.getElementById('char').style.display = 'inline';
+        }
+
+        return (count == 5)
+    
+    }
     
           
         </script>
@@ -29,7 +103,28 @@
         {% endfor %}
     </ul>
     {% endif %}
-    
+
+    <ul>
+        <li id = 'low'> - Please include a lowercase letter </li>
+    </ul>
+    <ul>
+        <li id = 'up'> - Please include an uppercase letter </li>
+    </ul>
+    <ul>
+        <li id = 'num'> - Please include a number </li>
+    </ul>
+    <ul>
+        <li id = 'char'>- Please make sure that your password is at least 8 characters long</li>
+    </ul>
+
+    <ul>
+        <li id = 'same'>- Please make sure that your passwords match</li>
+    </ul>
+
+    <ul>
+        <li id = 'email'>- Please make sure that your email is valid </li>
+    </ul>
+
     
     <p>LDAP: {{current_admin.admin_ldap}}</p>
     <button id = 'update_ldap_button' onclick="update('ldap')"> Update LDAP</button>
@@ -57,9 +152,9 @@
 
     <p> Email Address: </h3> {{current_admin.admin_email}} </p>
     <button id = 'update_email_button' onclick="update('email')"> Update Email</button>
-    <form id = 'update_email_form' method='POST' action= '/quest/update_admin_email/{{current_admin.admin_ldap}}'>
+    <form onsubmit = 'return validate_email();'id = 'update_email_form' method='POST' action= '/quest/update_admin_email/{{current_admin.admin_ldap}}'>
         {% csrf_token %}
-        <input type='text' name = 'admin_email' value = '{{current_admin.admin_email}}'>
+        <input id = 'account_email' type='text' name = 'admin_email' value = '{{current_admin.admin_email}}'>
         <button type = 'submit'> Confirm Update </button>
     </form>
 
@@ -70,16 +165,16 @@
 
     <button id = 'update_password_button' onclick="update('password')"> Update Password</button>
 
-    <form id = 'update_password_form' method='POST' action= '/quest/update_admin_password/{{current_admin.admin_ldap}}'>
+    <form onsubmit = 'return validate_password();'id = 'update_password_form' method='POST' action= '/quest/update_admin_password/{{current_admin.admin_ldap}}'>
         {% csrf_token %}
         <label> Current Password:</label>
         <input type='password' name = 'current_password'  autocomplete="new-password" >
         
         <label> New Password: </label>
-        <input type='password' name = 'new_password' autocomplete="new-password">
+        <input id = 'password' type='password' name = 'new_password' autocomplete="new-password">
     
         <label> Retype New Password: </label>
-        <input type='password' name = 'retyped_password' autocomplete= "new-password" >
+        <input id = 'retyped_password' type='password' name = 'retyped_password' autocomplete= "new-password" >
 
         <button type = 'submit'> Confirm Update </button>
     </form>

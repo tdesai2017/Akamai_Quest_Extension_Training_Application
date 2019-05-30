@@ -14,6 +14,7 @@ from quest_extension.logic import *
 from django.core.mail import send_mail
 import random
 import json
+import hashlib
 
 
 

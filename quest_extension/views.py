@@ -851,9 +851,16 @@ def get_admin_project_page(request, ldap):
     #Only include projects that there is a AdminProject link for
     list_of_projects = AdminProject.objects.filter(admin = current_admin).values_list('project', flat=True)
     list_of_projects = Project.objects.filter(pk__in=list_of_projects)
-    
 
-    context = {'project_form': project_form, 'list_of_projects': list_of_projects, 'current_admin': current_admin}
+    all_random_phrases = Project.objects.all().values_list('project_random_phrase', flat=True)
+    all_random_phrases = json.dumps([x for x in all_random_phrases])
+    all_admin_pins = Project.objects.all().values_list('project_admin_pin', flat=True) 
+    all_admin_pins = json.dumps([x for x in all_admin_pins])
+    context = {'project_form': project_form,
+    'list_of_projects': list_of_projects,
+    'current_admin': current_admin,
+    'all_random_phrases': all_random_phrases,
+    'all_admin_pins': all_admin_pins}
     return render(request, 'quest_extension/admin_project_page.html', context)
 
 def add_new_project(request, ldap):

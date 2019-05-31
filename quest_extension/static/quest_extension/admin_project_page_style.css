@@ -42,6 +42,12 @@ text-align: right
   color: red
 }
 
+
+#invalid_random_phrase, #invalid_admin_pin {
+  display: None;
+  color: red
+}
+
 /* Message classes */
 .success {
   color: lightgreen;

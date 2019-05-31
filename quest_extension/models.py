@@ -33,15 +33,17 @@ class Quest(models.Model):
 
 
 class Question(models.Model):
+    QUESTION_TYPES = (('MC', 'MC'), ('FR', 'FR'), ('API', 'API'))
     quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=1000, blank=True, null=True)
-    question_type = models.CharField(max_length=45)
+    question_type = models.CharField(max_length=45, choices = QUESTION_TYPES)
     deleted = models.BooleanField(default=False)
     # The advantage of having both time_modified and delete_time -> when we undo a delete,
     # the most recently deleted item will be returned at it's original position (we save the 
     # old timestamp when items are deleted)
     time_modified = models.DateTimeField(auto_now=True)
     delete_time = models.DateTimeField(auto_now = True)
+
 
 class IncorrectAnswer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
@@ -65,14 +67,6 @@ class CorrectAnswer(models.Model):
    question = models.ForeignKey(Question, on_delete=models.CASCADE)
    answer_text = models.CharField(max_length=1000)
    time_modified = models.DateTimeField(auto_now=True)
-
-  
-# class CompletedQuest(models.Model):
-#    user = models.ForeignKey(User, on_delete=models.CASCADE)
-#    quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
-#    points_earned = models.IntegerField()
-#    date_completed = models.DateTimeField()
-
 
 
 class Team(models.Model):

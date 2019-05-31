@@ -6,8 +6,8 @@
 	<title>Quest home</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
-    <!-- <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script> -->
+    
+    <script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
     <script type="text/javascript">
         //<![CDATA[
         bkLib.onDomLoaded(function() {
@@ -18,7 +18,7 @@
             );
         });
         //]]>
-        </script>
+    </script>
 
 
     <script> 
@@ -29,6 +29,33 @@
     function hide(){
         document.getElementById("container").style.display = "none";
         document.getElementById("create_new_project").style.display = "inline";
+    }
+
+    function new_pin_and_random_phrase() {
+        document.getElementById("invalid_admin_pin").style.display = 'none';
+        document.getElementById("invalid_random_phrase").style.display = 'none';
+
+
+        pin_input = document.getElementById("id_project_admin_pin").value;
+        random_phrase_input = document.getElementById("id_project_random_phrase").value;
+        var all_admin_pins = JSON.parse('{{ all_admin_pins|safe }}') ;
+        var all_random_phrases =  JSON.parse('{{all_random_phrases|safe }}');
+        console.log (all_admin_pins.includes(pin_input));
+        console.log (all_random_phrases.includes(random_phrase_input));
+        if (all_admin_pins.includes(pin_input) || all_random_phrases.includes(random_phrase_input)) {
+            if (all_admin_pins.includes(pin_input)){
+                document.getElementById("invalid_admin_pin").style.display = 'inline';
+            }
+            if (all_random_phrases.includes(random_phrase_input)){
+                document.getElementById("invalid_random_phrase").style.display = 'inline';
+            }
+            return false;
+        }
+        else {
+            return true;
+        }
+
+
     }
       
       </script>
@@ -46,6 +73,13 @@
         {% endfor %}
     </ul>
     {% endif %}
+
+    <ul>
+        <li id = 'invalid_admin_pin'> - Please use a different admin pin for security purposes </li>
+    </ul>
+    <ul>
+        <li id = 'invalid_random_phrase'> - Please use a different random phrase for security purposes </li>
+    </ul>
 
     <form method='GET' action = '/quest/admin_settings_info/{{current_admin.admin_ldap}}'>
         <button type='submit'>Admin's Settings/Info</button>
@@ -66,7 +100,7 @@
 
     <div id = "container">
         <br>
-        <form method='POST' id = 'new_project_form' action = "/quest/add_new_project/{{current_admin.admin_ldap}}">
+        <form onsubmit = "return new_pin_and_random_phrase();" method='POST' id = 'new_project_form' action = "/quest/add_new_project/{{current_admin.admin_ldap}}">
                 {% csrf_token %}
                 {{ project_form }}
                 <br>

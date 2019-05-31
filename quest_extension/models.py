@@ -99,12 +99,12 @@ class CorrectlyAnsweredQuestion(models.Model):
     
 
 class Video(models.Model):
-    VIDEO_TYPES = (
-    ('Youtube', 'Youtube'),
-    ('Personal', 'Personal'))
+    # VIDEO_TYPES = (
+    # ('Youtube', 'Youtube'),
+    # ('Personal', 'Personal'))
     quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
     video_url = models.CharField(max_length = 1000)
-    video_type = models.CharField(max_length = 1000, choices = VIDEO_TYPES)
+    # video_type = models.CharField(max_length = 1000, choices = VIDEO_TYPES)
 
 
 

@@ -15,7 +15,7 @@ from django.core.mail import send_mail
 import random
 import json
 import hashlib
-
+import requests
 
 
 #Views
@@ -627,6 +627,9 @@ def get_user_quest_page(request, ldap, quest_id):
     have_correct_answer = CorrectlyAnsweredQuestion.objects.filter(userproject = current_user_project).values_list('question', flat = True)
 
     #Creates the format for the questions to be in
+    #The reason that this is different from admin_quest_page code is since
+    #we are also passing in all the CorrectlyAnsweredQuestions for users
+    
     format_2 = []
     for question in list_of_questions:
         correct_answer = CorrectAnswer.objects.filter(question = question)
@@ -648,7 +651,7 @@ def get_user_quest_page(request, ldap, quest_id):
         #Combines wrong answers with correct answer
         format_2.append(format_2_tuple)
 
-    #attempt to map quesitons to correct answers
+    #attempt to map quesitons to correct answers for instant js validation
     question_to_answers = {}
     for question in list_of_questions:
         correct_answers = CorrectAnswer.objects.filter(question = question, deleted = False)
@@ -1879,9 +1882,10 @@ def search_by_user_ldap(request, ldap, project_id):
         else:
             messages.warning(request, 'User with ldap "' + post_request['user'] + '" is not a part of this project')
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
-    
+    count = len(user_project_info)
     query = 'LDAP = ' + post_request['user']
     context = {
+    'count': count,
     'current_project': current_project, 
     'current_admin': current_admin, 
     'user_project_info': user_project_info, 
@@ -1917,8 +1921,10 @@ def search_by_user_name(request, ldap, project_id):
             messages.warning(request, 'User with name ' + user_first_name + ' ' +  user_last_name + ' is not a part of this project')
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
     
+    count = len(user_project_info)
     query = 'Name  = ' + user_first_name +  ' ' + user_last_name
     context = {
+    'count': count,
     'current_project': current_project, 
     'current_admin': current_admin, 
     'user_project_info': user_project_info, 
@@ -1951,9 +1957,11 @@ def search_above(request, ldap, project_id):
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
         user_project_info = UserProject.objects.filter(current_quest__in = valid_quests, project = current_project)
-
+    
+    count = len(user_project_info)
     query = 'Quest Path Number > ' + str(above)
     context = {
+    'count': count,
     'current_project': current_project,
     'current_admin': current_admin, 
     'user_project_info': user_project_info, 
@@ -1987,8 +1995,10 @@ def search_below(request, ldap, project_id):
 
         user_project_info = UserProject.objects.filter(current_quest__in = valid_quests, project = current_project)
 
+    count = len(user_project_info)
     query = 'Quest Path Number > ' + str(below)
     context = {
+        'count': count,
         'current_project': current_project, 
         'current_admin': current_admin, 
         'user_project_info': user_project_info, 
@@ -2020,8 +2030,10 @@ def search_at(request, ldap, project_id):
 
         user_project_info = UserProject.objects.filter(current_quest__in = valid_quests, project = current_project)
 
+    count = len(user_project_info)
     query = 'Quest Path Number = ' + str(at)
     context = {
+    'count': count,
     'current_project': current_project, 
     'current_admin': current_admin, 
     'user_project_info': user_project_info, 
@@ -2045,14 +2057,16 @@ def search_all_users(request, ldap, project_id):
 
         user_project_info = UserProject.objects.filter(project = current_project)
         messages.success(request, 'Users\' information found')
-
+    
+    count = len(user_project_info)
     query = 'All Users'
     context = {
+    'count': count,
     'current_project': current_project, 
     'current_admin': current_admin, 
     'user_project_info': user_project_info, 
     'query': query,
-    'view_or_editable': view_or_editable
+    'view_or_editable': view_or_editable,
     }
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
@@ -2073,9 +2087,10 @@ def search_completed_users(request, ldap, project_id):
         user_project_info = UserProject.objects.filter(project = current_project, completed_project = True)
         messages.success(request, 'Users\' information found')
 
-
+    count = len(user_project_info)
     query = 'All Users that completed the project'
     context = {
+        'count': count, 
         'current_project': current_project, 
         'current_admin': current_admin, 
         'user_project_info': user_project_info, 
@@ -2101,9 +2116,10 @@ def search_not_completed_users(request, ldap, project_id):
         user_project_info = UserProject.objects.filter(project = current_project, completed_project = False)
         messages.success(request, 'Users\' information found')
 
-
+    count = len(user_project_info)
     query = 'All Users that have not completed the project'
     context = {
+    'count': count,
     'current_project': current_project, 
     'current_admin': current_admin, 
     'user_project_info': user_project_info, 
@@ -2113,10 +2129,24 @@ def search_not_completed_users(request, ldap, project_id):
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
+######################### PHP TESTS
+
+def php_tests(request):
+
+    # run php -S localhost:4000 to start the php
+    php_result = str(requests.get('http://localhost:4000/take_request_give_response.php').content)
+    # php_result = php_result[php_result.index(':') + 1 : php_result.index('}')]
+    php_value = ''
+    if 'true' in php_result:
+        php_value = 'true'
+    elif 'false' in php_result:
+        php_value = 'false'
+    
 
 
-
-
+    
+    context = {'php_value': php_value}
+    return render(request, 'quest_extension/php_tests.html', context)
 
 
 

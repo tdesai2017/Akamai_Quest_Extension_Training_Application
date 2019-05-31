@@ -199,5 +199,8 @@ path('search_all_users/<ldap>/<project_id>', views.search_all_users),
 path('search_completed_users/<ldap>/<project_id>', views.search_completed_users),
 path('search_not_completed_users/<ldap>/<project_id>', views.search_not_completed_users),
 
+############################## PHP test urls
+
+path ('php_tests', views.php_tests),
 
 ]

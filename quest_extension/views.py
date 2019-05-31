@@ -272,23 +272,7 @@ def get_admin_quest_page_editable(request, ldap, quest_id):
     video_form = VideoForm()
     all_videos = Video.objects.filter(quest = current_quest)
 
-    format = {}
-    for question in list_of_questions:
-        correct_answer = CorrectAnswer.objects.filter(question = question)
-        wrong_answers = IncorrectAnswer.objects.filter(question = question)
-        #This was the only way I could find that would allows us to join two independent model types 
-        #(by converting them into lists and appending them)
-        all_answers = []
-
-        for answer in wrong_answers:
-            all_answers.append(answer)
-
-        for answer in correct_answer:
-            all_answers.append(answer)
-
-        shuffle(all_answers)
-        #Combines wrong answers with correct answer
-        format[question] = all_answers 
+    format = create_admin_quest_page_format(list_of_questions)
 
     context = {'current_quest': current_quest,
      'format': format,
@@ -548,23 +532,8 @@ def get_admin_quest_page_view_only(request, ldap, quest_id):
     video_form = VideoForm()
 
 
-    format = {}
-    for question in list_of_questions:
-        correct_answer = CorrectAnswer.objects.filter(question = question)
-        wrong_answers = IncorrectAnswer.objects.filter(question = question)
-        #This was the only way I could find that would allows us to join two independent model types 
-        #(by converting them into lists and appending them)
-        all_answers = []
+    format = create_admin_quest_page_format(list_of_questions)
 
-        for answer in wrong_answers:
-            all_answers.append(answer)
-
-        for answer in correct_answer:
-            all_answers.append(answer)
-
-        shuffle(all_answers)
-        #Combines wrong answers with correct answer
-        format[question] = all_answers 
 
     context = {'current_quest': current_quest,
     'format': format,
@@ -621,44 +590,42 @@ def get_user_quest_page(request, ldap, quest_id):
 
 
     list_of_questions = Question.objects.filter(quest = current_quest, deleted=False).order_by('time_modified')
-    fr_input_form = TakeInFreeResponseForm()
     
     #"question" also returns the primary id of the question
     have_correct_answer = CorrectlyAnsweredQuestion.objects.filter(userproject = current_user_project).values_list('question', flat = True)
 
-    #Creates the format for the questions to be in
-    #The reason that this is different from admin_quest_page code is since
-    #we are also passing in all the CorrectlyAnsweredQuestions for users
-    
+    #List for template display
     format_2 = []
+
+    #List for js 
+    question_to_answers = {}
+
+
     for question in list_of_questions:
-        correct_answer = CorrectAnswer.objects.filter(question = question)
+        correct_answers = CorrectAnswer.objects.filter(question = question)
         wrong_answers = IncorrectAnswer.objects.filter(question = question)
         all_answers = []
         correct_answer_2 = []
 
-        format_2_tuple = (question, all_answers, correct_answer)
+        format_2_tuple = (question, all_answers, correct_answers)
 
         for answer in wrong_answers:
             all_answers.append(answer)
 
-        for answer in correct_answer:
+        for answer in correct_answers:
             all_answers.append(answer)
             correct_answer_2.append(answer)
-        
 
         shuffle(all_answers)
+
         #Combines wrong answers with correct answer
         format_2.append(format_2_tuple)
 
-    #attempt to map quesitons to correct answers for instant js validation
-    question_to_answers = {}
-    for question in list_of_questions:
-        correct_answers = CorrectAnswer.objects.filter(question = question, deleted = False)
+
         list_of_correct_answers = [ans.answer_text for ans in correct_answers]
         question_to_answers[question.id] = list_of_correct_answers
-    question_to_answers = json.dumps(question_to_answers)
 
+    question_to_answers = json.dumps(question_to_answers)
 
     context = {'current_quest': current_quest, 
             # 'fr_input_form': fr_input_form, 

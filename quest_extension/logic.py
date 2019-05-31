@@ -88,13 +88,14 @@ def validate_admin_access(request, ldap):
 #Checks whether you can go to the next question once you sumbit a new answer
 def go_to_next_quest(current_quest, current_user, current_project):
     num_questions_in_quest = len(Question.objects.filter(quest = current_quest, deleted = False))
-    all_questions_in_quest = [question for question in Question.objects.filter(quest = current_quest, deleted = False)]
-    current_user_project = UserProject(user = current_user, project = current_project)
-    count_of_correctly_answered_questions = 0
-    for question in all_questions_in_quest:
-        if (CorrectlyAnsweredQuestion.objects.filter(question = question, userproject = current_user_project)):
-            count_of_correctly_answered_questions += 1
+    # all_questions_in_quest = [question for question in Question.objects.filter(quest = current_quest, deleted = False)]
+    current_user_project = UserProject.objects.get(user = current_user, project = current_project)
+    # count_of_correctly_answered_questions = 0
+    # for question in all_questions_in_quest:
+    #     if (CorrectlyAnsweredQuestion.objects.filter(question = question, userproject = current_user_project)):
+    #         count_of_correctly_answered_questions += 1
             
+    count_of_correctly_answered_questions = len(CorrectlyAnsweredQuestion.objects.filter(userproject = current_user_project))
     print(count_of_correctly_answered_questions, num_questions_in_quest)
 
     if (count_of_correctly_answered_questions == num_questions_in_quest):
@@ -232,4 +233,26 @@ def validate_question_response(request, ldap, question, user_answer):
         messages.success(request, 'That\'s correct!!' , extra_tags = str(current_question.id))
     else:
         messages.error(request, 'Sorry, that\'s not the right answer :(', extra_tags = str(current_question.id))
+
+
+def create_admin_quest_page_format(list_of_questions):
+    format = {}
+    for question in list_of_questions:
+        correct_answer = CorrectAnswer.objects.filter(question = question)
+        wrong_answers = IncorrectAnswer.objects.filter(question = question)
+        #This was the only way I could find that would allows us to join two independent model types 
+        #(by converting them into lists and appending them)
+        all_answers = []
+
+        for answer in wrong_answers:
+            all_answers.append(answer)
+
+        for answer in correct_answer:
+            all_answers.append(answer)
+
+        shuffle(all_answers)
+        #Combines wrong answers with correct answer
+        format[question] = all_answers 
+    return format
+    
 

@@ -19,6 +19,10 @@ urlpatterns = [
 
 ######################################
 
+    path('api-create-form/<ldap>/<quest_id>', views.get_api_question),
+    path('create_api_question/<ldap>/<quest_id>', views.create_api_question),
+
+######################################
 
 
     #Admin Pages
@@ -99,8 +103,6 @@ path ('admin_quest_settings_view_only/<ldap>/<quest_id>', views.get_admin_quest_
 
 
     path('user_quest_page/<ldap>/<quest_id>', views.get_user_quest_page),
-    # path('validate_fr_question_response/<ldap>/<quest_id>', views.validate_fr_question_response),
-    # path('validate_mc_question_response/<ldap>/<quest_id>', views.validate_mc_question_response),
     path('validate_user_input/<ldap>/<quest_id>', views.validate_user_input),
 
 
@@ -201,6 +203,6 @@ path('search_not_completed_users/<ldap>/<project_id>', views.search_not_complete
 
 ############################## PHP test urls
 
-path ('php_tests', views.php_tests),
+path ('php_tests/<ldap>', views.php_tests),
 
 ]

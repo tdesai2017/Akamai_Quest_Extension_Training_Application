@@ -25,6 +25,7 @@
     <form id = 'free_response' action='/quest/fr-create-form/{{current_admin.admin_ldap}}/{{current_quest.id}}' method = 'GET'></form>
     <form id = 'multiple_choice' action='/quest/mc-create-form/{{current_admin.admin_ldap}}/{{current_quest.id}}' method = 'GET'></form>
     <form id = 'undo_delete' method = 'POST' action = '/quest/undo_delete_question/{{current_admin.admin_ldap}}/{{current_quest.id}}'> {% csrf_token %} </form>
+    <form id = 'api' method = 'GET' action = '/quest/api-create-form/{{current_admin.admin_ldap}}/{{current_quest.id}}'> {% csrf_token %}</form>
 {% endblock %}
 
 
@@ -38,6 +39,7 @@
         <h3>Choose what kind of question you want to make!</h3>
         <button form = 'free_response' type = submit>Free Response</button>
         <button form = 'multiple_choice' type = submit>Multiple Choice</button>
+        <button form = 'api' type = submit> API </button>
         <br>
         <br>
         <button form = 'undo_delete' type = submit name='undo' value='current_quest.id'> Undo Delete</button>
@@ -62,12 +64,16 @@
         </form>
         {% endif %}
 
+
         <form method= 'POST' action= '/quest/delete_question/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
                 {% csrf_token %}
                 <button type='submit' name = 'deleted' value = '{{question.id}}'>Delete Question</button>
         </form>
     </div>
 {% endblock %}
+
+
+
 
 {% block home %}
     <form id='home' action = '/quest/admin_home_editable/{{current_admin.admin_ldap}}/{{current_project_id}}' method='GET'></form>

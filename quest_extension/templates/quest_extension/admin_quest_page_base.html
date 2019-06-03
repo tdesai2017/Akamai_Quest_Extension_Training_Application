@@ -163,10 +163,16 @@
                     <button type= 'submit'>Submit</button>
                     
                 {% endif %}
+
+                {% if question.question_type == 'API' %}
+                    <button type = 'submit'> Completed Task! </button>
+                {% endif %}
                 <br>
                 <br>
+
             {% block edit_deletequestion %}
             {% endblock %}
+            
 
             <br>
             <br>

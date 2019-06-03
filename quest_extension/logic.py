@@ -12,10 +12,13 @@ from datetime import datetime
 import copy
 from django.db.models import Sum
 import hashlib
+import requests
+
+
 
 
 #Saves a free response question to the backend
-def save_fr_question(ldap, question_form, answer_form, quest_id, timestamp=datetime.now()):
+def save_fr_question(request, ldap, question_form, answer_form, quest_id, timestamp=datetime.now()):
     quest = Quest.objects.get(id=quest_id)
     q_form = question_form.save(commit=False)
     q_form.question_type = 'FR'
@@ -34,7 +37,7 @@ def save_fr_question(ldap, question_form, answer_form, quest_id, timestamp=datet
 
 
 #Saves a multiple choice question to the backend
-def save_mc_question(ldap, question_form, answer_form, wrong_answer_form, quest_id, timestamp=datetime.now()):
+def save_mc_question(request, ldap, question_form, answer_form, wrong_answer_form, quest_id, timestamp=datetime.now()):
 
     quest_id = str(quest_id)
     quest = Quest.objects.get(id=quest_id)
@@ -70,7 +73,40 @@ def save_mc_question(ldap, question_form, answer_form, wrong_answer_form, quest_
         w_a_form = IncorrectAnswer(question=Question.objects.get(id=question_id), answer_text= wrong_answer)
         w_a_form.save()
     
+    messages.success(request, 'New question successfully created!')
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + quest_id)
+
+# Saves an API Question
+def save_api_question(request, ldap, question_form, quest_id, timestamp=datetime.now()):
+    api_url = request.POST['api_url']
+    current_quest = Quest.objects.get(id = quest_id)
+    
+    q_form = question_form.save(commit=False)
+    q_form.question_type = 'API'
+    q_form.question_api_url = api_url
+    q_form.quest = current_quest
+    q_form.save()
+    timestamp = datetime.now()
+    question_id = q_form.id
+    Question.objects.filter(id = question_id).update(time_modified = timestamp)
+    return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
+
+# Verifies whether the given API URL returns true or false and can take in an ldap query parameter
+def is_api_url_valid(request, api_url, ldap, quest_id):
+    php_result = 'invalid'
+
+    # I am passing an example queryparameter -> the api code should return false for something like this
+    payload = {'ldap': 'example'}
+    try:
+        php_result = str(requests.get(api_url, params = payload).content)
+    except:
+        return False
+
+
+    if 'true' not in php_result and 'false' not in php_result:
+        return False
+    
+    return True
 
 
 
@@ -198,13 +234,41 @@ def make_hash(password):
 def check_hash(password, hash):
     if make_hash(password) == hash:
         return True
-
     return False
 
 
-#Validates whether a question is correctly answered
-def validate_question_response(request, ldap, question, user_answer):
+#Validates whether an api question is correctly answered
+def validate_api_question_response(request, ldap, question):
+    current_user = User.objects.get(user_ldap = ldap)
+    current_question = question
+    current_quest = question.quest
+    current_project = current_quest.project
+    current_user_project = UserProject.objects.get(user = current_user, project = current_project)
 
+    question_url = question.question_api_url
+
+    payload = {'ldap': ldap}
+
+
+    php_result = str(requests.get(question_url, params = payload).content)
+
+    if 'true' in php_result:
+        correctly_answered_question = CorrectlyAnsweredQuestion()
+        #Adds a new correctly answer question
+        correctly_answered_question.question = current_question
+        correctly_answered_question.userproject = current_user_project
+        correctly_answered_question.save()        
+        go_to_next_quest(current_quest, current_user, current_project)
+        messages.success(request, 'That\'s correct!!' , extra_tags = str(current_question.id))
+    elif 'false' in php_result:
+        messages.error(request, 'Sorry, you have not completed this task yet :(', extra_tags = str(current_question.id))
+
+
+
+
+
+#Validates whether a mc or fr question is correctly answered
+def validate_mc_or_fr_question_response(request, ldap, question, user_answer):
    
     current_quest = question.quest
     current_project = current_quest.project

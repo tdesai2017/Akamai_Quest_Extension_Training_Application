@@ -39,7 +39,7 @@ def get_fr_question_form(request, ldap, quest_id):
     question_form = QuestionForm()
     answer_form = CorrectAnswerForm()
     context = {'q_form' : question_form, 'ans_form' : answer_form, 'quest_id': quest_id, 'current_admin': current_admin}
-    return render(request, 'quest_extension/fr_question_form.html', context)
+    return render(request, 'quest_extension/admin_create_fr_question.html', context)
 
 def create_fr_question(request, ldap, quest_id):
     
@@ -58,7 +58,7 @@ def create_fr_question(request, ldap, quest_id):
         answer_form = CorrectAnswerForm(request.POST)
         if question_form.is_valid() and answer_form.is_valid():
             messages.success(request, 'New question successfully created!')
-            return save_fr_question(ldap, question_form, answer_form, quest_id)
+            return save_fr_question(request, ldap, question_form, answer_form, quest_id)
     
     return HttpResponseRedirect('/quest/fr-create-form/' + ldap + '/' + str(quest_id))
     
@@ -84,7 +84,7 @@ def get_mc_question_form(request, ldap, quest_id):
     answer_form = RightAnswerForm()
     wrong_answer_form = WrongAnswerForm()
     context = {'q_form' : question_form, 'ans_form' : answer_form, 'wrong_answer_form' : wrong_answer_form, 'quest_id': quest_id, 'current_admin': current_admin}
-    return render(request, 'quest_extension/mc_question_form.html', context)
+    return render(request, 'quest_extension/admin_create_mc_question.html', context)
 
 
 def create_mc_question(request, ldap, quest_id):
@@ -105,13 +105,92 @@ def create_mc_question(request, ldap, quest_id):
         wrong_answer_form = WrongAnswerForm(request.POST)
         if question_form.is_valid() and answer_form.is_valid() and wrong_answer_form.is_valid():
             messages.success(request, 'New question successfully created!')
-            return save_mc_question(ldap, question_form, answer_form, wrong_answer_form, quest_id)
+            return save_mc_question(request, ldap, question_form, answer_form, wrong_answer_form, quest_id)
         
     return HttpResponseRedirect('/quest/mc-create-form/' + ldap + '/' + str(quest_id))
 
 
 ######################################
 
+
+def get_api_question(request, ldap, quest_id):
+    current_quest = Quest.objects.get(id = quest_id)
+    current_project = current_quest.project
+    question_form = QuestionForm()
+
+
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
+
+    if not is_still_editable(current_project):
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    context = {'quest_id': quest_id, 'current_admin': current_admin, 'question_form': question_form}
+    return render(request, 'quest_extension/admin_create_api_question.html', context)  
+
+def create_api_question (request, ldap, quest_id):
+    current_quest = Quest.objects.get(id = quest_id)
+    current_project = current_quest.project
+    current_quest = Quest.objects.get(id=quest_id)
+    #Test URL always returns true: http://localhost:4000/take_request_give_response.php
+
+
+
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    if not is_still_editable(current_project):
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
+    if request.method  == 'POST':
+        api_url = request.POST['api_url']
+        question_form = QuestionForm(request.POST)
+        if question_form.is_valid() and is_api_url_valid(request, api_url, ldap, quest_id):
+            messages.success(request, 'New question successfully created!')
+            return save_api_question(request, ldap, question_form, quest_id)
+        else:
+            messages.error(request, 'Your URL must return an HTTP response that has a string representation of either \'true\' or \'false\'. It must also have a query string labeled as \'ldap\'')
+            return HttpResponseRedirect('/quest/api-create-form/' + ldap + '/' + str(quest_id))
+
+
+            
+    return HttpResponseRedirect('/quest/api-create-form/' + ldap + '/' + str(quest_id))
+
+
+
+# def php_tests(request, ldap):
+
+#     # run php -S localhost:4000 to start the php
+#     # $ldap = $_GET["ldap"]; will get you the ldap in the php code
+
+#     payload = {'ldap': ldap}
+#     print (ldap)
+
+#     try:
+#         php_result = str(requests.get('http://localhost:4000/take_request_give_response.php', params = payload).content)
+#     except:
+#         php_result = ''
+    
+#     php_value = ''
+#     if 'true' in php_result:
+#         php_value = 'true'
+#     elif 'false' in php_result:
+#         php_value = 'false'
+#     else:
+#         php_value = php_result
+
+#     print (php_value)
+    
+#     context = {'php_value': php_value}
+#     return render(request, 'quest_extension/php_tests.html', context)
+
+
+
+######################################
 
 def get_admin_home_editable(request, ldap, project_id): 
 
@@ -628,7 +707,6 @@ def get_user_quest_page(request, ldap, quest_id):
     question_to_answers = json.dumps(question_to_answers)
 
     context = {'current_quest': current_quest, 
-            # 'fr_input_form': fr_input_form, 
             'ldap': ldap, 
             'current_project_id': current_project_id, 
             'have_correct_answer': have_correct_answer,
@@ -638,47 +716,9 @@ def get_user_quest_page(request, ldap, quest_id):
 
     return render(request, 'quest_extension/user_quest_page.html', context)
 
-# def validate_fr_question_response(request, ldap, question, user_answer):
-
-#     if not validate_user_access(request, ldap):
-#         return HttpResponseRedirect('/quest/user_login')
-
-#     current_quest = Quest.objects.get(id = quest_id)
-#     current_project = current_quest.project
-#     current_user = User.objects.get(user_ldap = ldap)
-
-#     if request.method == 'POST':
-#         #When do I check here whether the form is valid
-#         post_request = request.POST
-#         user_answer = post_request['answer']
-#         current_question = Question.objects.get(id = post_request['FR_response_id'])
-#         correct_answers = CorrectAnswer.objects.filter(question = current_question)
-#         current_user_project = UserProject.objects.get(user = current_user, project = current_project)
-
-        
-#         correct_answers_texts = []
-#         for answer in correct_answers:
-#             correct_answers_texts.append(answer.answer_text)
-
-#         if user_answer in correct_answers_texts:
-#             print("You are correct")
-#             #Creates a new MODEL INSTANCE of CorrectlyAnswerQuestions
-#             correctly_answered_question = CorrectlyAnsweredQuestion()
-#             #Adds a new correctly answer question
-#             correctly_answered_question.question = current_question
-#             correctly_answered_question.userproject = current_user_project
-#             correctly_answered_question.save()
-#             go_to_next_quest(current_quest, current_user, current_project)
-#         else:
-#              messages.error(request, 'Sorry, that\'s not the right answer :(', extra_tags = str(current_question.id))
-
-#     return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + str(quest_id))
 
 
-
-
-
-
+# This will only validate mc and fr responses
 def validate_user_input(request, ldap, quest_id):
 
     if not validate_user_access(request, ldap):
@@ -690,9 +730,13 @@ def validate_user_input(request, ldap, quest_id):
         for key, value in post_request.items():
             if 'answer' in key and post_request.getlist(key)[0] != '':
                 question = Question.objects.get (id = key[key.index('_') + 1:])
-                validate_question_response (request, ldap, question, post_request.getlist(key))
+                if question.question_type =='API':
+                    validate_api_question_response (request, ldap, question)
+                else:
+                    validate_mc_or_fr_question_response (request, ldap, question, post_request.getlist(key))
 
     return HttpResponseRedirect('/quest/user_quest_page/' + ldap + '/' + str(quest_id))
+
 
 
 ######################################
@@ -752,7 +796,7 @@ def save_admin_edit_fr_question(request, ldap, question_id):
             #it's original place
             Question.objects.filter(id = question_id).update(time_modified = timestamp)
             messages.success(request, 'Question successfully updated!')
-            return save_fr_question(ldap, question_form, answer_form, quest_id, timestamp)
+            return save_fr_question(request, ldap, question_form, answer_form, quest_id, timestamp)
 
     return HttpResponseRedirect('/quest/admin_edit_fr_question/' + ldap + '/' + str(question_id))
 
@@ -831,7 +875,7 @@ def save_admin_edit_mc_question (request, ldap, question_id):
             #it's original place
             Question.objects.filter(id = question_id).update(time_modified = timestamp)
             messages.success(request, 'Question successfully updated!')
-            return save_mc_question(ldap, question_form, answer_form, wrong_answer_form, quest_id, timestamp)
+            return save_mc_question(request, ldap, question_form, answer_form, wrong_answer_form, quest_id, timestamp)
 
     return HttpResponseRedirect('/quest/admin_edit_mc_question/' + ldap + '/' + str(question_id))
 
@@ -2105,19 +2149,28 @@ def search_not_completed_users(request, ldap, project_id):
 
 ######################### PHP TESTS
 
-def php_tests(request):
+def php_tests(request, ldap):
 
     # run php -S localhost:4000 to start the php
-    php_result = str(requests.get('http://localhost:4000/take_request_give_response.php').content)
-    # php_result = php_result[php_result.index(':') + 1 : php_result.index('}')]
+    # $ldap = $_GET["ldap"]; will get you the ldap in the php code
+
+    payload = {'ldap': ldap}
+    print (ldap)
+
+    try:
+        php_result = str(requests.get('http://localhost:4000/take_request_give_response.php', params = payload).content)
+    except:
+        php_result = ''
+    
     php_value = ''
     if 'true' in php_result:
         php_value = 'true'
     elif 'false' in php_result:
         php_value = 'false'
-    
+    else:
+        php_value = php_result
 
-
+    print (php_value)
     
     context = {'php_value': php_value}
     return render(request, 'quest_extension/php_tests.html', context)

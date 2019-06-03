@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Question</title>
+    <link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_create_question/admin_create_api_question.css' %}">
+
+</head>
+<body>
+
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+        
+  <form method="POST" action= '/quest/create_api_question/{{current_admin.admin_ldap}}/{{quest_id}}'>
+    {% csrf_token %}
+    {{ question_form }}
+    <br>
+    <br>
+    API URL: <input type = 'text' name = 'api_url'>
+    <button type = 'submit'> Submit </button>
+    </form>
+    
+
+    <form method= 'GET' action='/quest/admin_quest_page_editable/{{current_admin.admin_ldap}}/{{quest_id}}'>
+        <button > Back </button>
+    </form>
+
+</body>
+</html>

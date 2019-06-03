@@ -93,6 +93,14 @@ path ('admin_quest_settings_view_only/<ldap>/<quest_id>', views.get_admin_quest_
 
 ######################################
 
+path('admin_edit_api_question/<ldap>/<question_id>', views.get_admin_edit_api_question),
+    path('save_edit_api_question/<ldap>/<question_id>', views.save_admin_edit_api_question),
+
+
+
+######################################
+
+
 
 
     #User Pages

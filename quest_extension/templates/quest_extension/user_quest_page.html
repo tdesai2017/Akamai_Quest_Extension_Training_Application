@@ -198,8 +198,7 @@
 
             {% if question.question_type == 'API' %}
                 {% if question.id not in have_correct_answer %}
-                    {{ question.id }}
-                    <input name = 'answer_{{question.id}}' type = checkbox value = 'completed_task' > </button>
+                    <input name = 'answer_{{question.id}}' type = checkbox value = 'completed_task'> Completed Task! </button>
 
                     {%for message in messages %}
                         {%if question.id|slugify in message.tags %}

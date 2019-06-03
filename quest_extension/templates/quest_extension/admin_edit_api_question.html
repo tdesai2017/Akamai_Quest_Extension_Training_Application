@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Create API Question</title>
+    <title>Edit API Question</title>
     <link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_create_question/admin_create_api_question.css' %}">
 
 </head>
@@ -18,12 +18,12 @@
     {% endif %}
 
         
-  <form method="POST" action= '/quest/create_api_question/{{current_admin.admin_ldap}}/{{quest_id}}'>
+  <form method="POST" action= '/quest/save_edit_api_question/{{current_admin.admin_ldap}}/{{current_question.id}}'>
     {% csrf_token %}
     {{ question_form }}
     <br>
     <br>
-    API URL: <input type = 'text' name = 'api_url'>
+    API URL: <input type = 'text' name = 'api_url' value = {{current_question.question_api_url}}>
     <button type = 'submit'> Submit </button>
     </form>
     

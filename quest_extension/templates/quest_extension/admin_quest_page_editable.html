@@ -33,8 +33,6 @@
 
 
 {% block fr_mc_undo_delete %}
-
-
     <div class= 'admin_buttons'>
         <h3>Choose what kind of question you want to make!</h3>
         <button form = 'free_response' type = submit>Free Response</button>
@@ -59,6 +57,13 @@
 
         {% if question.question_type == 'MC' %}
         <form method= 'GET', action= '/quest/admin_edit_mc_question/{{current_admin.admin_ldap}}/{{ question.id }}'>
+                {% csrf_token %}
+                <button type='submit' name = 'edit' value = '{{question.id}}'>Edit</button>
+        </form>
+        {% endif %}
+
+        {% if question.question_type == 'API' %}
+        <form method= 'GET', action= '/quest/admin_edit_api_question/{{current_admin.admin_ldap}}/{{ question.id }}'>
                 {% csrf_token %}
                 <button type='submit' name = 'edit' value = '{{question.id}}'>Edit</button>
         </form>

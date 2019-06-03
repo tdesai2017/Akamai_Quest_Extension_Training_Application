@@ -137,8 +137,6 @@ def create_api_question (request, ldap, quest_id):
     current_quest = Quest.objects.get(id=quest_id)
     #Test URL always returns true: http://localhost:4000/take_request_give_response.php
 
-
-
     if not validate_admin_access(request, ldap):
         return HttpResponseRedirect('/quest/admin_login')
 
@@ -154,40 +152,8 @@ def create_api_question (request, ldap, quest_id):
             return save_api_question(request, ldap, question_form, quest_id)
         else:
             messages.error(request, 'Your URL must return an HTTP response that has a string representation of either \'true\' or \'false\'. It must also have a query string labeled as \'ldap\'')
-            return HttpResponseRedirect('/quest/api-create-form/' + ldap + '/' + str(quest_id))
 
-
-            
     return HttpResponseRedirect('/quest/api-create-form/' + ldap + '/' + str(quest_id))
-
-
-
-# def php_tests(request, ldap):
-
-#     # run php -S localhost:4000 to start the php
-#     # $ldap = $_GET["ldap"]; will get you the ldap in the php code
-
-#     payload = {'ldap': ldap}
-#     print (ldap)
-
-#     try:
-#         php_result = str(requests.get('http://localhost:4000/take_request_give_response.php', params = payload).content)
-#     except:
-#         php_result = ''
-    
-#     php_value = ''
-#     if 'true' in php_result:
-#         php_value = 'true'
-#     elif 'false' in php_result:
-#         php_value = 'false'
-#     else:
-#         php_value = php_result
-
-#     print (php_value)
-    
-#     context = {'php_value': php_value}
-#     return render(request, 'quest_extension/php_tests.html', context)
-
 
 
 ######################################
@@ -744,12 +710,13 @@ def validate_user_input(request, ldap, quest_id):
 #For editing free response questions (not creating)
 def get_admin_edit_fr_question(request, ldap, question_id):
 
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
-
     current_question = Question.objects.get(id = question_id)
     current_quest = current_question.quest
     current_project = current_quest.project
+    
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
     if not is_still_editable(current_project):
         messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
@@ -779,9 +746,14 @@ def save_admin_edit_fr_question(request, ldap, question_id):
 
     current_quest = current_question.quest
     current_project = current_quest.project
+
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
     if not is_still_editable(current_project):
         messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
 
     if request.method == 'POST':
         question_form = QuestionForm(request.POST)
@@ -807,14 +779,14 @@ def save_admin_edit_fr_question(request, ldap, question_id):
 ######################################
 #For editing mc questions (not creating)
 def get_admin_edit_mc_question(request, ldap, question_id):
-
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
-
-
+    
     current_question = Question.objects.get(id = question_id)
     current_quest = current_question.quest
     current_project = current_quest.project
+    
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
     if not is_still_editable(current_project):
         messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
@@ -850,16 +822,17 @@ def get_admin_edit_mc_question(request, ldap, question_id):
     
 def save_admin_edit_mc_question (request, ldap, question_id):
 
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
-
-
     current_question = Question.objects.get(id = question_id)
     current_quest = current_question.quest
     current_project = current_quest.project
+
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
     if not is_still_editable(current_project):
         messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
         return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
 
     quest_id = current_question.quest.id
     if request.method == 'POST':
@@ -878,6 +851,59 @@ def save_admin_edit_mc_question (request, ldap, question_id):
             return save_mc_question(request, ldap, question_form, answer_form, wrong_answer_form, quest_id, timestamp)
 
     return HttpResponseRedirect('/quest/admin_edit_mc_question/' + ldap + '/' + str(question_id))
+######################################
+
+def get_admin_edit_api_question(request, ldap, question_id):
+
+    current_question = Question.objects.get(id = question_id)
+    current_quest = current_question.quest
+    current_project = current_quest.project
+    current_admin = Admin.objects.get(admin_ldap = ldap)
+    question_form = QuestionForm(initial={'question_text': current_question.question_text})
+
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    if not is_still_editable(current_project):
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
+    context = {'current_question': current_question, 'quest_id': current_quest.id, 'current_admin': current_admin, 'question_form': question_form}
+    return render(request, 'quest_extension/admin_edit_api_question.html', context)
+
+
+def save_admin_edit_api_question(request, ldap, question_id):
+
+    current_question = Question.objects.get(id = question_id)
+    current_quest = current_question.quest
+    current_project = current_quest.project
+    quest_id = current_quest.id
+
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    if not is_still_editable(current_project):
+        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
+        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
+    if request.method == 'POST':
+        question_form = QuestionForm(request.POST)
+        api_url = request.POST['api_url']
+        if question_form.is_valid() and is_api_url_valid(request, api_url, ldap, quest_id):
+            timestamp = copy.deepcopy(current_question.time_modified)
+            print(timestamp)
+            current_question.deleted = True
+            current_question.save()
+            
+            Question.objects.filter(id = question_id).update(time_modified = timestamp)
+            messages.success(request, 'Question successfully updated!')
+            return save_api_question(request, ldap, question_form, quest_id, timestamp)
+
+        else:
+            messages.error(request, 'Your URL must return an HTTP response that has a string representation of either \'true\' or \'false\'. It must also have a query string labeled as \'ldap\'')
+
+    return HttpResponseRedirect('/quest/admin_edit_api_question/' + ldap + '/' + str(current_question.id))
+
 
 ######################################
 

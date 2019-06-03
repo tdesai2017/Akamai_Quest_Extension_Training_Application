@@ -157,7 +157,7 @@
 
                 {% if question.question_type == 'MC' %}
                     {% for a in answers %}
-                        <input type="checkbox" name="mc__input" value="{{ a.answer_text }}"> {{ a.answer_text }}<br>
+                        <input type="checkbox" name="mc_input" value="{{ a.answer_text }}"> {{ a.answer_text }}<br>
                     {% endfor %}
                     <br>
                     <button type= 'submit'>Submit</button>
@@ -165,7 +165,7 @@
                 {% endif %}
 
                 {% if question.question_type == 'API' %}
-                    <button type = 'submit'> Completed Task! </button>
+                    <input name = 'answer_{{question.id}}' type = checkbox value = 'completed_task'> Completed Task! </button>
                 {% endif %}
                 <br>
                 <br>

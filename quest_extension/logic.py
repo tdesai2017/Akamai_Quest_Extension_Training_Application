@@ -300,7 +300,7 @@ def validate_mc_or_fr_question_response(request, ldap, question, user_answer):
     else:
         messages.error(request, 'Sorry, that\'s not the right answer :(', extra_tags = str(current_question.id))
 
-
+# Creates the format needed to display the information for the admin quest pages (View and editable)
 def create_admin_quest_page_format(list_of_questions):
     format = {}
     for question in list_of_questions:
@@ -321,4 +321,103 @@ def create_admin_quest_page_format(list_of_questions):
         format[question] = all_answers 
     return format
     
+# All Admin Info Query Code - each return either a list of UserProjects that reflect the query, or a None object if none exist
+def search_by_ldap_helper(request, user_requested_for, current_project):
 
+    if User.objects.filter(user_ldap = user_requested_for):
+            user_requested_for = User.objects.get(user_ldap = user_requested_for)
+    else:
+        messages.warning(request, 'User with ldap "' + user_requested_for + '" does not exist')
+        return None
+
+    if UserProject.objects.filter(user = user_requested_for, project = current_project):
+        user_project_info = UserProject.objects.filter(user = user_requested_for, project = current_project)
+
+    else:
+        messages.warning(request, 'User with ldap "' + user_requested_for.user_ldap + '" is not a part of this project')
+        return None
+
+    return user_project_info
+
+
+def search_by_name_helper(request, user_first_name, user_last_name, current_project):
+
+    if User.objects.filter(user_first_name = user_first_name, user_last_name = user_last_name):
+            user_requested_for = User.objects.get(user_first_name = user_first_name, user_last_name = user_last_name)
+    else:
+        messages.warning(request,  'User with name ' + user_first_name + ' ' + user_last_name +  ' does not exist')
+        return None
+
+    if UserProject.objects.filter(user = user_requested_for, project = current_project):
+        user_project_info = UserProject.objects.filter(user = user_requested_for, project = current_project)
+
+    else:
+        messages.warning(request, 'User with name ' + user_first_name + ' ' +  user_last_name + ' is not a part of this project')
+        return None
+
+    return user_project_info
+
+
+
+def search_above_helper(request, above, current_project, highest_quest_path_number):
+     
+    if Quest.objects.filter(project = current_project, quest_path_number__gt = above):
+        valid_quests = Quest.objects.filter(project = current_project, quest_path_number__gt = int(above))
+        user_project_info = UserProject.objects.filter(current_quest__in = valid_quests, project = current_project)
+
+    else:
+        messages.warning(request, 'There are no quests that have a path greater than ' + above  
+        + ' (the highest quest path number in this project is ' + str(highest_quest_path_number) + ')')
+        return None
+
+    return user_project_info
+
+
+def search_below_helper(request, below, current_project, lowest_quest_path_number):
+
+    if Quest.objects.filter(project = current_project, quest_path_number__lt = below):
+            valid_quests = Quest.objects.filter(project = current_project, quest_path_number__lt = int(below))
+            user_project_info = UserProject.objects.filter(current_quest__in = valid_quests, project = current_project)
+    else:
+        messages.warning(request, 'There are no quests that have a path lower than ' + below  
+        + ' (the lowest quest path number in this project is ' + str(lowest_quest_path_number) + ')')
+        return None
+
+    return user_project_info
+
+
+
+def search_at_helper(request, at, current_project):
+    if Quest.objects.filter(project = current_project, quest_path_number = at):
+        valid_quests = Quest.objects.filter(project = current_project, quest_path_number = at)
+        user_project_info = UserProject.objects.filter(current_quest__in = valid_quests, project = current_project)
+        
+    else:
+        messages.warning(request, 'There are no quests with the path number ' + str(at))
+        return None
+
+    return user_project_info
+
+
+def search_all_helper(request, current_project):
+    user_project_info = UserProject.objects.filter(project = current_project)
+    return user_project_info  
+
+def search_completed_helper(request, current_project):
+    user_project_info = UserProject.objects.filter(project = current_project, completed_project = True)
+    return user_project_info
+
+def search_not_completed_helper(request, current_project):
+    user_project_info = UserProject.objects.filter(project = current_project, completed_project = False)
+    return user_project_info
+
+
+
+
+def team_is_in_project(request, current_project, team_name):
+
+    if Team.objects.filter(team_name = team_name, project = current_project):
+        return True
+    else:
+        messages.warning(request, 'There is no team with this name in this project')
+        return False

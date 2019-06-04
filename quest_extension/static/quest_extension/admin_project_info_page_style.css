@@ -9,11 +9,14 @@
     
 }
 
-
 .container {
     width: 100%;
     text-align: center;
 
+}
+
+form[id^="search"]{
+    display: none;
 }
 
 

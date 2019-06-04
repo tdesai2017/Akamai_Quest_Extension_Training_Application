@@ -92,8 +92,6 @@
     </div>
     
     <div class='centered'>
-
-
          {% if current_project.project_has_teams %}
         <br>
         <br>
@@ -114,7 +112,9 @@
 
 
         <p>Welcome Admin to the Quests!</p>
+        {% if current_project.project_has_teams %}
         <p> You are on the team ___!!!</p>
+        {% endif %}
         <p>You have ___ points!</p>
             
         

@@ -94,7 +94,7 @@ path ('admin_quest_settings_view_only/<ldap>/<quest_id>', views.get_admin_quest_
 ######################################
 
 path('admin_edit_api_question/<ldap>/<question_id>', views.get_admin_edit_api_question),
-    path('save_edit_api_question/<ldap>/<question_id>', views.save_admin_edit_api_question),
+path('save_edit_api_question/<ldap>/<question_id>', views.save_admin_edit_api_question),
 
 
 
@@ -209,6 +209,17 @@ path('search_all_users/<ldap>/<project_id>', views.search_all_users),
 path('search_completed_users/<ldap>/<project_id>', views.search_completed_users),
 path('search_not_completed_users/<ldap>/<project_id>', views.search_not_completed_users),
 
+
+
+# All Team Based Queries are the same format as Project Queries except that they start with 'team'
+path('search_team_above/<ldap>/<project_id>', views.search_team_above),
+path('search_team_below/<ldap>/<project_id>', views.search_team_below), 
+path('search_team_at/<ldap>/<project_id>', views.search_team_at),
+path('search_team_by_user_ldap/<ldap>/<project_id>', views.search_team_by_user_ldap),
+path('search_team_by_user_name/<ldap>/<project_id>', views.search_team_by_user_name),
+path('search_team_all_users/<ldap>/<project_id>', views.search_team_all_users),
+path('search_team_completed_users/<ldap>/<project_id>', views.search_team_completed_users),
+path('search_team_not_completed_users/<ldap>/<project_id>', views.search_team_not_completed_users),
 ############################## PHP test urls
 
 path ('php_tests/<ldap>', views.php_tests),

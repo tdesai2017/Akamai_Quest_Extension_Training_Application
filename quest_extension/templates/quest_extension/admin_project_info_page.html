@@ -108,6 +108,8 @@
     <p class = 'block5'> Current Quest Name: </p>
     <p class = 'block6'> Current Quest Path Number: </p>
     <p class = 'block7'> Points: </p>
+    <p class = 'block8'> Has Completed Project: </p>
+
     <br>
 
 
@@ -137,12 +139,16 @@
         </div>
 
         <div class = 'block6'>
-            <p>{{user_project_record.current_quest.quest_path_number}}</p>
+            <p>{{user_project_record.current_quest.quest_path_number}}/{{num_quests_in_project}}</p>
         </div>
 
         <div class = 'block7'>
-            <p>{{user_project_record.points}}</p>
+            <p>{{user_project_record.points}}/{{num_points_in_project}}</p>
         </div>
+
+        <div class = 'block8'>
+                <p>{{user_project_record.completed_project}}</p>
+            </div>
     </div>
 {% endfor %}
 

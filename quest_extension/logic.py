@@ -86,7 +86,6 @@ def save_api_question(request, ldap, question_form, quest_id, timestamp=datetime
     q_form.question_api_url = api_url
     q_form.quest = current_quest
     q_form.save()
-    timestamp = datetime.now()
     question_id = q_form.id
     Question.objects.filter(id = question_id).update(time_modified = timestamp)
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
@@ -131,9 +130,11 @@ def go_to_next_quest(current_quest, current_user, current_project):
     #     if (CorrectlyAnsweredQuestion.objects.filter(question = question, userproject = current_user_project)):
     #         count_of_correctly_answered_questions += 1
             
-    count_of_correctly_answered_questions = len(CorrectlyAnsweredQuestion.objects.filter(userproject = current_user_project))
-    print(count_of_correctly_answered_questions, num_questions_in_quest)
+    all_question_ids_in_quest = Question.objects.filter(quest = current_quest).values_list('id', flat = True)
+    count_of_correctly_answered_questions = len(CorrectlyAnsweredQuestion.objects.filter(userproject = current_user_project, question__in = all_question_ids_in_quest))
+    print (CorrectlyAnsweredQuestion.objects.filter(userproject = current_user_project, question__in = all_question_ids_in_quest))
 
+    print(count_of_correctly_answered_questions, num_questions_in_quest)
     if (count_of_correctly_answered_questions == num_questions_in_quest):
         users_user_project_object = UserProject.objects.get(user = current_user, project = current_project)
         #adds points for the completed quest to the user
@@ -148,6 +149,7 @@ def go_to_next_quest(current_quest, current_user, current_project):
             users_user_project_object.current_quest = next_quest
             users_user_project_object.save()
         else:
+            print('I am actually here')
             users_user_project_object.completed_project = True
             users_user_project_object.save()
 

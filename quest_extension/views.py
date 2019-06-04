@@ -892,6 +892,7 @@ def save_admin_edit_api_question(request, ldap, question_id):
         if question_form.is_valid() and is_api_url_valid(request, api_url, ldap, quest_id):
             timestamp = copy.deepcopy(current_question.time_modified)
             print(timestamp)
+            print (datetime.now())
             current_question.deleted = True
             current_question.save()
             
@@ -1926,9 +1927,15 @@ def search_by_user_ldap(request, ldap, project_id):
         else:
             messages.warning(request, 'User with ldap "' + post_request['user'] + '" is not a part of this project')
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
+
+
+    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
+    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
     count = len(user_project_info)
     query = 'LDAP = ' + post_request['user']
     context = {
+    'num_points_in_project': num_points_in_project, 
+    'num_quests_in_project': num_quests_in_project,
     'count': count,
     'current_project': current_project, 
     'current_admin': current_admin, 
@@ -1965,9 +1972,13 @@ def search_by_user_name(request, ldap, project_id):
             messages.warning(request, 'User with name ' + user_first_name + ' ' +  user_last_name + ' is not a part of this project')
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
     
+    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
+    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
     count = len(user_project_info)
     query = 'Name  = ' + user_first_name +  ' ' + user_last_name
     context = {
+    'num_points_in_project': num_points_in_project, 
+    'num_quests_in_project': num_quests_in_project,
     'count': count,
     'current_project': current_project, 
     'current_admin': current_admin, 
@@ -2002,9 +2013,13 @@ def search_above(request, ldap, project_id):
 
         user_project_info = UserProject.objects.filter(current_quest__in = valid_quests, project = current_project)
     
+    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
+    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
     count = len(user_project_info)
     query = 'Quest Path Number > ' + str(above)
     context = {
+    'num_points_in_project': num_points_in_project, 
+    'num_quests_in_project': num_quests_in_project,
     'count': count,
     'current_project': current_project,
     'current_admin': current_admin, 
@@ -2039,9 +2054,13 @@ def search_below(request, ldap, project_id):
 
         user_project_info = UserProject.objects.filter(current_quest__in = valid_quests, project = current_project)
 
+    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
+    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
     count = len(user_project_info)
     query = 'Quest Path Number > ' + str(below)
     context = {
+        'num_points_in_project': num_points_in_project, 
+        'num_quests_in_project': num_quests_in_project,
         'count': count,
         'current_project': current_project, 
         'current_admin': current_admin, 
@@ -2073,10 +2092,14 @@ def search_at(request, ldap, project_id):
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
         user_project_info = UserProject.objects.filter(current_quest__in = valid_quests, project = current_project)
-
+    
+    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
+    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
     count = len(user_project_info)
     query = 'Quest Path Number = ' + str(at)
     context = {
+    'num_points_in_project': num_points_in_project, 
+    'num_quests_in_project': num_quests_in_project,
     'count': count,
     'current_project': current_project, 
     'current_admin': current_admin, 
@@ -2102,9 +2125,13 @@ def search_all_users(request, ldap, project_id):
         user_project_info = UserProject.objects.filter(project = current_project)
         messages.success(request, 'Users\' information found')
     
+    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
+    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
     count = len(user_project_info)
     query = 'All Users'
     context = {
+    'num_points_in_project': num_points_in_project, 
+    'num_quests_in_project': num_quests_in_project,
     'count': count,
     'current_project': current_project, 
     'current_admin': current_admin, 
@@ -2131,9 +2158,13 @@ def search_completed_users(request, ldap, project_id):
         user_project_info = UserProject.objects.filter(project = current_project, completed_project = True)
         messages.success(request, 'Users\' information found')
 
+    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
+    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
     count = len(user_project_info)
     query = 'All Users that completed the project'
     context = {
+        'num_points_in_project': num_points_in_project, 
+        'num_quests_in_project': num_quests_in_project,
         'count': count, 
         'current_project': current_project, 
         'current_admin': current_admin, 
@@ -2162,7 +2193,11 @@ def search_not_completed_users(request, ldap, project_id):
 
     count = len(user_project_info)
     query = 'All Users that have not completed the project'
+    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
+    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
     context = {
+    'num_points_in_project': num_points_in_project, 
+    'num_quests_in_project': num_quests_in_project,
     'count': count,
     'current_project': current_project, 
     'current_admin': current_admin, 

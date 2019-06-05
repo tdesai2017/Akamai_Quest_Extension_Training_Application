@@ -45,15 +45,13 @@
         <form id = 'search_above_form' method = 'POST' action = '/quest/search_above/{{current_admin.admin_ldap}}/{{current_project.id}}'>
             <p>Search users above (inclusive) ___ current quest:</p>
             {% csrf_token %}
-            Quest Path Number:
             
+            Quest Path Number:
             <select name="above">
                 {% for quest_number in quest_path_number_list %}
                 <option value = {{quest_number}}> {{quest_number}} </option>
                 {% endfor %}
             </select>
-
-
 
             <button type = 'submit'> Submit </button>
         </form>
@@ -65,7 +63,14 @@
         <form id = 'search_below_form' method = 'POST' action = '/quest/search_below/{{current_admin.admin_ldap}}/{{current_project.id}}'>
             <p>Search users below (inclusive) ___ current quest:</p>
             {% csrf_token %}
-            Quest Path Number: <input type = 'number' name = 'below'>
+
+            Quest Path Number:    
+            <select name="above">
+                {% for quest_number in quest_path_number_list %}
+                <option value = {{quest_number}}> {{quest_number}} </option>
+                {% endfor %}
+            </select>
+
             <button type = 'submit'> Submit </button>
         </form>
 
@@ -76,7 +81,14 @@
         <form  id = 'search_at_form' method = 'POST' action = '/quest/search_at/{{current_admin.admin_ldap}}/{{current_project.id}}'>
             <p>Search for users at ___ current quest:</p>
             {% csrf_token %}
-            Quest Path Number: <input type = 'number' name = 'at'>
+            
+            Quest Path Number: 
+            <select name="above">
+                {% for quest_number in quest_path_number_list %}
+                <option value = {{quest_number}}> {{quest_number}} </option>
+                {% endfor %}
+            </select>
+
             <button type = 'submit'> Submit </button>
         </form>
 
@@ -87,7 +99,14 @@
         <form id = 'search_ldap_form' method = 'POST' action = '/quest/search_by_user_ldap/{{current_admin.admin_ldap}}/{{current_project.id}}'>
             <p>Search for one user's information (ldap):</p>
             {% csrf_token %}
-            LDAP: <input type = 'text' name = 'user'>
+            
+            LDAP: 
+            <select name="user">
+                {% for user_ldap in user_ldaps_list %}
+                <option value = {{user_ldap}}> {{user_ldap}} </option>
+                {% endfor %}
+            </select>
+
             <button type = 'submit'> Submit </button>
         </form>
 
@@ -98,8 +117,23 @@
         <form id = 'search_user_name_form' method = 'POST' action = '/quest/search_by_user_name/{{current_admin.admin_ldap}}/{{current_project.id}}'>
             <p>Search for one user's information (name):</p>
             {% csrf_token %}
-            First name: <input type = 'text' name = 'first' required>
-            Last name: <input type = 'text' name = 'last' required>
+           
+            First name: 
+            <select name="first">
+                    {% for user_first_name in user_first_name_list %}
+                    <option value = '{{user_first_name}}'> {{user_first_name}} </option>
+                    {% endfor %}
+                </select>
+
+
+            Last name: 
+            <select name="last">
+                    {% for user_last_name in user_last_name_list %}
+                    <option value = '{{user_last_name}}'> {{user_last_name}} </option>
+                    {% endfor %}
+                </select>
+
+
             <button type = 'submit'> Submit </button>
         </form>
         
@@ -147,7 +181,14 @@
             <p>Search team members above (inclusive) ___ current quest:</p>
             {% csrf_token %}
             Team Name: <input type = 'text' name = 'team_name'>
-            Quest Path Number: <input type = 'number' name = 'above'>
+
+            Quest Path Number:
+            <select name="above">
+                {% for quest_number in quest_path_number_list %}
+                <option value = {{quest_number}}> {{quest_number}} </option>
+                {% endfor %}
+            </select>
+
             <button type = 'submit'> Submit </button>
         </form>
 
@@ -159,7 +200,12 @@
             <p>Search team members below (inclusive) ___ current quest:</p>
             {% csrf_token %}
             Team Name: <input type = 'text' name = 'team_name'>
-            Quest Path Number: <input type = 'number' name = 'below'>
+            Quest Path Number: 
+            <select name="below">
+                {% for quest_number in quest_path_number_list %}
+                <option value = {{quest_number}}> {{quest_number}} </option>
+                {% endfor %}
+            </select>
             <button type = 'submit'> Submit </button>
         </form>
 
@@ -171,7 +217,12 @@
             <p>Search for team members at ___ current quest:</p>
             {% csrf_token %}
             Team Name: <input type = 'text' name = 'team_name'>
-            Quest Path Number: <input type = 'number' name = 'at'>
+            Quest Path Number: 
+            <select name="at">
+                {% for quest_number in quest_path_number_list %}
+                <option value = {{quest_number}}> {{quest_number}} </option>
+                {% endfor %}
+            </select>
             <button type = 'submit'> Submit </button>
         </form>
 
@@ -183,7 +234,12 @@
             <p>Search for one team members's information (ldap):</p>
             {% csrf_token %}
             Team Name: <input type = 'text' name = 'team_name'>
-            LDAP: <input type = 'text' name = 'user'>
+            LDAP: 
+            <select name="user">
+                {% for user_ldap in user_ldaps_list %}
+                <option value = {{user_ldap}}> {{user_ldap}} </option>
+                {% endfor %}
+            </select>
             <button type = 'submit'> Submit </button>
         </form>
 
@@ -195,8 +251,20 @@
             <p>Search for one team member's information (name):</p>
             {% csrf_token %}
             Team Name: <input type = 'text' name = 'team_name'>
-            First name: <input type = 'text' name = 'first' required>
-            Last name: <input type = 'text' name = 'last' required>
+            First name: 
+            <select name="first">
+                    {% for user_first_name in user_first_name_list %}
+                    <option value = '{{user_first_name}}'> {{user_first_name}} </option>
+                    {% endfor %}
+                </select>
+
+
+            Last name: 
+            <select name="last">
+                    {% for user_last_name in user_last_name_list %}
+                    <option value = '{{user_last_name}}'> {{user_last_name}} </option>
+                    {% endfor %}
+                </select>
             <button type = 'submit'> Submit </button>
         </form>
         

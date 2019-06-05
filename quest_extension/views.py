@@ -1909,8 +1909,8 @@ def get_admin_project_info_page(request, ldap, project_id):
     quest_path_number_list = Quest.objects.filter(project = current_project).order_by('quest_path_number').values_list('quest_path_number', flat = True) 
     user_ids_in_project = UserProject.objects.filter(project = current_project).values_list('user_id', flat = True)
     user_ldaps_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_ldap').values_list('user_ldap', flat = True)
-    user_first_name_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_first_name').values_list('user_first_name')
-    user_last_name_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_last_name').values_list('user_last_name')
+    user_first_name_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_first_name').values_list('user_first_name', flat = True)
+    user_last_name_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_last_name').values_list('user_last_name', flat = True)
 
 
     context = {'current_project': current_project, 'current_admin': current_admin, 'view_or_editable': view_or_editable,

@@ -922,6 +922,9 @@ def get_admin_project_page(request, ldap):
     #Only include projects that there is a AdminProject link for
     list_of_projects = AdminProject.objects.filter(admin = current_admin).values_list('project', flat=True)
     list_of_projects = Project.objects.filter(pk__in=list_of_projects)
+    
+    #this is a list of all projects
+    list_of_all_projects = Project.objects.all().order_by('project_name')
 
     all_random_phrases = Project.objects.all().values_list('project_random_phrase', flat=True)
     all_random_phrases = json.dumps([x for x in all_random_phrases])
@@ -931,7 +934,9 @@ def get_admin_project_page(request, ldap):
     'list_of_projects': list_of_projects,
     'current_admin': current_admin,
     'all_random_phrases': all_random_phrases,
-    'all_admin_pins': all_admin_pins}
+    'all_admin_pins': all_admin_pins,
+    'list_of_all_projects': list_of_all_projects,
+    }
     return render(request, 'quest_extension/admin_project_page.html', context)
 
 def add_new_project(request, ldap):
@@ -1600,8 +1605,8 @@ def get_admin_project_settings_editable(request, ldap, project_id):
     list_of_admins = AdminProject.objects.filter(project = current_project).values_list('admin', flat = True)
     list_of_admins = Admin.objects.filter(pk__in=list_of_admins)
     has_teams = current_project.project_has_teams
-    list_of_teams = Team.objects.filter(project = current_project)
-
+    list_of_teams = Team.objects.filter(project = current_project).order_by('team_name')
+    count_of_teams = len(list_of_teams)
 
     context = {
     'current_project': current_project, 
@@ -1610,6 +1615,7 @@ def get_admin_project_settings_editable(request, ldap, project_id):
     'view_or_editable': view_or_editable,
     'has_teams': has_teams,
     'list_of_teams': list_of_teams,
+    'count_of_teams': count_of_teams,
     }
     return render(request, 'quest_extension/admin_project_settings_editable.html', context)
 
@@ -1768,7 +1774,7 @@ def get_admin_project_settings_view_only(request, ldap, project_id):
     list_of_admins = Admin.objects.filter(pk__in=list_of_admins)
     has_teams = current_project.project_has_teams
     list_of_teams = Team.objects.filter(project = current_project)
-
+    count_of_teams = len(list_of_teams)
 
     context = {
     'current_project': current_project, 
@@ -1777,6 +1783,7 @@ def get_admin_project_settings_view_only(request, ldap, project_id):
     'view_or_editable': view_or_editable,
     'has_teams': has_teams,
     'list_of_teams': list_of_teams,
+    'count_of_teams': count_of_teams,
     }
     return render(request, 'quest_extension/admin_project_settings_view_only.html', context)
 
@@ -1898,7 +1905,18 @@ def get_admin_project_info_page(request, ldap, project_id):
     if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
         return HttpResponseRedirect('/quest/admin_login')
 
-    context = {'current_project': current_project, 'current_admin': current_admin, 'view_or_editable': view_or_editable}
+
+    quest_path_number_list = Quest.objects.filter(project = current_project).order_by('quest_path_number').values_list('quest_path_number', flat = True) 
+    user_ids_in_project = UserProject.objects.filter(project = current_project).values_list('user_id', flat = True)
+    user_ldaps_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_ldap').values_list('user_ldap', flat = True)
+    user_first_name_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_first_name').values_list('user_first_name')
+    user_last_name_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_last_name').values_list('user_last_name')
+
+
+    context = {'current_project': current_project, 'current_admin': current_admin, 'view_or_editable': view_or_editable,
+    'quest_path_number_list': quest_path_number_list, 'user_ldaps_list': user_ldaps_list, 
+    'user_first_name_list': user_first_name_list, 'user_last_name_list': user_last_name_list,
+     }
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
@@ -1925,18 +1943,11 @@ def search_by_user_ldap(request, ldap, project_id):
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
 
-
-    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
-    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-    count = len(user_project_info)
     query = 'LDAP = ' + post_request['user']
-    context = {
-    'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-    'count': count, 'current_project': current_project, 'current_admin': current_admin, 
-    'user_project_info': user_project_info, 'query': query,'view_or_editable': view_or_editable
-    }
+    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
+    
 
 def search_by_user_name(request, ldap, project_id):
     current_project = Project.objects.get(id = project_id)
@@ -1961,14 +1972,9 @@ def search_by_user_name(request, ldap, project_id):
     else:
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
-    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
-    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-    count = len(user_project_info)
     query = 'Name  = ' + user_first_name +  ' ' + user_last_name
-    context = {'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-    'count': count, 'current_project': current_project, 'current_admin': current_admin, 
-    'user_project_info': user_project_info, 'query': query, 'view_or_editable': view_or_editable
-    }
+    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
@@ -1995,17 +2001,9 @@ def search_above(request, ldap, project_id):
     else:
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
+    query = 'Quest Path Number >= ' + str(above)
+    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
 
-
-    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
-    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-    count = len(user_project_info)
-    query = 'Quest Path Number > ' + str(above)
-    context = {
-    'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-    'count': count, 'current_project': current_project, 'current_admin': current_admin, 
-    'user_project_info': user_project_info, 'query': query, 'view_or_editable': view_or_editable
-    }
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
@@ -2032,15 +2030,8 @@ def search_below(request, ldap, project_id):
     else:
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
-    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
-    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-    count = len(user_project_info)
-    query = 'Quest Path Number < ' + str(below)
-    context = {
-    'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-    'count': count, 'current_project': current_project, 'current_admin': current_admin, 
-    'user_project_info': user_project_info, 'query': query, 'view_or_editable': view_or_editable
-    }
+    query = 'Quest Path Number <= ' + str(below)
+    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 def search_at(request, ldap, project_id):
@@ -2065,15 +2056,8 @@ def search_at(request, ldap, project_id):
     else:
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
-    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
-    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-    count = len(user_project_info)
     query = 'Quest Path Number = ' + str(at)
-    context = {
-    'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-    'count': count, 'current_project': current_project, 'current_admin': current_admin, 
-    'user_project_info': user_project_info, 'query': query, 'view_or_editable': view_or_editable,
-    }
+    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
@@ -2099,15 +2083,8 @@ def search_all_users(request, ldap, project_id):
     else:
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
     
-    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
-    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-    count = len(user_project_info)
     query = 'All Users'
-    context = {
-    'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-    'count': count,'current_project': current_project, 'current_admin': current_admin, 
-    'user_project_info': user_project_info, 'query': query,'view_or_editable': view_or_editable,
-    }
+    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
@@ -2134,15 +2111,9 @@ def search_completed_users(request, ldap, project_id):
     else:
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
-    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
-    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-    count = len(user_project_info)
+    
     query = 'All Users that completed the project'
-    context = {
-    'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-    'count': count, 'current_project': current_project, 'current_admin': current_admin, 
-    'user_project_info': user_project_info, 'query': query,'view_or_editable': view_or_editable
-    }
+    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
@@ -2169,28 +2140,15 @@ def search_not_completed_users(request, ldap, project_id):
     else:
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
-    count = len(user_project_info)
+    
     query = 'All Users that have not completed the project'
-    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
-    context = {
-    'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-    'count': count, 'current_project': current_project, 'current_admin': current_admin, 
-    'user_project_info': user_project_info, 'query': query, 'view_or_editable': view_or_editable
-    }
+    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
-# path('search_team_above/<ldap>/<project_id>', views.search_team_above),
-# path('search_team_below/<ldap>/<project_id>', views.search_team_below), 
-# path('search_team_at/<ldap>/<project_id>', views.search_team_at),
-# path('search_team_by_user_ldap/<ldap>/<project_id>', views.search_team_by_user_ldap),
-# path('search_team_by_user_name/<ldap>/<project_id>', views.search_team_by_user_name),
-# path('search_team_all_users/<ldap>/<project_id>', views.search_team_all_users),
-# path('search_team_completed_users/<ldap>/<project_id>', views.search_team_completed_users),
-# path('search_team_not_completed_users/<ldap>/<project_id>', views.search_team_not_completed_users),
 
 
+#Team based querying
 def search_team_by_user_ldap(request, ldap, project_id):
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -2222,15 +2180,9 @@ def search_team_by_user_ldap(request, ldap, project_id):
     else:
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
-    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
-    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-    count = len(user_project_info)
+    
     query = 'LDAP = ' + post_request['user']
-    context = {
-    'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-    'count': count, 'current_project': current_project, 'current_admin': current_admin, 
-    'user_project_info': user_project_info, 'query': query,'view_or_editable': view_or_editable
-    }
+    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
@@ -2266,14 +2218,9 @@ def search_team_by_user_name(request, ldap, project_id):
     else:
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
     
-    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
-    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-    count = len(user_project_info)
+    
     query = 'Name  = ' + user_first_name +  ' ' + user_last_name
-    context = {'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-    'count': count, 'current_project': current_project, 'current_admin': current_admin, 
-    'user_project_info': user_project_info, 'query': query, 'view_or_editable': view_or_editable
-    }
+    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
     
@@ -2308,14 +2255,9 @@ def search_team_above(request, ldap, project_id):
     else:
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
     
-    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
-    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-    count = len(user_project_info)
-    query = 'Quest Path Number > ' + str(above)
-    context = {'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-    'count': count, 'current_project': current_project, 'current_admin': current_admin, 
-    'user_project_info': user_project_info, 'query': query, 'view_or_editable': view_or_editable
-    }
+    
+    query = 'Quest Path Number >= ' + str(above)
+    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
@@ -2349,14 +2291,9 @@ def search_team_below(request, ldap, project_id):
     else:
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
     
-    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
-    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-    count = len(user_project_info)
-    query = 'Quest Path Number < ' + str(below)
-    context = {'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-    'count': count, 'current_project': current_project, 'current_admin': current_admin, 
-    'user_project_info': user_project_info, 'query': query, 'view_or_editable': view_or_editable
-    }
+   
+    query = 'Quest Path Number <= ' + str(below)
+    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
@@ -2390,14 +2327,9 @@ def search_team_at(request, ldap, project_id):
     else:
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
     
-    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
-    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-    count = len(user_project_info)
+    
     query = 'Quest Path Number = ' + at
-    context = {'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-    'count': count, 'current_project': current_project, 'current_admin': current_admin, 
-    'user_project_info': user_project_info, 'query': query, 'view_or_editable': view_or_editable
-    }
+    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
@@ -2430,14 +2362,8 @@ def search_team_all_users(request, ldap, project_id):
     else:
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
     
-    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
-    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-    count = len(user_project_info)
     query = 'All Users'
-    context = {'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-    'count': count, 'current_project': current_project, 'current_admin': current_admin, 
-    'user_project_info': user_project_info, 'query': query, 'view_or_editable': view_or_editable
-    }  
+    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
@@ -2470,14 +2396,9 @@ def search_team_completed_users(request, ldap, project_id):
     else:
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
     
-    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
-    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-    count = len(user_project_info)
+   
     query = 'All Users that completed the project'
-    context = {'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-    'count': count, 'current_project': current_project, 'current_admin': current_admin, 
-    'user_project_info': user_project_info, 'query': query, 'view_or_editable': view_or_editable
-    }
+    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
@@ -2510,21 +2431,10 @@ def search_team_not_completed_users(request, ldap, project_id):
     else:
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
     
-    num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
-    num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-    count = len(user_project_info)
+    
     query = 'All Users that have not completed the project'
-    context = {'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-    'count': count, 'current_project': current_project, 'current_admin': current_admin, 
-    'user_project_info': user_project_info, 'query': query, 'view_or_editable': view_or_editable
-    }
+    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
-
-
-
-
-
-
 
 
 ######################### PHP TESTS

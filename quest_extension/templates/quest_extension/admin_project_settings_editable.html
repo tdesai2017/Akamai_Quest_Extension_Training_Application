@@ -8,7 +8,7 @@
 
 
 {% block teams %}
-<h3> Teams </h3>
+<h3> Teams - {{count_of_teams}} total </h3>
   {% for team in list_of_teams %}
   <p> {{ team.team_name }}</p>
   {% endfor %}
@@ -28,8 +28,15 @@ can use the js method from above -->
     <form id = 'update_delete_team_form' method='POST' action= '/quest/delete_team/{{current_admin.admin_ldap}}/{{current_project.id}}'>
         {% csrf_token %}
         <lable> Team to delete: </lable>
-        <input type='text' name = 'delete_team_name'>
+        <select name="delete_team_name">
+        {% for team in list_of_teams %}
+        <option value="{{team.team_name}}"> {{team.team_name}} </option>
+        {% endfor %}
+        </select>
+
+
         <button type = 'submit'> Confirm Update </button>
+        
     </form>
 <br>
 <br>

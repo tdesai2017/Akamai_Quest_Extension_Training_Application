@@ -164,10 +164,22 @@
             Please be careful when editing!! If both admins are
             editing at the same time you may get some wonky results :(
         <p>
-            Project Name: <input type = 'text' name= 'project_name'>
+                Project Name: 
+                <select name="project_name">
+                {% for project in list_of_all_projects %}
+                <option value="{{project.project_name}}"> {{project.project_name}} </option>
+                {% endfor %}
+                </datalist>
+
+            
             Admin Pin: <input type = 'text' name= 'project_admin_pin'>
 
             <button type = 'submit'> Join Project </button>
+
+
+            
+
+
 
         </form>
     <br>

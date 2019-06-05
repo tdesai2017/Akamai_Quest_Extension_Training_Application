@@ -41,20 +41,29 @@
 
         <h3> Entire Project Queries</h3>
 
-        <button id = 'search_above_button' onclick="search('above')"> Search users above (exclusive) ___ current quest:</button>
+        <button id = 'search_above_button' onclick="search('above')"> Search users above (inclusive) ___ current quest:</button>
         <form id = 'search_above_form' method = 'POST' action = '/quest/search_above/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p>Search users above (exclusive) ___ current quest:</p>
+            <p>Search users above (inclusive) ___ current quest:</p>
             {% csrf_token %}
-            Quest Path Number: <input type = 'number' name = 'above'>
+            Quest Path Number:
+            
+            <select name="above">
+                {% for quest_number in quest_path_number_list %}
+                <option value = {{quest_number}}> {{quest_number}} </option>
+                {% endfor %}
+            </select>
+
+
+
             <button type = 'submit'> Submit </button>
         </form>
 
         <br>
         <br>
 
-        <button id = 'search_below_button' onclick="search('below')"> Search users below (exclusive) ___ current quest:</button>
+        <button id = 'search_below_button' onclick="search('below')"> Search users below (inclusive) ___ current quest:</button>
         <form id = 'search_below_form' method = 'POST' action = '/quest/search_below/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p>Search users below (exclusive) ___ current quest:</p>
+            <p>Search users below (inclusive) ___ current quest:</p>
             {% csrf_token %}
             Quest Path Number: <input type = 'number' name = 'below'>
             <button type = 'submit'> Submit </button>
@@ -133,9 +142,9 @@
         <h3> Team Queries</h3>
 
 
-        <button id = 'search_team_above_button' onclick="search('team_above')"> Search team members above (exclusive) ___ current quest:</button>
+        <button id = 'search_team_above_button' onclick="search('team_above')"> Search team members above (inclusive) ___ current quest:</button>
         <form id = 'search_team_above_form' method = 'POST' action = '/quest/search_team_above/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p>Search team members above (exclusive) ___ current quest:</p>
+            <p>Search team members above (inclusive) ___ current quest:</p>
             {% csrf_token %}
             Team Name: <input type = 'text' name = 'team_name'>
             Quest Path Number: <input type = 'number' name = 'above'>
@@ -145,9 +154,9 @@
         <br>
         <br>
 
-        <button id = 'search_team_below_button' onclick="search('team_below')"> Search team members below (exclusive) ___ current quest:</button>
+        <button id = 'search_team_below_button' onclick="search('team_below')"> Search team members below (inclusive) ___ current quest:</button>
         <form id = 'search_team_below_form' method = 'POST' action = '/quest/search_team_below/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p>Search team members below (exclusive) ___ current quest:</p>
+            <p>Search team members below (inclusive) ___ current quest:</p>
             {% csrf_token %}
             Team Name: <input type = 'text' name = 'team_name'>
             Quest Path Number: <input type = 'number' name = 'below'>

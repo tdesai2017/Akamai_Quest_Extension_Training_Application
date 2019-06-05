@@ -361,12 +361,12 @@ def search_by_name_helper(request, user_first_name, user_last_name, current_proj
 
 def search_above_helper(request, above, current_project, highest_quest_path_number):
      
-    if Quest.objects.filter(project = current_project, quest_path_number__gt = above):
-        valid_quests = Quest.objects.filter(project = current_project, quest_path_number__gt = int(above))
+    if Quest.objects.filter(project = current_project, quest_path_number__gt = int(above) - 1):
+        valid_quests = Quest.objects.filter(project = current_project, quest_path_number__gt = int(above) - 1)
         user_project_info = UserProject.objects.filter(current_quest__in = valid_quests, project = current_project)
 
     else:
-        messages.warning(request, 'There are no quests that have a path greater than ' + above  
+        messages.warning(request, 'There are no quests that have a path greater than or equal to ' + above  
         + ' (the highest quest path number in this project is ' + str(highest_quest_path_number) + ')')
         return None
 
@@ -375,11 +375,11 @@ def search_above_helper(request, above, current_project, highest_quest_path_numb
 
 def search_below_helper(request, below, current_project, lowest_quest_path_number):
 
-    if Quest.objects.filter(project = current_project, quest_path_number__lt = below):
-            valid_quests = Quest.objects.filter(project = current_project, quest_path_number__lt = int(below))
+    if Quest.objects.filter(project = current_project, quest_path_number__lt = int(below) + 1):
+            valid_quests = Quest.objects.filter(project = current_project, quest_path_number__lt = int(below) + 1)
             user_project_info = UserProject.objects.filter(current_quest__in = valid_quests, project = current_project)
     else:
-        messages.warning(request, 'There are no quests that have a path lower than ' + below  
+        messages.warning(request, 'There are no quests that have a path less than or equal to ' + below  
         + ' (the lowest quest path number in this project is ' + str(lowest_quest_path_number) + ')')
         return None
 
@@ -421,3 +421,37 @@ def team_is_in_project(request, current_project, team_name):
     else:
         messages.warning(request, 'There is no team with this name in this project')
         return False
+
+
+
+
+def get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable, team_name = None): 
+        num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
+        num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
+        count = len(user_project_info)
+
+        # If not using teams
+        if team_name == None:
+            quest_path_number_list = Quest.objects.filter(project = current_project).order_by('quest_path_number').values_list('quest_path_number', flat = True) 
+            user_ids_in_project = UserProject.objects.filter(project = current_project).values_list('user_id', flat = True)
+            user_ldaps_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_ldap').values_list('user_ldap', flat = True)
+            user_first_name_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_first_name').values_list('user_first_name')
+            user_last_name_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_last_name').values_list('user_last_name')
+             
+        context = {
+        'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
+        'count': count, 'current_project': current_project, 'current_admin': current_admin, 
+        'user_project_info': user_project_info, 'query': query,'view_or_editable': view_or_editable,
+        'quest_path_number_list': quest_path_number_list, 'user_ldaps_list': user_ldaps_list,
+        'user_first_name_list': user_first_name_list, 'user_last_name_list': user_last_name_list
+        }
+
+        #Every quest number
+        #Every ldap in quest
+        #Every Users Name 
+
+        #Same for Teams
+
+
+
+        return context

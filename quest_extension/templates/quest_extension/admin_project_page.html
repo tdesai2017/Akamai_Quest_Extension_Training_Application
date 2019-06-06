@@ -161,7 +161,7 @@
             {% csrf_token %}
             Unarchive a previous project:
     
-            <select name="project_to_unarchive_id">
+            <select name="project_to_unarchive_id" required>
                 {% for project in list_of_archived_projects %}
                     <option value="{{project.id}}"> {{project.project_name}} </option>
                 {% endfor %}
@@ -178,7 +178,7 @@
             editing at the same time you may get some wonky results :(
         <p>
                 Project Name: 
-                <select name="project_name">
+                <select name="project_name" required>
                     {% for project in list_of_all_projects %}
                         <option value="{{project.project_name}}"> {{project.project_name}} </option>
                     {% endfor %}

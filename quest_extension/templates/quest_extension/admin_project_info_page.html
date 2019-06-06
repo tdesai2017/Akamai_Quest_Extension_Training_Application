@@ -50,7 +50,7 @@
             {% csrf_token %}
             
             Quest Path Number:
-            <select name="above">
+            <select name="above" required>
                 {% for quest_number in quest_path_number_list %}
                 <option value = {{quest_number}}> {{quest_number}} </option>
                 {% endfor %}
@@ -68,7 +68,7 @@
             {% csrf_token %}
 
             Quest Path Number:    
-            <select name="above">
+            <select name="above" required>
                 {% for quest_number in quest_path_number_list %}
                 <option value = {{quest_number}}> {{quest_number}} </option>
                 {% endfor %}
@@ -86,7 +86,7 @@
             {% csrf_token %}
             
             Quest Path Number: 
-            <select name="above">
+            <select name="above" required>
                 {% for quest_number in quest_path_number_list %}
                 <option value = {{quest_number}}> {{quest_number}} </option>
                 {% endfor %}
@@ -104,7 +104,7 @@
             {% csrf_token %}
             
             LDAP: 
-            <select name="user">
+            <select name="user" required>
                 {% for user_ldap in user_ldaps_list %}
                 <option value = {{user_ldap}}> {{user_ldap}} </option>
                 {% endfor %}
@@ -122,7 +122,7 @@
             {% csrf_token %}
            
             First name: 
-            <select name="first">
+            <select name="first" required>
                     {% for user_first_name in user_first_name_list %}
                     <option value = '{{user_first_name}}'> {{user_first_name}} </option>
                     {% endfor %}
@@ -130,7 +130,7 @@
 
 
             Last name: 
-            <select name="last">
+            <select name="last" required>
                     {% for user_last_name in user_last_name_list %}
                     <option value = '{{user_last_name}}'> {{user_last_name}} </option>
                     {% endfor %}
@@ -186,7 +186,7 @@
             Team Name: <input type = 'text' name = 'team_name'>
 
             Quest Path Number:
-            <select name="above">
+            <select name="above" required>
                 {% for quest_number in quest_path_number_list %}
                 <option value = {{quest_number}}> {{quest_number}} </option>
                 {% endfor %}
@@ -204,7 +204,7 @@
             {% csrf_token %}
             Team Name: <input type = 'text' name = 'team_name'>
             Quest Path Number: 
-            <select name="below">
+            <select name="below" required>
                 {% for quest_number in quest_path_number_list %}
                 <option value = {{quest_number}}> {{quest_number}} </option>
                 {% endfor %}
@@ -221,7 +221,7 @@
             {% csrf_token %}
             Team Name: <input type = 'text' name = 'team_name'>
             Quest Path Number: 
-            <select name="at">
+            <select name="at" required>
                 {% for quest_number in quest_path_number_list %}
                 <option value = {{quest_number}}> {{quest_number}} </option>
                 {% endfor %}
@@ -238,7 +238,7 @@
             {% csrf_token %}
             Team Name: <input type = 'text' name = 'team_name'>
             LDAP: 
-            <select name="user">
+            <select name="user" required>
                 {% for user_ldap in user_ldaps_list %}
                 <option value = {{user_ldap}}> {{user_ldap}} </option>
                 {% endfor %}
@@ -255,7 +255,7 @@
             {% csrf_token %}
             Team Name: <input type = 'text' name = 'team_name'>
             First name: 
-            <select name="first">
+            <select name="first" required>
                     {% for user_first_name in user_first_name_list %}
                     <option value = '{{user_first_name}}'> {{user_first_name}} </option>
                     {% endfor %}
@@ -263,7 +263,7 @@
 
 
             Last name: 
-            <select name="last">
+            <select name="last" required>
                     {% for user_last_name in user_last_name_list %}
                     <option value = '{{user_last_name}}'> {{user_last_name}} </option>
                     {% endfor %}

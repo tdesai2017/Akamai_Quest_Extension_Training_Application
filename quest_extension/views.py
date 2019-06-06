@@ -593,8 +593,12 @@ def get_admin_quest_page_view_only(request, ldap, quest_id):
 
 def get_user_home(request, ldap, project_id):
 
-    if not validate_user_access(request, ldap):
+    
+    if not validate_user_access(request, ldap):  
         return HttpResponseRedirect('/quest/user_login')
+
+    if not user_still_has_access(request, ldap, project_id):
+        return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 
     user = User.objects.get(user_ldap= ldap)
     current_project = Project.objects.get(id = project_id)
@@ -620,6 +624,12 @@ def get_user_quest_page(request, ldap, quest_id):
 
     if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
+
+    current_quest = Quest.objects.get(id = quest_id)
+    current_project_id = current_quest.project.id
+
+    if not user_still_has_access(request, ldap, current_project_id):
+        return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 
     current_quest = Quest.objects.get(id = quest_id)
     current_project_id = current_quest.project.id
@@ -689,6 +699,12 @@ def validate_user_input(request, ldap, quest_id):
 
     if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
+
+    current_quest = Quest.objects.get(id = quest_id)
+    current_project_id = current_quest.project.id
+
+    if not user_still_has_access(request, ldap, current_project_id):
+        return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 
     if request.method == 'POST':
         post_request = request.POST
@@ -1192,6 +1208,9 @@ def get_user_project_settings(request, ldap, project_id):
     if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
+    if not user_still_has_access(request, ldap, project_id):
+        return HttpResponseRedirect('/quest/user_project_page/' + ldap)
+
     current_user = User.objects.get(user_ldap = ldap)
     current_project = Project.objects.get(id = project_id)
     current_user_project = UserProject.objects.get(user = current_user, project = current_project)
@@ -1207,6 +1226,9 @@ def remove_user_project(request, ldap, project_id):
 
     if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
+
+    if not user_still_has_access(request, ldap, project_id):
+        return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 
     current_user = User.objects.get(user_ldap = ldap)
     
@@ -1235,6 +1257,9 @@ def user_archive_project(request, ldap, project_id):
 
     if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
+
+    if not user_still_has_access(request, ldap, project_id):
+        return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 
     current_user = User.objects.get(user_ldap = ldap)
 

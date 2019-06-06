@@ -428,35 +428,47 @@ def team_is_in_project(request, current_project, team_name):
         return False
 
 
-
-
 def get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable): 
+
+    num_points_in_project = 0
+    num_quests_in_project = 0
+    if Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True):
         num_points_in_project = sum(Quest.objects.filter(project = current_project).values_list('quest_points_earned', flat=True))
+    if Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True):
         num_quests_in_project = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat=True))
-        count = len(user_project_info)
+        
+    count = len(user_project_info)
 
-        # If not using teams
-        quest_path_number_list = Quest.objects.filter(project = current_project).order_by('quest_path_number').values_list('quest_path_number', flat = True) 
-        user_ids_in_project = UserProject.objects.filter(project = current_project).values_list('user_id', flat = True)
-        user_ldaps_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_ldap').values_list('user_ldap', flat = True)
-        user_first_name_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_first_name').values_list('user_first_name', flat = True)
-        user_last_name_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_last_name').values_list('user_last_name', flat = True)
-
-
-        context = {
-        'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
-        'count': count, 'current_project': current_project, 'current_admin': current_admin, 
-        'user_project_info': user_project_info, 'query': query,'view_or_editable': view_or_editable,
-        'quest_path_number_list': quest_path_number_list, 'user_ldaps_list': user_ldaps_list,
-        'user_first_name_list': user_first_name_list, 'user_last_name_list': user_last_name_list
-        }
-
-        #Every quest number
-        #Every ldap in quest
-        #Every Users Name 
-
-        #Same for Teams
+    # If not using teams
+    quest_path_number_list = Quest.objects.filter(project = current_project).order_by('quest_path_number').values_list('quest_path_number', flat = True) 
+    user_ids_in_project = UserProject.objects.filter(project = current_project).values_list('user_id', flat = True)
+    user_ldaps_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_ldap').values_list('user_ldap', flat = True)
+    user_first_name_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_first_name').values_list('user_first_name', flat = True)
+    user_last_name_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_last_name').values_list('user_last_name', flat = True)
 
 
+    context = {
+    'num_points_in_project': num_points_in_project, 'num_quests_in_project': num_quests_in_project,
+    'count': count, 'current_project': current_project, 'current_admin': current_admin, 
+    'user_project_info': user_project_info, 'query': query,'view_or_editable': view_or_editable,
+    'quest_path_number_list': quest_path_number_list, 'user_ldaps_list': user_ldaps_list,
+    'user_first_name_list': user_first_name_list, 'user_last_name_list': user_last_name_list
+    }
 
-        return context
+    return context
+
+
+def user_still_has_access(request, ldap, project_id):
+    current_user = User.objects.get(user_ldap = ldap)
+    
+    # If project does not exist
+    if not Project.objects.filter(id = project_id):
+        messages.error(request, 'Sorry, this project no longer exists - the admin must have deleted it!')
+        return False
+
+    current_project = Project.objects.get(id = project_id)
+    if not UserProject.objects.filter(project = current_project, user = current_user):
+        messages.error(request, 'Sorry, you no longer have access to "' + current_project.project_name + '" - the admin must have removed it!')
+        return False
+
+    return True

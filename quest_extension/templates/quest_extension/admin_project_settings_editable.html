@@ -28,7 +28,7 @@ can use the js method from above -->
     <form id = 'update_delete_team_form' method='POST' action= '/quest/delete_team/{{current_admin.admin_ldap}}/{{current_project.id}}'>
         {% csrf_token %}
         <lable> Team to delete: </lable>
-        <select name="delete_team_name">
+        <select name="delete_team_name" required>
         {% for team in list_of_teams %}
         <option value="{{team.team_name}}"> {{team.team_name}} </option>
         {% endfor %}

@@ -919,12 +919,18 @@ def get_admin_project_page(request, ldap):
 
     project_form = ProjectForm()
     current_admin = Admin.objects.get(admin_ldap = ldap)
-    #Only include projects that there is a AdminProject link for
-    list_of_projects = AdminProject.objects.filter(admin = current_admin).values_list('project', flat=True)
-    list_of_projects = Project.objects.filter(pk__in=list_of_projects)
+
+    #Only include projects that there is a AdminProject link for - we don't want to include projects that the admin archived
+    list_of_projects = AdminProject.objects.filter(admin = current_admin, archived = False).values_list('project', flat=True)
+    list_of_projects = Project.objects.filter(pk__in=list_of_projects)    
     
-    #this is a list of all projects
+    #this is a list of all projects 
     list_of_all_projects = Project.objects.all().order_by('project_name')
+
+    #this is a lits of archived AdminProjects
+    list_of_archived_projects = AdminProject.objects.filter(admin = current_admin, archived = True).values_list('project', flat=True)
+    list_of_archived_projects = Project.objects.filter(pk__in=list_of_archived_projects)    
+
 
     all_random_phrases = Project.objects.all().values_list('project_random_phrase', flat=True)
     all_random_phrases = json.dumps([x for x in all_random_phrases])
@@ -936,6 +942,7 @@ def get_admin_project_page(request, ldap):
     'all_random_phrases': all_random_phrases,
     'all_admin_pins': all_admin_pins,
     'list_of_all_projects': list_of_all_projects,
+    'list_of_archived_projects': list_of_archived_projects,
     }
     return render(request, 'quest_extension/admin_project_page.html', context)
 
@@ -996,7 +1003,6 @@ def add_new_project(request, ldap):
                 team_object.team_name = team_name
                 team_object.save() #saves teams
                 
-            print
             #Creates a new AdminProject
             new_admin_project = AdminProject()
             new_admin_project.admin = current_admin
@@ -1024,7 +1030,7 @@ def join_project(request, ldap):
             project_to_join = Project.objects.get(project_admin_pin = input_pin)
             project_name = project_to_join.project_name
             #We are further validating that they can become an admin of this project
-            #Because they must also know the name of it
+            #because they must also know the name of it
             if project_to_join in list_of_admins_projects and project_name == input_name:
                 print (list_of_admins_projects)
                 messages.error(request, 'You cannot join a project that you are already a part of')
@@ -1047,10 +1053,25 @@ def join_project(request, ldap):
     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
  
 
-
-
-
+def admin_unarchive_project(request, ldap):
     
+    if not validate_admin_access(request, ldap):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    if request.method == 'POST':
+        post_request = request.POST
+        current_admin = Admin.objects.get(admin_ldap = ldap)
+        project_to_unarchive_id = post_request['project_to_unarchive_id']
+        project_to_unarchive = Project.objects.get(id = project_to_unarchive_id)
+        admin_project_to_unarchive = AdminProject.objects.get(project = project_to_unarchive, admin = current_admin)
+        admin_project_to_unarchive.archived = False
+        admin_project_to_unarchive.save()
+        messages.success(request, '"' + project_to_unarchive.project_name + '" has successfully been unarchived!')
+
+
+    return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+
+
 ######################################
 def get_user_project_page(request, ldap):
 
@@ -1752,6 +1773,23 @@ def delete_team(request, ldap, project_id):
             team_to_delete.delete()
             messages.success(request, 'Team successfully deleted!')
     return redirect_to_correct_project_settings_page(request.session['view_or_editable'], ldap, project_id)
+
+
+def admin_archive_project(request, ldap, project_id):
+
+    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
+        return HttpResponseRedirect('/quest/admin_login')
+
+    if request.method == 'POST':
+        post_request = request.POST
+        project_to_archive = Project.objects.get(id = project_id)
+        current_admin = Admin.objects.get(admin_ldap = ldap)
+        admin_project_to_archive = AdminProject.objects.get(project = project_to_archive, admin = current_admin)
+        admin_project_to_archive.archived = True
+        admin_project_to_archive.save()
+        messages.success(request, '"' + project_to_archive.project_name + '" has successfully been archived!')
+
+    return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
 
 

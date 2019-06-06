@@ -175,7 +175,7 @@ def can_admin_access_project(ldap, project_id):
     current_admin = Admin.objects.get(admin_ldap = ldap)
     current_project = Project.objects.get(id = project_id)
 
-    list_of_projects = AdminProject.objects.filter(admin = current_admin).values('project')
+    list_of_projects = AdminProject.objects.filter(admin = current_admin).values_list('project', flat = True)
     list_of_projects = Project.objects.filter(pk__in=list_of_projects)
     return current_project in list_of_projects
     

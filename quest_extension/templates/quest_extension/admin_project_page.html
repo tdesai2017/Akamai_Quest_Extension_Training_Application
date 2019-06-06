@@ -85,17 +85,32 @@
         <button type='submit'>Admin's Settings/Info</button>
     </form>
 
+    
 
-
-    <div class='not_the_container'>
+    <div class='centered'>
         <h1>Admin Project Control</h1>
 
         <p>Welcome Admin to the different Projects!</p>
         <br>
+
         <div id='create_new_project'>
-        <button onclick="show();">Create New Project</button>
-         </div>
-        
+            <button onclick="show();">Create New Project</button>
+        </div>
+
+        <br>
+
+        <form method = 'POST' action = '/quest/admin_unarchive_project/{{current_admin.admin_ldap}}'>
+            {% csrf_token %}
+            Unarchive a previous project:
+    
+            <select name="project_to_unarchive_id">
+                {% for project in list_of_archived_projects %}
+                    <option value="{{project.id}}"> {{project.project_name}} </option>
+                {% endfor %}
+            </select>
+            <button type = 'submit'> Submit </button>
+        </form>
+
     </div>
 
     <div id = "container">
@@ -126,7 +141,7 @@
 
 
 
-    <div class= 'not_the_container'>
+    <div class= 'centered'>
         {% for project in list_of_projects %}
         <br>
         {% if project.project_editable %}
@@ -163,30 +178,24 @@
         <p>
                 Project Name: 
                 <select name="project_name">
-                {% for project in list_of_all_projects %}
-                <option value="{{project.project_name}}"> {{project.project_name}} </option>
-                {% endfor %}
-                </datalist>
+                    {% for project in list_of_all_projects %}
+                        <option value="{{project.project_name}}"> {{project.project_name}} </option>
+                    {% endfor %}
+                </select>
 
             
             Admin Pin: <input type = 'text' name= 'project_admin_pin'>
 
             <button type = 'submit'> Join Project </button>
 
-
-            
-
-
-
         </form>
+
     <br>
     <br>
     <form method = 'GET' action = '/quest/admin_login'>
     <button type = 'submit'> Logout </button>
     </form>
 
-
-        
 
 </div>
     </body>

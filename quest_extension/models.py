@@ -103,6 +103,10 @@ class Video(models.Model):
 class AdminProject(models.Model):
     admin = models.ForeignKey(Admin, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    archived = models.BooleanField(default = False)
+
+
+    
 
 
 

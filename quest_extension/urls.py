@@ -62,6 +62,7 @@ path ('admin_quest_settings_view_only/<ldap>/<quest_id>', views.get_admin_quest_
     path('admin_project_page/<ldap>', views.get_admin_project_page),
     path('add_new_project/<ldap>', views.add_new_project),
     path('join_project/<ldap>', views.join_project),
+    path('admin_unarchive_project/<ldap>', views.admin_unarchive_project),
 
 
 ######################################
@@ -186,6 +187,8 @@ path('remove_as_admin/<ldap>/<project_id>', views.remove_as_admin),
 path('add_team/<ldap>/<project_id>', views.add_team),
 path('remove_all_users/<ldap>/<project_id>', views.remove_all_users),
 path('delete_team/<ldap>/<project_id>', views.delete_team),
+path ('admin_archive_project/<ldap>/<project_id>', views.admin_archive_project),
+
 
 ##############################
 

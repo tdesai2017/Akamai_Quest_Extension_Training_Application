@@ -58,16 +58,18 @@
 {% block teams %}
 {% endblock %}
 
-{% if not current_project.project_editable %}
-<form method = 'POST' action = '/quest/remove_all_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+
+<form method = 'POST' action = '/quest/admin_archive_project/{{current_admin.admin_ldap}}/{{current_project.id}}'>
   {% csrf_token %}
-  <button id = 'remove_all_users_button' type= 'submit' onclick="return confirm('WARNING: If you remove all users, all data regarding their progress will be lost')"> Remove All Users </button>
+  <button id = 'archive_project_button' type= 'submit' onclick="return confirm('You will still have full access' 
+   + ' to this project once archived, it will simply no longer be displayed with your unarchived projects. If there are other admins of this project, it will not be archived for them as well.')"> Archive Project </button>
 </form>
-{% endif %}
 
 <br>
 <br>
 
+{% block remove_all_users %}
+{% endblock %}
 
   <form method = 'POST' action = '/quest/delete_project/{{current_admin.admin_ldap}}/{{current_project.id}}'>
     {% csrf_token %}

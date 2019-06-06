@@ -692,7 +692,6 @@ def validate_user_input(request, ldap, quest_id):
 
     if request.method == 'POST':
         post_request = request.POST
-        print(post_request)
         for key, value in post_request.items():
             if 'answer' in key and post_request.getlist(key)[0] != '':
                 question = Question.objects.get (id = key[key.index('_') + 1:])
@@ -1130,12 +1129,12 @@ def add_user_project_page(request, ldap):
             has_teams = project_requested.project_has_teams
             if has_teams:
                 teams_in_current_project = Team.objects.filter(project = project_requested)
-
-            #If user did not add a team in their request to join the project
-            if has_teams and post_request['team'] not in teams_in_current_project.values_list('team_name', flat=True):
-                print (teams_in_current_project.values_list('team_name', flat=True), post_request['team'])
-                messages.error(request, 'Please include a valid team name!')
-                return HttpResponseRedirect('/quest/user_project_page/' + ldap)
+                requested_team = post_request['team'].strip()
+                #If user did not add a team in their request to join the project
+                if requested_team not in teams_in_current_project.values_list('team_name', flat=True):
+                    # print (teams_in_current_project.values_list('team_name', flat=True), post_request['team'])
+                    messages.error(request, 'Please include a valid team name!')
+                    return HttpResponseRedirect('/quest/user_project_page/' + ldap)
             
             #If you're not already a part of this project
             if project_requested not in list_of_user_projects:
@@ -1143,7 +1142,7 @@ def add_user_project_page(request, ldap):
                 new_user_project.user = User.objects.get(user_ldap = ldap)
                 new_user_project.project = project_requested
                 if has_teams:
-                    team_requested_for = Team.objects.get(team_name = post_request['team'], project = project_requested)
+                    team_requested_for = Team.objects.get(team_name = requested_team, project = project_requested)
                     new_user_project.team = team_requested_for
 
                 #Decides what quest the user will begin on (not neccessary since now you can't edit a project after a user joins however - see other comment above)
@@ -1272,7 +1271,7 @@ def add_new_user(request):
         if user_form.is_valid():
             temp = user_form.save(commit=False)
             email = temp.user_email
-            user_ldap = temp.user_ldap
+            user_ldap = temp.user_ldap.strip()
             user_password = temp.user_password
             temp.user_password = make_hash(user_password)
             try:
@@ -1596,7 +1595,7 @@ def add_new_admin(request):
         if admin_form.is_valid():
             temp = admin_form.save(commit=False)
             email = temp.admin_email
-            admin_ldap = temp.admin_ldap
+            admin_ldap = temp.admin_ldap.strip()
             admin_password = temp.admin_password
             admin_password = make_hash(admin_password)
             temp.admin_password = admin_password

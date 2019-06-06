@@ -9,7 +9,7 @@
 
         function validate_fr_answer(question_id){
             var question_to_answers = "{{ question_to_answers|escapejs }}";
-            var user_answer = document.getElementById('input_'+ question_id).value;
+            var user_answer = document.getElementById('input_'+ question_id).value.trim();
             var question_to_answers_json = JSON.parse(question_to_answers);
             console.log (user_answer)
             console.log (question_id)
@@ -38,7 +38,7 @@
             checked_list = []
             for (var i=0;i<user_input.length;i++){
                 if (user_input[i].checked) {
-                    checked_list.push(user_input[i].value)
+                    checked_list.push(user_input[i].value.trim())
                 }
             }  
             

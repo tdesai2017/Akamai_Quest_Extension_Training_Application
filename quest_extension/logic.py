@@ -31,6 +31,7 @@ def save_fr_question(request, ldap, question_form, answer_form, quest_id, timest
     print(current_question.time_modified)
 
     a_form = answer_form.save(commit=False)
+    a_form.answer_text = a_form.answer_text.strip()
     a_form.question = Question.objects.get(id=question_id)
     a_form.save()
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
@@ -73,7 +74,6 @@ def save_mc_question(request, ldap, question_form, answer_form, wrong_answer_for
         w_a_form = IncorrectAnswer(question=Question.objects.get(id=question_id), answer_text= wrong_answer)
         w_a_form.save()
     
-    messages.success(request, 'New question successfully created!')
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + quest_id)
 
 # Saves an API Question
@@ -284,12 +284,16 @@ def validate_mc_or_fr_question_response(request, ldap, question, user_answer):
         correct_answers_texts.append(answer.answer_text)
 
     user_answer.sort()
+    user_answer = [x.strip() for x in user_answer]
+    print(user_answer)
     correct_answers_texts.sort()
+    print(correct_answers_texts)
 
 
     #Even if we need to select multiple answers to get the correct response, this will now work
     if user_answer == correct_answers_texts:
-    #Creates a new MODEL INSTANCE of CorrectlyAnswerQuestions
+
+        #Creates a new MODEL INSTANCE of CorrectlyAnswerQuestions
         correctly_answered_question = CorrectlyAnsweredQuestion()
         #Adds a new correctly answer question
         correctly_answered_question.question = current_question
@@ -343,13 +347,14 @@ def search_by_ldap_helper(request, user_requested_for, current_project):
 def search_by_name_helper(request, user_first_name, user_last_name, current_project):
 
     if User.objects.filter(user_first_name = user_first_name, user_last_name = user_last_name):
-            user_requested_for = User.objects.get(user_first_name = user_first_name, user_last_name = user_last_name)
+            #Multiple people could have the same name
+            users_requested_for = User.objects.filter(user_first_name = user_first_name, user_last_name = user_last_name)
     else:
         messages.warning(request,  'User with name ' + user_first_name + ' ' + user_last_name +  ' does not exist')
         return None
 
-    if UserProject.objects.filter(user = user_requested_for, project = current_project):
-        user_project_info = UserProject.objects.filter(user = user_requested_for, project = current_project)
+    if UserProject.objects.filter(user__in = users_requested_for, project = current_project):
+        user_project_info = UserProject.objects.filter(user__in = users_requested_for, project = current_project)
 
     else:
         messages.warning(request, 'User with name ' + user_first_name + ' ' +  user_last_name + ' is not a part of this project')

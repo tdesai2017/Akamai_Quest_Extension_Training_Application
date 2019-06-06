@@ -38,16 +38,26 @@
                     <button type='submit'>{{project.project_name}}</button>
                 </div>
             </form>
-
-            <form method='POST' action = '/quest/remove_user_project/{{ current_user.user_ldap }}'>
-                {% csrf_token %}
-                <button onclick="return confirm('Are you sure you want to remove this project (All data submitted and all questions answered for this project will be deleted)?');" type = 'submit' name = 'remove_project' value = '{{ project.id }}'> Remove Project </button>
-            </form>
             <br>
-
-
             
         {% endfor %}
+        
+        <br>
+        <br>
+
+        <form method = 'POST' action = '/quest/user_unarchive_project/{{current_user.user_ldap}}'>
+            {% csrf_token %}
+            Unarchive a previous project:
+    
+            <select name="project_to_unarchive_id">
+                {% for project in list_of_archived_projects %}
+                    <option value="{{project.id}}"> {{project.project_name}} </option>
+                {% endfor %}
+            </select>
+            <button type = 'submit'> Submit </button>
+        </form>
+
+        <br>
 
         <p> Want to Join Another Project? Type in the Random Phrase for the project, your team name if 
             there is one, click add, 
@@ -55,22 +65,23 @@
         </p>
 
 
-            <form id = 'add_new_project' method='POST' action = '/quest/add_user_project_page/{{ current_user.user_ldap }}'>
-                {% csrf_token %}
-                {{ add_new_project_form }}
-                Team: <input type = 'text', name = 'team'>
-                <button type ='submit' name = 'project_id' value = '{{project.id}}'>Add</button>
+        <form id = 'add_new_project' method='POST' action = '/quest/add_user_project_page/{{ current_user.user_ldap }}'>
+            {% csrf_token %}
+            {{ add_new_project_form }}
+            Team: <input type = 'text', name = 'team'>
+            <button type ='submit' name = 'project_id' value = '{{project.id}}'>Add</button>
 
+        </form>
+
+        <br>
+        
+        <div id= 'logout'>
+        <form method='POST' action = '/quest/user_logout/{{ current_user.user_ldap}}'>
+                {% csrf_token%}
+                <button type = 'submit', name = 'logout'>Logout</button>
             </form>
-            <br>
-            
-            <div id= 'logout'>
-            <form method='POST' action = '/quest/user_logout/{{ current_user.user_ldap}}'>
-                    {% csrf_token%}
-                    <button type = 'submit', name = 'logout'>Logout</button>
-                </form>
-            </div>
         </div>
+    </div>
 
 	
     </body>

@@ -111,6 +111,14 @@ path('save_edit_api_question/<ldap>/<question_id>', views.save_admin_edit_api_qu
 ######################################
 
 
+    path('user_project_settings/<ldap>/<project_id>', views.get_user_project_settings),
+    path('remove_user_project/<ldap>/<project_id>', views.remove_user_project),
+    path('user_archive_project/<ldap>/<project_id>', views.user_archive_project),
+
+
+######################################
+
+
     path('user_quest_page/<ldap>/<quest_id>', views.get_user_quest_page),
     path('validate_user_input/<ldap>/<quest_id>', views.validate_user_input),
 
@@ -121,8 +129,7 @@ path('save_edit_api_question/<ldap>/<question_id>', views.save_admin_edit_api_qu
     path('user_project_page/<ldap>', views.get_user_project_page),
     path('user_logout/<ldap>', views.user_logout),
     path('add_user_project_page/<ldap>', views.add_user_project_page),
-    path('remove_user_project/<ldap>', views.remove_user_project),
-
+    path('user_unarchive_project/<ldap>', views.user_unarchive_project),
 
 ######################################
 

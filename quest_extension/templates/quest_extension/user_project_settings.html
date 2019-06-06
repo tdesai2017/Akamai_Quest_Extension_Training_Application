@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <title>User Settings</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/user_project_settings_style.css' %}">
+    <script src="main.js"></script>
+</head>
+<body>
+
+    <h1> Project Settings </h1>
+
+    <br>
+
+    Project Name: {{current_project.project_name}}
+
+    <br>
+    <br>
+
+    Team: {{current_user_project.team.team_name}}
+
+    <br>
+    <br>
+
+    Current Points: {{current_user_project.points}}
+
+    <br>
+    <br>
+
+
+    <form method = 'POST' action = '/quest/user_archive_project/{{current_user.user_ldap}}/{{current_project.id}}'>
+        {% csrf_token %}
+        <button id = 'archive_project_button' type= 'submit' onclick="return confirm('You will still have full access' 
+         + ' to this project once archived, it will simply no longer be displayed with your unarchived projects.')"> Archive Project </button>
+      </form>
+
+      <br>
+      <br>
+
+    <form method='POST' action = '/quest/remove_user_project/{{ current_user.user_ldap }}/{{current_project.id}}'>
+        {% csrf_token %}
+        <button id = 'remove_project_button' onclick="return confirm('Are you sure you want to remove this project (All data submitted and all questions answered for this project will be deleted)?');" type = 'submit' > Remove Project </button>
+    </form>
+    
+    <br>
+    <br>
+
+    <form method = 'GET' action = '/quest/user_home/{{current_user.user_ldap}}/{{current_project.id}}'>
+        <button type = 'submit'> Back </button>
+
+    </form>
+
+
+    
+</body>
+</html>

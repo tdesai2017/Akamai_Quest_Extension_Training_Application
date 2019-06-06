@@ -24,6 +24,13 @@
     </head>
 
     <body>
+
+    <form method = 'GET' action = '/quest/user_project_settings/{{ user.user_ldap }}/{{ current_project.id }}'>
+        
+        <button type = 'submit'> Project Settings</button>
+
+    </form>
+
     <div class = centered>
         <h1>{{ current_project.project_name}}</h1>
         <!-- these two <br>s are here to make the admin home page most closely replicate that of the user home page -->

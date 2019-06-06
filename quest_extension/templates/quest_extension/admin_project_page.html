@@ -91,7 +91,6 @@
         <h1>Admin Project Control</h1>
 
         <p>Welcome Admin to the different Projects!</p>
-        <br>
 
         <div id='create_new_project'>
             <button onclick="show();">Create New Project</button>
@@ -99,18 +98,7 @@
 
         <br>
 
-        <form method = 'POST' action = '/quest/admin_unarchive_project/{{current_admin.admin_ldap}}'>
-            {% csrf_token %}
-            Unarchive a previous project:
-    
-            <select name="project_to_unarchive_id">
-                {% for project in list_of_archived_projects %}
-                    <option value="{{project.id}}"> {{project.project_name}} </option>
-                {% endfor %}
-            </select>
-            <button type = 'submit'> Submit </button>
-        </form>
-
+        
     </div>
 
     <div id = "container">
@@ -169,7 +157,20 @@
 
         <br>
         <br>
+        <form method = 'POST' action = '/quest/admin_unarchive_project/{{current_admin.admin_ldap}}'>
+            {% csrf_token %}
+            Unarchive a previous project:
+    
+            <select name="project_to_unarchive_id">
+                {% for project in list_of_archived_projects %}
+                    <option value="{{project.id}}"> {{project.project_name}} </option>
+                {% endfor %}
+            </select>
+            <button type = 'submit'> Submit </button>
+        </form>
 
+        <br>
+        
         <form method = 'POST' action='/quest/join_project/{{current_admin.admin_ldap}}'>
             {% csrf_token %}
         <p>Want to become a secondary admin for someone else's project?

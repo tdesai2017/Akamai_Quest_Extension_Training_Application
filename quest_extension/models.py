@@ -82,6 +82,8 @@ class UserProject(models.Model):
     points = models.IntegerField(default = 0)
     completed_project = models.BooleanField(default=False)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null = True)
+    archived = models.BooleanField(default = False)
+
 
 
 class CorrectlyAnsweredQuestion(models.Model):

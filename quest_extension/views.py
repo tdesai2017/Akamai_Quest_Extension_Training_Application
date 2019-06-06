@@ -1079,15 +1079,22 @@ def get_user_project_page(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 
     current_user = User.objects.get(user_ldap = ldap)
-    user_projects = [user_project.project for user_project in UserProject.objects.filter(user = current_user)]
-    user_project_ids = [project.id for project in user_projects]
-    all_other_projects = [project for project in Project.objects.all() if project.id not in user_project_ids]
+
+    #Only include projects that there is a AdminProject link for - we don't want to include projects that the admin archived
+    user_projects = UserProject.objects.filter(user = current_user, archived = False).values_list('project', flat=True)
+    user_projects = Project.objects.filter(pk__in=user_projects)    
+    
+
+    #this is a lits of archived AdminProjects
+    list_of_archived_projects = UserProject.objects.filter(user = current_user, archived = True).values_list('project', flat=True)
+    list_of_archived_projects = Project.objects.filter(pk__in=list_of_archived_projects)
+
     add_new_project_form = AddNewProjectForm()
 
     context = {'current_user': current_user,
-     'user_projects': user_projects,
-      'all_other_projects': all_other_projects,
-      'add_new_project_form': add_new_project_form}
+    'user_projects': user_projects,
+    'add_new_project_form': add_new_project_form,
+    'list_of_archived_projects': list_of_archived_projects}
     return render(request, 'quest_extension/user_project_page.html', context)
 
 
@@ -1130,8 +1137,6 @@ def add_user_project_page(request, ldap):
                 messages.error(request, 'Please include a valid team name!')
                 return HttpResponseRedirect('/quest/user_project_page/' + ldap)
             
-            
-
             #If you're not already a part of this project
             if project_requested not in list_of_user_projects:
                 new_user_project = UserProject()
@@ -1162,7 +1167,44 @@ def add_user_project_page(request, ldap):
     
     return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 
-def remove_user_project(request, ldap):
+
+def user_unarchive_project(request, ldap):
+    
+    if not validate_user_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
+    if request.method == 'POST':
+        post_request = request.POST
+        current_user = User.objects.get(user_ldap = ldap)
+        project_to_unarchive_id = post_request['project_to_unarchive_id']
+        project_to_unarchive = Project.objects.get(id = project_to_unarchive_id)
+        user_project_to_unarchive = UserProject.objects.get(project = project_to_unarchive, user = current_user)
+        user_project_to_unarchive.archived = False
+        user_project_to_unarchive.save()
+        messages.success(request, '"' + project_to_unarchive.project_name + '" has successfully been unarchived!')
+
+
+    return HttpResponseRedirect('/quest/user_project_page/' + ldap)
+
+
+######################################
+def get_user_project_settings(request, ldap, project_id):
+
+    if not validate_user_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
+    current_user = User.objects.get(user_ldap = ldap)
+    current_project = Project.objects.get(id = project_id)
+    current_user_project = UserProject.objects.get(user = current_user, project = current_project)
+
+    context = {'current_user': current_user, 'current_project': current_project,
+    'current_user_project': current_user_project}
+
+    return render(request, 'quest_extension/user_project_settings.html', context)
+
+
+
+def remove_user_project(request, ldap, project_id):
 
     if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
@@ -1170,9 +1212,8 @@ def remove_user_project(request, ldap):
     current_user = User.objects.get(user_ldap = ldap)
     
     if request.method == 'POST':
-        post_request = request.POST
         #We aren't actually deleting the project, don't worry
-        project_to_delete = Project.objects.get(id = post_request['remove_project'])
+        project_to_delete = Project.objects.get(id = project_id)
         current_user_project = UserProject.objects.get(project = project_to_delete, user = current_user )
 
         user_project_to_delete = UserProject.objects.get(user = current_user, project= project_to_delete)
@@ -1189,8 +1230,30 @@ def remove_user_project(request, ldap):
             project_to_delete.save()
 
 
-        return HttpResponseRedirect('/quest/user_project_page/' + ldap)
     return HttpResponseRedirect('/quest/user_project_page/' + ldap)
+
+def user_archive_project(request, ldap, project_id):
+
+    if not validate_user_access(request, ldap):
+        return HttpResponseRedirect('/quest/user_login')
+
+    current_user = User.objects.get(user_ldap = ldap)
+
+    if request.method == 'POST':
+        post_request = request.POST
+        project_to_archive = Project.objects.get(id = project_id)
+        current_user = User.objects.get(user_ldap = ldap)
+        user_project_to_archive = UserProject.objects.get(project = project_to_archive, user = current_user)
+        user_project_to_archive.archived = True
+        user_project_to_archive.save()
+        messages.success(request, '"' + project_to_archive.project_name + '" has successfully been archived!')
+
+    return HttpResponseRedirect('/quest/user_project_page/' + ldap)
+
+    
+
+
+
 
 ######################################
 

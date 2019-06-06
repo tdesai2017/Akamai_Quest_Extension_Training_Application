@@ -25,6 +25,11 @@
     </ul>
     {% endif %}
 
+
+    <p>Project Name: {{current_project.project_name}}</p>
+
+    <br>
+
     <p>Random Phrase: {{current_project.project_random_phrase}}</p>
     <button id = 'update_random_phrase_button' onclick="update('random_phrase')"> Update Random Phrase</button>
     <form id = 'update_random_phrase_form' method='POST' action= '/quest/update_project_random_phrase/{{current_admin.admin_ldap}}/{{current_project.id}}'>

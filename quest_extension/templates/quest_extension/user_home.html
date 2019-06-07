@@ -25,11 +25,21 @@
 
     <body>
 
+
     <form method = 'GET' action = '/quest/user_project_settings/{{ user.user_ldap }}/{{ current_project.id }}'>
         
         <button type = 'submit'> Project Settings</button>
 
     </form>
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
 
     <div class = centered>
         <h1>{{ current_project.project_name}}</h1>
@@ -74,7 +84,11 @@
     <br>
         
     <form method='GET' onsubmit='return canMoveForward( "{{quest.quest_path_number }}" );'  action='/quest/user_quest_page/{{user.user_ldap}}/{{quest.id}}'>
-        <button  type='submit' name= 'quest_path_number' value = '{{ quest.quest_path_number }}'>{{quest.quest_name}}</button>
+        <button  type='submit' >{{quest.quest_name}}</button>
+        <!-- Add an icon if you have completed a quest -->
+        {% if current_user_project_object.current_quest.quest_path_number > quest.quest_path_number or current_user_project_object.completed_project == True %}
+        &#10004;
+        {% endif %}
     </form>
 
     {% endfor %}

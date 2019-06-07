@@ -614,7 +614,8 @@ def get_user_home(request, ldap, project_id):
                 'current_project': current_project, 
                 'current_user_project_object': current_user_project_object, 
                 'current_user_project_team': current_user_project_team,
-                'all_teams_and_points': all_teams_and_points}
+                'all_teams_and_points': all_teams_and_points,
+                }
     return render(request, 'quest_extension/user_home.html', context)
 
 
@@ -641,6 +642,7 @@ def get_user_quest_page(request, ldap, quest_id):
     # Ensures that you cannot move to a quest you are not allowed to be in just by altering the 
     # questions primary id in the url
     if (current_user_project.current_quest.quest_path_number < current_quest.quest_path_number):
+        messages.error(request, 'Sorry, you do not have access to this quest yet')
         return HttpResponseRedirect('/quest/user_home/' + ldap + '/' + str(current_project_id))
 
 
@@ -702,9 +704,19 @@ def validate_user_input(request, ldap, quest_id):
 
     current_quest = Quest.objects.get(id = quest_id)
     current_project_id = current_quest.project.id
+    current_project = current_quest.project
+    current_user = User.objects.get(user_ldap = ldap)
 
     if not user_still_has_access(request, ldap, current_project_id):
         return HttpResponseRedirect('/quest/user_project_page/' + ldap)
+
+    current_user_project = UserProject.objects.get(user = current_user, project = current_project)
+
+    # Ensures that you cannot move to a quest you are not allowed to be in just by altering the 
+    # questions primary id in the url
+    if (current_user_project.current_quest.quest_path_number < current_quest.quest_path_number):
+        messages.error(request, 'Sorry, you do not have access to this quest yet')
+        return HttpResponseRedirect('/quest/user_home/' + ldap + '/' + str(current_project_id))
 
     if request.method == 'POST':
         post_request = request.POST
@@ -2568,6 +2580,7 @@ def php_tests(request, ldap):
 
     # run php -S localhost:4000 to start the php
     # $ldap = $_GET["ldap"]; will get you the ldap in the php code
+
 
     payload = {'ldap': ldap}
     print (ldap)

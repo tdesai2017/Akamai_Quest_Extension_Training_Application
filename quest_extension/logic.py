@@ -153,15 +153,38 @@ def go_to_next_quest(current_quest, current_user, current_project):
             users_user_project_object.completed_project = True
             users_user_project_object.save()
 
+
+
+# Use if problems come up in the future
+def can_admin_access_page(request, ldap, quest_id= None, project_id = None):
+
+    if not validate_admin_access(request, ldap):
+        return False
+
+    if quest_id != None:
+        return can_admin_access_quest(ldap, quest_id)
+    
+    if project_id != None:
+        return can_admin_access_project(ldap, project_id)
+
+    else:
+        return True
+
+
+
 #Checks whether an Admin can access a Quest
 def can_admin_access_quest(ldap, quest_id):
 
+    
+    #Quest must exist
     if not Quest.objects.filter(id = quest_id):
         return False
+
 
     current_quest = Quest.objects.get(id = quest_id)
     project_id = current_quest.project.id
 
+    # Checks whether the admin can access the project
     return can_admin_access_project(ldap, project_id)
 
             
@@ -169,6 +192,7 @@ def can_admin_access_quest(ldap, quest_id):
 #Checks whether an Admin can access a Project
 def can_admin_access_project(ldap, project_id):
 
+    #Project must exist
     if not (Admin.objects.filter(admin_ldap = ldap) and Project.objects.filter(id = project_id)):
         return False
 
@@ -264,6 +288,9 @@ def validate_api_question_response(request, ldap, question):
         messages.success(request, 'That\'s correct!!' , extra_tags = str(current_question.id))
     elif 'false' in php_result:
         messages.error(request, 'Sorry, you have not completed this task yet :(', extra_tags = str(current_question.id))
+    else:
+        messages.error(request, 'There is a problem with this question since it does not return a ' +
+        'true or false response - please let the admin know!', extra_tags = str(current_question.id))
 
 
 
@@ -472,3 +499,5 @@ def user_still_has_access(request, ldap, project_id):
         return False
 
     return True
+
+ 

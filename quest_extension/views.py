@@ -22,18 +22,14 @@ import requests
 
 #For the creation of a FR question (not editing)
 def get_fr_question_form(request, ldap, quest_id):
-
-    current_quest = Quest.objects.get(id = quest_id)
-    current_project = current_quest.project
-
     
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
 
-
-    if not is_still_editable(current_project):
-        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
-        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     question_form = QuestionForm()
@@ -43,15 +39,12 @@ def get_fr_question_form(request, ldap, quest_id):
 
 def create_fr_question(request, ldap, quest_id):
     
-    current_quest = Quest.objects.get(id = quest_id)
-    current_project = current_quest.project
-
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
-
-    if not is_still_editable(current_project):
-        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
-        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     if request.method  == 'POST':
         question_form = QuestionForm(request.POST)
@@ -68,16 +61,12 @@ def create_fr_question(request, ldap, quest_id):
 #For the creation of a free response form (not editing)
 def get_mc_question_form(request, ldap, quest_id):
 
-    current_quest = Quest.objects.get(id = quest_id)
-    current_project = current_quest.project
-
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
-
-
-    if not is_still_editable(current_project):
-        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
-        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     question_form = QuestionForm()
@@ -89,15 +78,12 @@ def get_mc_question_form(request, ldap, quest_id):
 
 def create_mc_question(request, ldap, quest_id):
 
-    current_quest = Quest.objects.get(id = quest_id)
-    current_project = current_quest.project
-
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
-
-    if not is_still_editable(current_project):
-        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
-        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     if request.method  == 'POST':
         question_form = QuestionForm(request.POST)
@@ -114,18 +100,16 @@ def create_mc_question(request, ldap, quest_id):
 
 
 def get_api_question(request, ldap, quest_id):
-    current_quest = Quest.objects.get(id = quest_id)
-    current_project = current_quest.project
+
+
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
     question_form = QuestionForm()
-
-
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
-
-
-    if not is_still_editable(current_project):
-        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
-        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     context = {'quest_id': quest_id, 'current_admin': current_admin, 'question_form': question_form}
@@ -137,12 +121,12 @@ def create_api_question (request, ldap, quest_id):
     current_quest = Quest.objects.get(id=quest_id)
     #Test URL always returns true: http://localhost:4000/take_request_give_response.php
 
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
-
-    if not is_still_editable(current_project):
-        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
-        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     if request.method  == 'POST':
         api_url = request.POST['api_url']
@@ -160,14 +144,15 @@ def create_api_question (request, ldap, quest_id):
 
 def get_admin_home_editable(request, ldap, project_id): 
 
+
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
     current_project = Project.objects.get(id = project_id)    
-
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
-
-    if not is_still_editable(current_project):
-        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
-        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     #I start a session here so that when we go "back" from pages that are common to both
     #editable and view only pages, we will know if we were in an editable or view_only
@@ -192,14 +177,14 @@ def get_admin_home_editable(request, ldap, project_id):
 
 def save_new_quest(request, ldap, project_id): 
 
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
     current_project = Project.objects.get(id = project_id)
-
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
-
-    if not is_still_editable(current_project):
-        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
-        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     if request.method == 'POST':
         post_request = request.POST
@@ -237,8 +222,12 @@ def save_new_quest(request, ldap, project_id):
 
 def admin_update_project_description(request, ldap, project_id):
 
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_project = Project.objects.get(id = project_id)
 
@@ -249,8 +238,6 @@ def admin_update_project_description(request, ldap, project_id):
         current_project.save()
         messages.success(request, 'Description successfully updated!')
 
-
-
     return redirect_to_correct_home_page(request.session['view_or_editable'], ldap, project_id)
 
 
@@ -258,8 +245,12 @@ def admin_update_project_description(request, ldap, project_id):
 
 def admin_update_project_name (request, ldap, project_id):
 
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_project = Project.objects.get(id = project_id)
 
@@ -276,14 +267,16 @@ def admin_update_project_name (request, ldap, project_id):
 ######################################
 
 
-def get_admin_home_view_only(request, ldap,  project_id): 
+def get_admin_home_view_only(request, ldap, project_id): 
+
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     request.session['view_or_editable'] = 'view'
-
-
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
-
     current_admin = Admin.objects.get(admin_ldap = ldap)
     current_project = Project.objects.get(id = project_id)
     quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
@@ -299,9 +292,12 @@ def get_admin_home_view_only(request, ldap,  project_id):
 
 def get_admin_quest_page_editable(request, ldap, quest_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
-        return HttpResponseRedirect('/quest/admin_login')
-
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_quest = Quest.objects.get(id = quest_id)
     current_project = current_quest.project
@@ -332,9 +328,12 @@ def get_admin_quest_page_editable(request, ldap, quest_id):
 
 def delete_question(request, ldap, quest_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
-        return HttpResponseRedirect('/quest/admin_login')
-
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_quest = Quest.objects.get(id = quest_id)
     current_project = current_quest.project
@@ -357,8 +356,12 @@ def delete_question(request, ldap, quest_id):
 
 def undo_delete_question(request, ldap, quest_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
 
     current_quest = Quest.objects.get(id = quest_id)
@@ -383,8 +386,12 @@ def undo_delete_question(request, ldap, quest_id):
 
 def save_video(request, ldap, quest_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_quest = Quest.objects.get(id = quest_id)
     
@@ -408,8 +415,12 @@ def save_video(request, ldap, quest_id):
 
 def delete_video(request, ldap, quest_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     if request.method == 'POST': 
         post_request = request.POST
@@ -423,8 +434,12 @@ def delete_video(request, ldap, quest_id):
 
 def update_quest_name(request, ldap, quest_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_quest = Quest.objects.get(id = quest_id)
 
@@ -442,8 +457,12 @@ def update_quest_name(request, ldap, quest_id):
 
 def update_quest_description(request, ldap, quest_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_quest = Quest.objects.get(id = quest_id)
     
@@ -463,8 +482,12 @@ def update_quest_description(request, ldap, quest_id):
 
 def get_admin_quest_settings_editable(request, ldap, quest_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_quest = Quest.objects.get(id = quest_id)
     current_project = current_quest.project
@@ -479,8 +502,12 @@ def get_admin_quest_settings_editable(request, ldap, quest_id):
 
 def update_quest_points_earned(request, ldap, quest_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     
@@ -502,8 +529,12 @@ def update_quest_points_earned(request, ldap, quest_id):
 
 def update_quest_path_number(request, ldap, quest_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     current_quest = Quest.objects.get(id = quest_id)
@@ -531,8 +562,12 @@ def update_quest_path_number(request, ldap, quest_id):
 
 def delete_quest(request, ldap, quest_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_quest = Quest.objects.get(id = quest_id)
     current_project = current_quest.project
@@ -551,8 +586,12 @@ def delete_quest(request, ldap, quest_id):
 
 def get_admin_quest_settings_view_only(request, ldap, quest_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_quest = Quest.objects.get(id = quest_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -565,8 +604,11 @@ def get_admin_quest_settings_view_only(request, ldap, quest_id):
 
 def get_admin_quest_page_view_only(request, ldap, quest_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_quest(ldap, quest_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     current_quest = Quest.objects.get(id = quest_id)
@@ -737,16 +779,15 @@ def validate_user_input(request, ldap, quest_id):
 #For editing free response questions (not creating)
 def get_admin_edit_fr_question(request, ldap, question_id):
 
+    a = admin_validation(request, ldap, question_id = question_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
     current_question = Question.objects.get(id = question_id)
     current_quest = current_question.quest
     current_project = current_quest.project
-    
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
-
-    if not is_still_editable(current_project):
-        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
-        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     current_questions_answers = CorrectAnswer.objects.filter(question = current_question)
@@ -769,18 +810,16 @@ def get_admin_edit_fr_question(request, ldap, question_id):
 
 def save_admin_edit_fr_question(request, ldap, question_id):
 
+    a = admin_validation(request, ldap, question_id = question_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
     current_question = Question.objects.get(id = question_id)
 
     current_quest = current_question.quest
     current_project = current_quest.project
-
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
-
-    if not is_still_editable(current_project):
-        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
-        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
-
 
     if request.method == 'POST':
         question_form = QuestionForm(request.POST)
@@ -806,17 +845,16 @@ def save_admin_edit_fr_question(request, ldap, question_id):
 ######################################
 #For editing mc questions (not creating)
 def get_admin_edit_mc_question(request, ldap, question_id):
+
+    a = admin_validation(request, ldap, question_id = question_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
     
     current_question = Question.objects.get(id = question_id)
     current_quest = current_question.quest
     current_project = current_quest.project
-    
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
-
-    if not is_still_editable(current_project):
-        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
-        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     correct_answers = CorrectAnswer.objects.filter(question = current_question)
@@ -849,18 +887,15 @@ def get_admin_edit_mc_question(request, ldap, question_id):
     
 def save_admin_edit_mc_question (request, ldap, question_id):
 
+    a = admin_validation(request, ldap, question_id = question_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
     current_question = Question.objects.get(id = question_id)
     current_quest = current_question.quest
     current_project = current_quest.project
-
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
-
-    if not is_still_editable(current_project):
-        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
-        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
-
-
     quest_id = current_question.quest.id
     if request.method == 'POST':
         question_form = QuestionForm(request.POST)
@@ -882,18 +917,18 @@ def save_admin_edit_mc_question (request, ldap, question_id):
 
 def get_admin_edit_api_question(request, ldap, question_id):
 
+    a = admin_validation(request, ldap, question_id = question_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
     current_question = Question.objects.get(id = question_id)
     current_quest = current_question.quest
     current_project = current_quest.project
     current_admin = Admin.objects.get(admin_ldap = ldap)
     question_form = QuestionForm(initial={'question_text': current_question.question_text})
 
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
-
-    if not is_still_editable(current_project):
-        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
-        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
     context = {'current_question': current_question, 'quest_id': current_quest.id, 'current_admin': current_admin, 'question_form': question_form}
     return render(request, 'quest_extension/admin_edit_api_question.html', context)
@@ -901,18 +936,17 @@ def get_admin_edit_api_question(request, ldap, question_id):
 
 def save_admin_edit_api_question(request, ldap, question_id):
 
+    a = admin_validation(request, ldap, question_id = question_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
     current_question = Question.objects.get(id = question_id)
     current_quest = current_question.quest
     current_project = current_quest.project
     quest_id = current_quest.id
-
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
-
-    if not is_still_editable(current_project):
-        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
-        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
-
+    
     if request.method == 'POST':
         question_form = QuestionForm(request.POST)
         api_url = request.POST['api_url']
@@ -937,11 +971,13 @@ def save_admin_edit_api_question(request, ldap, question_id):
 
 def get_admin_project_page(request, ldap):
 
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
-    
-    #This session will only last while a user is in either an editable or non-editable path
-    if 'view_or_editable' in request.session:
+    a = admin_validation(request, ldap) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
+    if 'view_or_editable' in request.session.keys():
         del request.session['view_or_editable']
 
     project_form = ProjectForm()
@@ -975,8 +1011,11 @@ def get_admin_project_page(request, ldap):
 
 def add_new_project(request, ldap):
 
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     if request.method == 'POST':
@@ -1041,8 +1080,11 @@ def add_new_project(request, ldap):
 
 def join_project(request, ldap):
 
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     if request.method == 'POST':
@@ -1053,6 +1095,8 @@ def join_project(request, ldap):
         list_of_admins_projects = Project.objects.filter(pk__in=list_of_admins_projects)
 
         #To join a project, it cannot already be one you admin, and it must also exist
+        #By picking the project by the random phrase and using the name only for validation - we don't need to worry if 
+        #two projects have the same name
         if Project.objects.filter(project_admin_pin = input_pin):
             project_to_join = Project.objects.get(project_admin_pin = input_pin)
             project_name = project_to_join.project_name
@@ -1082,8 +1126,11 @@ def join_project(request, ldap):
 
 def admin_unarchive_project(request, ldap):
     
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     if request.method == 'POST':
         post_request = request.POST
@@ -1341,9 +1388,6 @@ def get_user_login(request):
     if 'current_user_ldap' in request.session:
         del request.session['current_user_ldap']
 
-    # if 'current_admin_ldap' in request.session:
-    #     del request.session['current_admin_ldap']
-
     login_form = LoginForm()
     context = {'login_form': login_form}
     return render(request, 'quest_extension/user_login.html', context)
@@ -1544,13 +1588,8 @@ def update_user_password(request, ldap):
     return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
 
 
-    #################################################################################
-    #################################################################################
-    #################################################################################
-    #################################################################################
-    #################################################################################
-    #All admin views
-
+    
+#######################################
 def get_admin_login(request):
 
     if 'current_admin_ldap' in request.session:
@@ -1707,8 +1746,11 @@ def admin_go_back_to_login(request, ldap):
 
 def get_admin_project_settings_editable(request, ldap, project_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_project = Project.objects.get(id = project_id)
 
@@ -1742,8 +1784,11 @@ def get_admin_project_settings_editable(request, ldap, project_id):
 
 def update_random_phrase(request, ldap, project_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_project = Project.objects.get(id = project_id)
     if request.method == 'POST':
@@ -1763,8 +1808,11 @@ def update_random_phrase(request, ldap, project_id):
     
 
 def update_admin_pin(request, ldap, project_id):
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_project = Project.objects.get(id = project_id)
     if request.method == 'POST':
@@ -1783,9 +1831,12 @@ def update_admin_pin(request, ldap, project_id):
 
 
 def remove_as_admin(request, ldap, project_id):
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
 
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     AdminProject.objects.get(project = current_project, admin = current_admin).delete()
@@ -1797,8 +1848,11 @@ def remove_as_admin(request, ldap, project_id):
 #Should only be available in the view_only mode, since there's no use in editable
 def remove_all_users(request, ldap, project_id):
     
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-            return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_project = Project.objects.get(id = project_id)
     current_project.project_editable = True
@@ -1809,8 +1863,12 @@ def remove_all_users(request, ldap, project_id):
 
 
 def delete_project(request, ldap, project_id):
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     if request.method == 'POST':
         current_project = Project.objects.get(id = project_id)
@@ -1823,15 +1881,13 @@ def delete_project(request, ldap, project_id):
 #Only allowable in editable mode
 def add_team(request, ldap, project_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_project = Project.objects.get(id = project_id)
-
-    if not is_still_editable(current_project):
-        messages.warning(request, 'Someone has joined the project, so you must re-enter it in the view only mode')
-        return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
-
     
     list_of_team_names = Team.objects.filter(project = current_project).values_list('team_name', flat=True)
     if request.method == 'POST':
@@ -1852,8 +1908,11 @@ def add_team(request, ldap, project_id):
     
 def delete_team(request, ldap, project_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
     
     current_project = Project.objects.get(id = project_id)
     list_of_team_names = Team.objects.filter(project = current_project).values_list('team_name', flat=True)
@@ -1876,8 +1935,11 @@ def delete_team(request, ldap, project_id):
 
 def admin_archive_project(request, ldap, project_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     if request.method == 'POST':
         post_request = request.POST
@@ -1898,8 +1960,11 @@ def admin_archive_project(request, ldap, project_id):
 
 def get_admin_project_settings_view_only(request, ldap, project_id):
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     view_or_editable = request.session['view_or_editable']
 
@@ -1931,8 +1996,11 @@ def get_admin_project_settings_view_only(request, ldap, project_id):
 
 def get_admin_settings_info(request, ldap):
     
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     context = {'current_admin': current_admin}
@@ -1940,8 +2008,11 @@ def get_admin_settings_info(request, ldap):
 
 def update_admin_ldap(request, ldap):
     
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     if request.method == 'POST':
@@ -1960,8 +2031,11 @@ def update_admin_ldap(request, ldap):
 
 def update_admin_first_name(request, ldap):
 
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     if request.method == 'POST':
@@ -1976,8 +2050,11 @@ def update_admin_first_name(request, ldap):
 
 def update_admin_last_name(request, ldap):
     
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     if request.method == 'POST':
@@ -1991,8 +2068,11 @@ def update_admin_last_name(request, ldap):
 
 def update_admin_email(request, ldap):
     
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     if request.method == 'POST':
@@ -2010,8 +2090,11 @@ def update_admin_email(request, ldap):
 
 def update_admin_password(request, ldap):
     
-    if not validate_admin_access(request, ldap):
-        return HttpResponseRedirect('/quest/admin_login')
+    a = admin_validation(request, ldap) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     if request.method == 'POST':
@@ -2034,15 +2117,18 @@ def update_admin_password(request, ldap):
 ##################################################
 
 def get_admin_project_info_page(request, ldap, project_id):
+    
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+    
+    
+    
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
-
-
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
-
-
     quest_path_number_list = Quest.objects.filter(project = current_project).order_by('quest_path_number').values_list('quest_path_number', flat = True) 
     user_ids_in_project = UserProject.objects.filter(project = current_project).values_list('user_id', flat = True)
     user_ldaps_list = User.objects.filter(pk__in = user_ids_in_project).order_by('user_ldap').values_list('user_ldap', flat = True)
@@ -2058,12 +2144,18 @@ def get_admin_project_info_page(request, ldap, project_id):
 
 
 def search_by_user_ldap(request, ldap, project_id):
+    
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+    
+    
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
 
     if request.method == 'POST':
         post_request = request.POST
@@ -2087,12 +2179,16 @@ def search_by_user_ldap(request, ldap, project_id):
     
 
 def search_by_user_name(request, ldap, project_id):
+
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
-
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
 
     if request.method == 'POST':
         post_request = request.POST
@@ -2116,12 +2212,16 @@ def search_by_user_name(request, ldap, project_id):
 
 
 def search_above(request, ldap, project_id):
+    
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+    
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
-
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
 
     highest_quest_path_number = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat = True))
     if request.method == 'POST':
@@ -2145,12 +2245,17 @@ def search_above(request, ldap, project_id):
 
 
 def search_below(request, ldap, project_id):
+    
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+    
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
 
     lowest_quest_path_number = min(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat = True))
     if request.method == 'POST':
@@ -2172,12 +2277,17 @@ def search_below(request, ldap, project_id):
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 def search_at(request, ldap, project_id):
+    
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+    
+    
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
-
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
 
     if request.method == 'POST':
         post_request = request.POST
@@ -2200,12 +2310,16 @@ def search_at(request, ldap, project_id):
 
 def search_all_users(request, ldap, project_id):
 
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
 
     if request.method == 'POST':
         post_request = request.POST
@@ -2227,13 +2341,17 @@ def search_all_users(request, ldap, project_id):
 
 
 def search_completed_users(request, ldap, project_id):
+
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
 
-
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
 
     if request.method == 'POST':
         post_request = request.POST
@@ -2256,13 +2374,17 @@ def search_completed_users(request, ldap, project_id):
 
 
 def search_not_completed_users(request, ldap, project_id):
+    
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
 
-
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
 
     if request.method == 'POST':
         post_request = request.POST
@@ -2287,12 +2409,16 @@ def search_not_completed_users(request, ldap, project_id):
 
 #Team based querying
 def search_team_by_user_ldap(request, ldap, project_id):
+    
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+    
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
-
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
 
     if request.method == 'POST':
         post_request = request.POST
@@ -2325,12 +2451,16 @@ def search_team_by_user_ldap(request, ldap, project_id):
 
 
 def search_team_by_user_name(request, ldap, project_id):
+    
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+    
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
-
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
 
     if request.method == 'POST':
         post_request = request.POST
@@ -2362,13 +2492,16 @@ def search_team_by_user_name(request, ldap, project_id):
 
     
 def search_team_above(request, ldap, project_id):
+    
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+    
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
-
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
-
 
     highest_quest_path_number = max(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat = True))
     if request.method == 'POST':
@@ -2399,13 +2532,18 @@ def search_team_above(request, ldap, project_id):
 
 
 def search_team_below(request, ldap, project_id):
+    
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+    
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
 
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
-
+    
     lowest_quest_path_number = min(Quest.objects.filter(project = current_project).values_list('quest_path_number', flat = True))
     if request.method == 'POST':
         post_request = request.POST
@@ -2435,12 +2573,16 @@ def search_team_below(request, ldap, project_id):
 
 
 def search_team_at(request, ldap, project_id):
+    
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
-
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
 
     if request.method == 'POST':
         post_request = request.POST
@@ -2471,12 +2613,16 @@ def search_team_at(request, ldap, project_id):
 
 
 def search_team_all_users(request, ldap, project_id):
+    
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
-
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
 
     if request.method == 'POST':
         post_request = request.POST
@@ -2505,12 +2651,16 @@ def search_team_all_users(request, ldap, project_id):
 
 
 def search_team_completed_users(request, ldap, project_id):
+    
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
-
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
 
     if request.method == 'POST':
         post_request = request.POST
@@ -2540,12 +2690,16 @@ def search_team_completed_users(request, ldap, project_id):
 
 
 def search_team_not_completed_users(request, ldap, project_id):
+    
+    a = admin_validation(request, ldap, project_id = project_id) 
+    if a != None:
+        print (a[1])
+        messages.warning(request, a[1])
+        return a[0]
+
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
     view_or_editable = request.session['view_or_editable'] 
-
-    if not (validate_admin_access(request, ldap) and can_admin_access_project(ldap, project_id)):
-        return HttpResponseRedirect('/quest/admin_login')
 
     if request.method == 'POST':
         post_request = request.POST

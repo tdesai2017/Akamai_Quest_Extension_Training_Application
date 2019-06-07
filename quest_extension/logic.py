@@ -116,6 +116,7 @@ def validate_user_access(request, ldap):
 #By having a separate one for admin access instead of using an "or" and one method is that now you MUST
 #have an admin session running to be able to go into Admin Pages
 def validate_admin_access(request, ldap):
+    
     return 'current_admin_ldap' in request.session and request.session['current_admin_ldap'] == ldap
         
     
@@ -155,11 +156,8 @@ def go_to_next_quest(current_quest, current_user, current_project):
 
 
 
-# Use if problems come up in the future
-def can_admin_access_page(request, ldap, quest_id= None, project_id = None):
+def can_admin_access_quest_or_project(ldap, quest_id= None, project_id = None):
 
-    if not validate_admin_access(request, ldap):
-        return False
 
     if quest_id != None:
         return can_admin_access_quest(ldap, quest_id)
@@ -231,7 +229,6 @@ def get_team_points_format(current_project):
 #if an admin is inside of a project and changing aspects of it, we want to stop this as 
 #soon as someone joins the proejct
 def is_still_editable(current_project):
-    print (len(UserProject.objects.filter(project = current_project)))
     return len(UserProject.objects.filter(project = current_project)) == 0
 
 def redirect_to_correct_home_page(view_or_editable, ldap, project_id):
@@ -500,4 +497,89 @@ def user_still_has_access(request, ldap, project_id):
 
     return True
 
+# Verifies that an admin still has access to a project - they may lose access when they are a joint admin adn one of the two admins
+#deletes the project
+def admin_project_or_quest_still_exists(request, ldap, quest_id):
+    
+    # If project does not exist
+    if not Quest.objects.filter(id = quest_id):
+        return False
+
+    current_quest = Quest.objects.filter(id = quest_id)
+    if not Project.objects.filter(id = current_quest.id):
+        return False
+
+    return True
+
  
+
+# Work in progress
+#Validates whether an admin can access a certain page
+def admin_validation(request, ldap, project_id = None, quest_id = None, question_id = None): 
+
+    warning_message = None
+
+
+    # Checks whether the admin is trying to change the url to go into someone else's account
+    if not validate_admin_access(request, ldap):
+        warning_message = 'Sorry, you must log into this account to gain access to it!'
+        return (HttpResponseRedirect('/quest/admin_login'), warning_message)
+
+    current_project= None
+
+    if 'view_or_editable' in request.session.keys():
+        view_or_editable = request.session['view_or_editable']
+
+        if view_or_editable == 'editable':
+
+            if question_id != None:
+                if not Question.objects.filter (id = question_id):
+                    warning_message = 'Sorry, this question no longer exists - a different admin must have deleted it (or they may have deleted the entire quest or project)!'
+                    return (HttpResponseRedirect('/quest/admin_project_page/' + ldap), warning_message)
+
+            if quest_id != None:
+                #does admin have privileges to access this quest (also validates project access in the projecss)
+                if not can_admin_access_quest_or_project(ldap, quest_id = quest_id):
+                        warning_message = 'Sorry, this quest no longer exists - a different admin must have deleted it (or they may have deleted the entire project)!'
+                        return (HttpResponseRedirect('/quest/admin_project_page/' + ldap), warning_message)
+                current_quest = Quest.objects.get(id = quest_id)
+                current_project = current_quest.project
+
+            if project_id != None:
+                # does admin have privileges to access this project
+                if not can_admin_access_quest_or_project(ldap, project_id = project_id):
+                    warning_message =  'Sorry, this project no longer exists - a different admin must have deleted it!'
+                    return (HttpResponseRedirect('/quest/admin_project_page/' + ldap), warning_message )
+                current_project = Project.objects.get(id = project_id)
+
+            # Is the project still editable or did someone join
+            if not is_still_editable(current_project):
+                warning_message = 'Someone has joined the project, so you must re-enter it in the view only mode!'
+                return (HttpResponseRedirect('/quest/admin_project_page/' + ldap), warning_message)
+
+
+        elif view_or_editable == 'view':
+
+
+            if quest_id != None:
+                #does quest exist
+                if not can_admin_access_quest_or_project(ldap, quest_id = quest_id):
+                        warning_message = 'Sorry, this quest no longer exists - a different admin must have deleted it!'
+                        return (HttpResponseRedirect('/quest/admin_project_page/' + ldap), warning_message)
+
+            if project_id != None:
+                # does project exist
+                if not can_admin_access_quest_or_project(ldap, project_id = project_id):
+                    warning_message =  'Sorry, this project no longer exists - a different admin must have deleted it!'
+                    return (HttpResponseRedirect('/quest/admin_project_page/' + ldap), warning_message )
+
+    return None
+ 
+
+
+
+
+
+
+
+

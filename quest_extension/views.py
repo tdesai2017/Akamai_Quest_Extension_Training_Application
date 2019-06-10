@@ -269,6 +269,9 @@ def admin_update_project_name (request, ldap, project_id):
 
 def get_admin_home_view_only(request, ldap, project_id): 
 
+    request.session['view_or_editable'] = 'view'
+
+
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:

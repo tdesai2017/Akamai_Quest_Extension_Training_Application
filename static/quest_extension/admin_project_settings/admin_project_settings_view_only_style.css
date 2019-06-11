@@ -1,0 +1,43 @@
+* {
+    text-align: center;
+}
+
+
+#update_random_phrase_form, #update_admin_pin_form, #update_add_team_form, #update_delete_team_form
+{
+
+    display: none;
+}
+
+#delete_project_button {
+    color: white;
+    background-color: red; 
+    padding: 15px 32px;
+}
+
+#remove_all_users_button {
+    color: white;
+    background-color: orange;
+    padding: 15px 32px;
+
+}
+
+#archive_project_button {
+    color: white;
+    background-color: rgb(221, 221, 18);
+    padding: 15px 32px;
+
+}
+
+/* Message classes */
+.success {
+    color: lightgreen;
+}
+
+.warning {
+    color: orange;
+}
+
+.error {
+    color: red;
+}

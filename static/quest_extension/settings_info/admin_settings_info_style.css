@@ -1,0 +1,37 @@
+* {
+    text-align: center;
+}
+
+
+#update_ldap_form, #update_first_name_form, #update_last_name_form, #update_email_form, #update_manager_ldap_form, #update_director_ldap_form, #update_password_form   
+{
+
+    display: none;
+
+}
+
+#update_password_button {
+height: 50px;
+width: 100px;
+}
+
+/* Password Warnings */
+#low, #up, #num, #char, #same, #email {
+    display: None;
+    color: red;
+
+  }
+
+
+/* Message classes */
+.success {
+    color: lightgreen;
+}
+
+.warning {
+    color: orange;
+}
+
+.error {
+    color: red;
+}

@@ -1,0 +1,43 @@
+#container {
+    width: 400px;
+    margin: 0 auto;
+}
+
+label, button {
+    display: block;
+    width: 10em;
+    float: left; /* makes the element act like inline block */
+    clear: left; /* clears any left floats so before so this should start on new line */
+    
+  }
+
+  label {
+    padding-bottom: 1em;
+
+  }
+  
+  input {
+    width: 10em;
+    float: left;
+  }
+
+
+  /* Password Warnings */
+  #low, #up, #num, #char, #same, #email {
+    display: None;
+    color: red;
+
+  }
+
+  /* Message classes */
+.success {
+  color: lightgreen;
+}
+
+.warning {
+  color: orange;
+}
+
+.error {
+  color: red;
+}

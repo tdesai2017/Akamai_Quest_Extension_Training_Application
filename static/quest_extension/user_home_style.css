@@ -1,0 +1,31 @@
+
+
+
+.centered {
+    text-align: center
+}
+
+.container {
+    padding-top: 3%;
+    text-align: center;
+    width: 100%;
+
+}
+
+#my-text-area {
+    display: inline-block;
+    width: 700px;
+}
+
+/* Message classes */
+.success {
+    color: lightgreen;
+}
+
+.warning {
+    color: orange;
+}
+
+.error {
+    color: red;
+}

@@ -1,0 +1,69 @@
+.centered {
+    text-align: center;
+}
+
+
+
+.admin_buttons button{ 
+    color: blue;
+}
+
+#video_form {
+    display: none;
+    
+}
+
+#edit_name_container {
+    display: none;
+}
+
+/* Container and my-text-area control how the description appears to the user */
+
+.container {
+    padding-top: 3%;
+    text-align: center;
+    width: 100%;
+
+}
+
+#my-text-area {
+    display: inline-block;
+    width: 700px;
+}
+
+
+#edit_description_container {
+    text-align: center;
+    display: none;
+  }
+  
+#edit-my-text-area{
+  
+display: inline-block;
+  
+}
+
+textarea {
+  
+    width: 700px;
+    height: 300px;
+    }
+
+#edit_description_button{
+    text-align: center;
+
+}
+
+
+/* Message classes */
+.success {
+    color: lightgreen;
+}
+
+.warning {
+    color: orange;
+}
+
+.error {
+    color: red;
+}

@@ -1,0 +1,27 @@
+* {
+    text-align: center;
+
+}
+
+#update_points_earned_form, #update_path_number_form{
+    display: none
+}
+
+#delete_quest_button {
+    color: white;
+    background-color: red; 
+    padding: 15px 32px;
+}
+
+/* Message classes */
+.success {
+    color: lightgreen;
+}
+
+.warning {
+    color: orange;
+}
+
+.error {
+    color: red;
+}

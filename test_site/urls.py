@@ -19,4 +19,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('quest/', include('quest_extension.urls', namespace="quest")),
+    path('', include('quest_extension.urls', namespace="quest"))
 ]

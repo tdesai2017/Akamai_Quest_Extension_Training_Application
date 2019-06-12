@@ -27,7 +27,6 @@ def get_fr_question_form(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -42,7 +41,6 @@ def create_fr_question(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -64,7 +62,7 @@ def get_mc_question_form(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
+
         messages.warning(request, a[1])
         return a[0]
 
@@ -81,7 +79,6 @@ def create_mc_question(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -105,7 +102,6 @@ def get_api_question(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -124,7 +120,7 @@ def create_api_question (request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
+
         messages.warning(request, a[1])
         return a[0]
 
@@ -148,7 +144,6 @@ def get_admin_home_editable(request, ldap, project_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -180,7 +175,6 @@ def save_new_quest(request, ldap, project_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -188,15 +182,12 @@ def save_new_quest(request, ldap, project_id):
 
     if request.method == 'POST':
         post_request = request.POST
-        print (post_request)
         quest_form = QuestForm(post_request)
         #Two quests cannot have the same path and paths must be greater than 0
         all_quests_in_current_project = Quest.objects.filter(project = current_project)
         all_paths_in_current_project = [quest.quest_path_number for quest in all_quests_in_current_project]
         if int(post_request['quest_path_number']) > 0 and int(post_request['quest_path_number']) not in all_paths_in_current_project:
-            print('I am here 1')
             if quest_form.is_valid():
-                print('I am here 2')
                 temp = quest_form.save(commit=False)
                 temp.quest_description = post_request['quest_description']
                 temp.project = current_project
@@ -207,7 +198,6 @@ def save_new_quest(request, ldap, project_id):
                 # now, the user's current quest will be updated here to the inputted quest with id = 1
                 all_users_without_current_quests = UserProject.objects.filter(project = current_project, current_quest= None)
                 if int(post_request['quest_path_number']) == 1 and len(all_users_without_current_quests) > 0:
-                    print('Yes we made it here at least', len(all_users_without_current_quests))
                     for userproject in all_users_without_current_quests:
                         userproject.current_quest = temp
                         userproject.save()
@@ -225,7 +215,6 @@ def admin_update_project_description(request, ldap, project_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -248,7 +237,6 @@ def admin_update_project_name (request, ldap, project_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -275,7 +263,6 @@ def get_admin_home_view_only(request, ldap, project_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -298,7 +285,6 @@ def get_admin_quest_page_editable(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -334,7 +320,6 @@ def delete_question(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -347,7 +332,6 @@ def delete_question(request, ldap, quest_id):
     if request.method == 'POST':
         post_request = request.POST
         current_question = Question.objects.get(id = post_request['deleted'])
-        print (post_request)
         #We want to not let the time_modified increase, so we save it here and assign it to the question after we save it
         current_time_modified = copy.deepcopy(current_question.time_modified)
         current_question.deleted = True
@@ -362,7 +346,6 @@ def undo_delete_question(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -392,7 +375,6 @@ def save_video(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -401,7 +383,6 @@ def save_video(request, ldap, quest_id):
     if request.method == 'POST': 
         post_request = request.POST
         video_form = VideoForm(post_request)
-        print(video_form)
         if video_form.is_valid():
             temp = video_form.save(commit=False)   
             url = post_request['video_url']
@@ -421,7 +402,6 @@ def delete_video(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -429,7 +409,6 @@ def delete_video(request, ldap, quest_id):
         post_request = request.POST
         video_id = post_request['delete']
         video_to_delete = Video.objects.get(id = video_id)
-        print("YOU ARE HERE", video_to_delete)
         video_to_delete.delete()
         messages.success(request, 'Video successfully deleted!')
             
@@ -440,7 +419,6 @@ def update_quest_name(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -463,7 +441,6 @@ def update_quest_description(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -488,7 +465,6 @@ def get_admin_quest_settings_editable(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -508,7 +484,6 @@ def update_quest_points_earned(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -535,7 +510,6 @@ def update_quest_path_number(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -568,7 +542,6 @@ def delete_quest(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -592,7 +565,6 @@ def get_admin_quest_settings_view_only(request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -609,7 +581,6 @@ def get_admin_quest_page_view_only(request, ldap, quest_id):
 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -784,7 +755,6 @@ def get_admin_edit_fr_question(request, ldap, question_id):
 
     a = admin_validation(request, ldap, question_id = question_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -803,7 +773,6 @@ def get_admin_edit_fr_question(request, ldap, question_id):
 
     fr_answer_form = CorrectAnswerForm(initial={'answer_text': all_answers})
 
-    print(current_question.question_type)
     context = {'current_question': current_question,
                 'question_text_form': question_text_form,
                 'fr_answer_form': fr_answer_form,
@@ -815,7 +784,6 @@ def save_admin_edit_fr_question(request, ldap, question_id):
 
     a = admin_validation(request, ldap, question_id = question_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -830,7 +798,6 @@ def save_admin_edit_fr_question(request, ldap, question_id):
         quest_id = current_question.quest.id
         if question_form.is_valid() and answer_form.is_valid():
             timestamp = copy.deepcopy(current_question.time_modified)
-            print(timestamp)
             current_question.deleted = True
             current_question.save()
             #If you want to undo the deletion of the previous version of the question, it will pop up back in
@@ -851,7 +818,6 @@ def get_admin_edit_mc_question(request, ldap, question_id):
 
     a = admin_validation(request, ldap, question_id = question_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
     
@@ -879,7 +845,6 @@ def get_admin_edit_mc_question(request, ldap, question_id):
     mc_wrong_answer_form = WrongAnswerForm(initial={'incorrect_choices': all_wrong_answers})
 
     current_question = Question.objects.get(id = question_id)
-    print(current_question.question_type)
     context = {'current_question': current_question,
                 'question_text_form': question_text_form,
                 'mc_correct_answer_form': mc_correct_answer_form,
@@ -892,7 +857,6 @@ def save_admin_edit_mc_question (request, ldap, question_id):
 
     a = admin_validation(request, ldap, question_id = question_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -906,7 +870,6 @@ def save_admin_edit_mc_question (request, ldap, question_id):
         wrong_answer_form = WrongAnswerForm(request.POST)
         if question_form.is_valid() and answer_form.is_valid() and wrong_answer_form.is_valid():
             timestamp = copy.deepcopy(current_question.time_modified)
-            print(timestamp)
             current_question.deleted = True
             current_question.save()
             #If you want to undo the deletion of the previous version of the question, it will pop up back in
@@ -922,7 +885,6 @@ def get_admin_edit_api_question(request, ldap, question_id):
 
     a = admin_validation(request, ldap, question_id = question_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -941,7 +903,6 @@ def save_admin_edit_api_question(request, ldap, question_id):
 
     a = admin_validation(request, ldap, question_id = question_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -955,8 +916,6 @@ def save_admin_edit_api_question(request, ldap, question_id):
         api_url = request.POST['api_url']
         if question_form.is_valid() and is_api_url_valid(request, api_url, ldap, quest_id):
             timestamp = copy.deepcopy(current_question.time_modified)
-            print(timestamp)
-            print (datetime.now())
             current_question.deleted = True
             current_question.save()
             
@@ -976,7 +935,6 @@ def get_admin_project_page(request, ldap):
 
     a = admin_validation(request, ldap) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -1016,7 +974,6 @@ def add_new_project(request, ldap):
 
     a = admin_validation(request, ldap) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -1037,7 +994,6 @@ def add_new_project(request, ldap):
         if not is_new_admin_pin:
             messages.error(request, 'Please use a different admin pin for security purposes')
 
-        print(post_request)
         if project_form.is_valid():
             temp = project_form.save(commit=False)
             temp.project_editable = True
@@ -1085,7 +1041,6 @@ def join_project(request, ldap):
 
     a = admin_validation(request, ldap) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -1106,7 +1061,6 @@ def join_project(request, ldap):
             #We are further validating that they can become an admin of this project
             #because they must also know the name of it
             if project_to_join in list_of_admins_projects and project_name == input_name:
-                print (list_of_admins_projects)
                 messages.error(request, 'You cannot join a project that you are already a part of')
                 return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
@@ -1131,7 +1085,6 @@ def admin_unarchive_project(request, ldap):
     
     a = admin_validation(request, ldap) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -1210,7 +1163,6 @@ def add_user_project_page(request, ldap):
                 requested_team = post_request['team'].strip()
                 #If user did not add a team in their request to join the project
                 if requested_team not in teams_in_current_project.values_list('team_name', flat=True):
-                    # print (teams_in_current_project.values_list('team_name', flat=True), post_request['team'])
                     messages.error(request, 'Please include a valid team name!')
                     return HttpResponseRedirect('/quest/user_project_page/' + ldap)
             
@@ -1371,7 +1323,6 @@ def add_new_user(request):
 
             valid_password = (retyped_password == temp.user_password)
             is_new_ldap = user_ldap not in User.objects.all().values_list('user_ldap', flat=True) 
-            print(User.objects.all().values_list('user_ldap', flat=True) )
             if valid_email and is_new_ldap and valid_password:
                 temp.save()
                 messages.success(request, 'Your new account was created!')
@@ -1400,7 +1351,6 @@ def user_login_to_account(request):
         post_request = request.POST
         ldap = post_request['ldap']
         password = make_hash(post_request['password'])
-        print (post_request)
 
         if User.objects.filter(user_ldap = ldap):
             #If incorrect password
@@ -1441,7 +1391,6 @@ def user_change_password_request(request):
             [current_user.user_email],
             fail_silently=False,
             )
-            print('MAIL SENT')
             return HttpResponseRedirect('/quest/user_forgot_password/' + ldap)
     
         return HttpResponseRedirect('/quest/user_login')
@@ -1612,7 +1561,6 @@ def admin_login_to_account(request):
         post_request = request.POST
         ldap = post_request['ldap']
         password = make_hash(post_request['password'])
-        print (post_request)
 
         if Admin.objects.filter(admin_ldap = ldap):
             #If incorrect password
@@ -1652,7 +1600,6 @@ def admin_change_password_request(request):
             [current_admin.admin_email],
             fail_silently=False,
             )
-            print('MAIL SENT')
             return HttpResponseRedirect('/quest/admin_forgot_password/' + ldap)
     
         return HttpResponseRedirect('/quest/admin_login')
@@ -1683,7 +1630,6 @@ def add_new_admin(request):
                 valid_email = True
             except:
                 valid_email = False
-                print("This is an invalid email")
                 messages.error(request, 'Please input a valid email')
                 return HttpResponseRedirect('/quest/new_admin') 
 
@@ -1751,7 +1697,6 @@ def get_admin_project_settings_editable(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -1789,7 +1734,6 @@ def update_random_phrase(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -1813,7 +1757,6 @@ def update_random_phrase(request, ldap, project_id):
 def update_admin_pin(request, ldap, project_id):
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -1837,7 +1780,6 @@ def remove_as_admin(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
     current_project = Project.objects.get(id = project_id)
@@ -1853,7 +1795,6 @@ def remove_all_users(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -1869,7 +1810,6 @@ def delete_project(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -1886,7 +1826,6 @@ def add_team(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -1913,7 +1852,6 @@ def delete_team(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
     
@@ -1940,7 +1878,6 @@ def admin_archive_project(request, ldap, project_id):
 
     a = admin_validation(request, ldap) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -1965,7 +1902,6 @@ def get_admin_project_settings_view_only(request, ldap, project_id):
 
     a = admin_validation(request, ldap) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -2001,7 +1937,6 @@ def get_admin_settings_info(request, ldap):
     
     a = admin_validation(request, ldap) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -2013,7 +1948,6 @@ def update_admin_ldap(request, ldap):
     
     a = admin_validation(request, ldap) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -2036,7 +1970,6 @@ def update_admin_first_name(request, ldap):
 
     a = admin_validation(request, ldap) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -2055,7 +1988,6 @@ def update_admin_last_name(request, ldap):
     
     a = admin_validation(request, ldap) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -2073,7 +2005,6 @@ def update_admin_email(request, ldap):
     
     a = admin_validation(request, ldap) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -2095,7 +2026,6 @@ def update_admin_password(request, ldap):
     
     a = admin_validation(request, ldap) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -2123,7 +2053,6 @@ def get_admin_project_info_page(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
     
@@ -2150,7 +2079,6 @@ def search_by_user_ldap(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
     
@@ -2185,7 +2113,6 @@ def search_by_user_name(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -2218,7 +2145,6 @@ def search_above(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
     
@@ -2251,7 +2177,6 @@ def search_below(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
     
@@ -2283,7 +2208,6 @@ def search_at(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
     
@@ -2315,7 +2239,6 @@ def search_all_users(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -2347,7 +2270,6 @@ def search_completed_users(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -2380,7 +2302,6 @@ def search_not_completed_users(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -2415,7 +2336,6 @@ def search_team_by_user_ldap(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
     
@@ -2457,7 +2377,6 @@ def search_team_by_user_name(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
     
@@ -2498,7 +2417,6 @@ def search_team_above(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
     
@@ -2538,7 +2456,6 @@ def search_team_below(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
     
@@ -2579,7 +2496,6 @@ def search_team_at(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -2619,7 +2535,6 @@ def search_team_all_users(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -2657,7 +2572,6 @@ def search_team_completed_users(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -2696,7 +2610,6 @@ def search_team_not_completed_users(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
-        print (a[1])
         messages.warning(request, a[1])
         return a[0]
 
@@ -2740,7 +2653,6 @@ def php_tests(request, ldap):
 
 
     payload = {'ldap': ldap}
-    print (ldap)
 
     try:
         php_result = str(requests.get('http://localhost:4000/take_request_give_response.php', params = payload).content)
@@ -2754,8 +2666,6 @@ def php_tests(request, ldap):
         php_value = 'false'
     else:
         php_value = php_result
-
-    print (php_value)
     
     context = {'php_value': php_value}
     return render(request, 'quest_extension/php_tests.html', context)

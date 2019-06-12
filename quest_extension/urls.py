@@ -5,6 +5,10 @@ from django.conf.urls import url, include
 
 app_name = 'quest'
 urlpatterns = [
+
+
+    path('', views.get_user_login),
+
     #Decides what Question Admin wants to create
     path('mc-create-form/<ldap>/<quest_id>', views.get_mc_question_form),
     path('create_mc_question/<ldap>/<quest_id>', views.create_mc_question),

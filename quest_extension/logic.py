@@ -13,6 +13,7 @@ import copy
 from django.db.models import Sum
 import hashlib
 import requests
+from collections import OrderedDict
 
 
 
@@ -28,7 +29,6 @@ def save_fr_question(request, ldap, question_form, answer_form, quest_id, timest
     question_id = q_form.id
     Question.objects.filter(id = question_id).update(time_modified = timestamp)
     current_question = Question.objects.get(id = question_id)
-    print(current_question.time_modified)
 
     a_form = answer_form.save(commit=False)
     a_form.answer_text = a_form.answer_text.strip()
@@ -50,9 +50,7 @@ def save_mc_question(request, ldap, question_form, answer_form, wrong_answer_for
     #This allows us to bypass the automatic date from auto_now
     Question.objects.filter(id = question_id).update(time_modified = timestamp)
     
-    current_question = Question.objects.get(id = question_id)
-    print(current_question.time_modified)
-    
+    current_question = Question.objects.get(id = question_id)    
 
     list_of_correct_answers = answer_form.cleaned_data['correct_choices'].split('\n')
     #Removes blank correct answers
@@ -135,24 +133,19 @@ def go_to_next_quest(current_quest, current_user, current_project):
             
     all_question_ids_in_quest = Question.objects.filter(quest = current_quest).values_list('id', flat = True)
     count_of_correctly_answered_questions = len(CorrectlyAnsweredQuestion.objects.filter(userproject = current_user_project, question__in = all_question_ids_in_quest))
-    print (CorrectlyAnsweredQuestion.objects.filter(userproject = current_user_project, question__in = all_question_ids_in_quest))
 
-    print(count_of_correctly_answered_questions, num_questions_in_quest)
     if (count_of_correctly_answered_questions == num_questions_in_quest):
         users_user_project_object = UserProject.objects.get(user = current_user, project = current_project)
         #adds points for the completed quest to the user
         users_user_project_object.points += current_quest.quest_points_earned
         users_user_project_object.save()
-        print("Edli's points are:" + str (users_user_project_object.points))
         current_quest_num = current_quest.quest_path_number
         #If next quest exists
         if (Quest.objects.filter(quest_path_number = current_quest_num + 1, project = current_project)):
             next_quest = Quest.objects.get(quest_path_number = current_quest_num + 1, project = current_project)
-            print("I Am Here")
             users_user_project_object.current_quest = next_quest
             users_user_project_object.save()
         else:
-            print('I am actually here')
             users_user_project_object.completed_project = True
             users_user_project_object.save()
 
@@ -201,12 +194,11 @@ def can_admin_access_project(ldap, project_id):
 
     list_of_projects = AdminProject.objects.filter(admin = current_admin).values_list('project', flat = True)
     list_of_projects = Project.objects.filter(pk__in=list_of_projects)
-    print (current_project in list_of_projects)
     return current_project in list_of_projects
     
 #Gets the team and points format that is used in the admin and user home pages
 def get_team_points_format(current_project):
-    all_teams_and_points = {}
+    all_teams_and_points = OrderedDict()
     all_teams_in_project = Team.objects.filter(project = current_project)
     for team in all_teams_in_project:
         current_points_for_team = UserProject.objects.filter(team = team).aggregate(points = Sum('points'))
@@ -222,11 +214,13 @@ def get_team_points_format(current_project):
             all_points_in_project = 0
 
         users_on_this_team = UserProject.objects.filter(team = team).count()
-        print(all_points_in_project, users_on_this_team)
         total_possible_points_for_team = all_points_in_project * users_on_this_team
         
         #format = teamname -> (current points earned by team, total points that can be earned by team)
         all_teams_and_points[team.team_name] = (current_points_for_team, total_possible_points_for_team)
+        print (all_teams_and_points)
+        print('---------------------')
+    print(all_teams_and_points)
     return all_teams_and_points
 
 #if an admin is inside of a project and changing aspects of it, we want to stop this as 
@@ -312,9 +306,7 @@ def validate_mc_or_fr_question_response(request, ldap, question, user_answer):
 
     user_answer.sort()
     user_answer = [x.strip() for x in user_answer]
-    print(user_answer)
     correct_answers_texts.sort()
-    print(correct_answers_texts)
 
 
     #Even if we need to select multiple answers to get the correct response, this will now work
@@ -333,7 +325,7 @@ def validate_mc_or_fr_question_response(request, ldap, question, user_answer):
 
 # Creates the format needed to display the information for the admin quest pages (View and editable)
 def create_admin_quest_page_format(list_of_questions):
-    format = {}
+    format = OrderedDict()
     for question in list_of_questions:
         correct_answer = CorrectAnswer.objects.filter(question = question)
         wrong_answers = IncorrectAnswer.objects.filter(question = question)
@@ -536,7 +528,6 @@ def admin_validation(request, ldap, project_id = None, quest_id = None, question
             return (HttpResponseRedirect('/quest/admin_project_page/' + ldap), warning_message)
 
     if quest_id != None:
-        print('I a halooooooo')
         #does admin have privileges to access this quest (also validates project access in the projecss)
         if not can_admin_access_quest_or_project(ldap, quest_id = quest_id):
                 warning_message = 'Sorry, this quest no longer exists - a different admin must have deleted it (or they may have deleted the entire project)!'

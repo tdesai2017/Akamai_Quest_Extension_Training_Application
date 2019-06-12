@@ -622,6 +622,7 @@ def get_user_home(request, ldap, project_id):
     quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
     current_user_project_team = current_user_project_object.team
     all_teams_and_points = get_team_points_format(current_project)
+    print (all_teams_and_points)
     #Points information for teams
     
 
@@ -2648,7 +2649,7 @@ def search_team_not_completed_users(request, ldap, project_id):
 
 def php_tests(request, ldap):
 
-    # run php -S localhost:4000 to start the php
+    # php -S localhost:4000 to start the php
     # $ldap = $_GET["ldap"]; will get you the ldap in the php code
 
 

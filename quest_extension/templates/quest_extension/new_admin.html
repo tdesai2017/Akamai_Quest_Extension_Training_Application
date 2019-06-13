@@ -83,7 +83,6 @@ function validate_password() {
 </form>
 {% endblock %}
 
-
 {% block account_form %}
 <form method='POST' id = 'admin_form' action = '/quest/add_new_admin' onsubmit = "return validate_password();">
     {% csrf_token %}

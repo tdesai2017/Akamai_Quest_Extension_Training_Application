@@ -16,6 +16,7 @@ import random
 import json
 import hashlib
 import requests
+import smtplib
 
 
 #Views
@@ -1405,15 +1406,49 @@ def user_change_password_request(request):
             pin = str(random.randint(99999, 999999))
             current_user.user_reset_password_pin = pin
             current_user.save()
-            message_body = ('Hi ' + current_user.user_first_name + '. We have just recieved notice that you requested ' +
-            'to create a new password! Your six digit pin is ' + str(pin))
-            send_mail(
-            'Password Reset',
-            message_body,
-            'icet.tushar@gmail.com', #This will have to change once we deploy this on a remote server
-            [current_user.user_email],
-            fail_silently=False,
-            )
+            
+            
+            # message_body = ('Hi ' + current_user.user_first_name + '. We have just recieved notice that you requested ' +
+            # 'to create a n'ew password! Your six digit pin is ' + str(pin))
+            
+            
+            # send_mail(
+            # 'Password Reset',
+            # message_body,
+            # 'icet.tushar@gmail.com', #This will have to change once we deploy this on a remote server
+            # [current_user.user_email],
+            # fail_silently=False,
+            # )
+
+
+
+            
+            FROM = 'quest-extension@akamai.com'
+
+            TO = ["tushar.sunil.desai@gmail.com"] # must be a list
+
+            SUBJECT = "Quest Forgot Password Link!"
+
+            TEXT = 'Hi ' + current_user.user_first_name + '. We have just recieved notice that you requested to create a new password! Your six digit pin is ' + str(pin)
+
+            # Prepare actual message
+
+            message = """\
+            From: %s
+            To: %s
+            Subject: %s
+
+            %s
+            """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
+
+            # Send the mail
+
+            server = smtplib.SMTP('localhost')
+            server.sendmail(FROM, TO, message)
+            server.quit()
+            messages.success(request, 'You should receive an email with your pin! Definitely check your spam folder if you do not see it at first!')
+
+
             return HttpResponseRedirect('/quest/user_forgot_password/' + ldap)
     
         return HttpResponseRedirect('/quest/user_login')
@@ -1619,7 +1654,7 @@ def admin_change_password_request(request):
             send_mail(
             'Password Reset',
             message_body,
-            'icet.tushar@gmail.com', #This will have to change once we deploy this on a remote server
+            'qextension@gmail.com', 
             [current_admin.admin_email],
             fail_silently=False,
             )

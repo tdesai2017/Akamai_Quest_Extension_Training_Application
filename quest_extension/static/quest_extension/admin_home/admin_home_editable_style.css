@@ -31,17 +31,41 @@ textarea {
     height: 300px;
     }
 
-#edit_description_button{
+#edit_description_button, div[id*="edit_picture_button"]{
     text-align: center;
 
 }
 
-#edit_name_container {
+#edit_name_container, div[id*="edit_picture_container"]{
     display: none;
 }
 
 #new_quest {
     display: none;
+}
+
+[id*=image_submit] {
+    border: 0; 
+    background: transparent;
+ }
+
+ [id*="button_submit"]  {
+     display: none;
+ }
+
+#image_cropper {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+#img {
+    display: inline;
+    margin: 0 auto;
+    height: 100%;
+    width: auto;
 }
 
 /* Message classes */

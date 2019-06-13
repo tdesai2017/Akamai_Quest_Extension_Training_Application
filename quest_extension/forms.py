@@ -7,7 +7,7 @@ from . import models
 class QuestForm(forms.ModelForm):
     class Meta:
         model = models.Quest
-        fields = ['quest_name', 'quest_points_earned', 'quest_path_number']
+        fields = ['quest_name', 'quest_points_earned', 'quest_path_number', 'quest_picture_url']
 
 
 #Records the name of a question

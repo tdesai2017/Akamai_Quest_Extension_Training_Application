@@ -251,6 +251,29 @@ def admin_update_project_name (request, ldap, project_id):
 
 
     return redirect_to_correct_home_page(request.session['view_or_editable'], ldap, project_id)
+
+
+
+def admin_update_quest_picture (request, ldap, quest_id):
+
+    current_quest = Quest.objects.get(id = quest_id)
+    project_id = current_quest.project.id
+
+
+    #Validates if an admin can access this 
+    a = admin_validation(request, ldap, quest_id = quest_id) 
+    if a != None:
+        messages.warning(request, a[1])
+        return a[0]
+
+    if request.method == 'POST':
+        current_quest.quest_picture_url = request.POST['new_picture_url']
+        current_quest.save()
+        messages.success(request, 'New Quest Picture Saved!')
+
+    
+    return redirect_to_correct_home_page(request.session['view_or_editable'], ldap, project_id)
+
     
 ######################################
 
@@ -622,7 +645,6 @@ def get_user_home(request, ldap, project_id):
     quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
     current_user_project_team = current_user_project_object.team
     all_teams_and_points = get_team_points_format(current_project)
-    print (all_teams_and_points)
     #Points information for teams
     
 

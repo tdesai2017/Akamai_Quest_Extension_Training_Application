@@ -9,14 +9,19 @@
 	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    
-
     <script>
+    function show_plain_button_instead(quest_id){
+
+        document.getElementById('image_submit_' + quest_id).style.display = 'none'
+        document.getElementById('button_submit_'+ quest_id).style.display = 'inline'
+    }
+
     function canMoveForward(quest_path_clicked){
         var current_quest_num = "{{ current_user_project_object.current_quest.quest_path_number }}";
         return (current_quest_num >= parseInt(quest_path_clicked));
         
     }
+    
     </script>
 
     <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_home_style.css' %}">
@@ -85,8 +90,23 @@
     <br>
         
     <form method='GET' onsubmit='return canMoveForward( "{{quest.quest_path_number }}" );'  action='/quest/user_quest_page/{{user.user_ldap}}/{{quest.id}}'>
-        <button  type='submit' >{{quest.quest_name}}</button>
+
+
+        <button id = 'image_submit_{{quest.id}}' type='submit'>
+            <div id = 'image_cropper'>
+                <img id = 'img' src="{{quest.quest_picture_url}}" onerror = "show_plain_button_instead('{{quest.id}}')" />
+            </div> 
+            {{quest.quest_name}} ({{quest.quest_path_number}})
+            </button>
+    
+    
+        <button id = 'button_submit_{{quest.id}}'>{{quest.quest_name}} ({{quest.quest_path_number}})</button>
+    
+
+
+
         <!-- Add an icon if you have completed a quest -->
+        
         {% if current_user_project_object.current_quest.quest_path_number > quest.quest_path_number or current_user_project_object.completed_project == True %}
         &#10004;
         {% endif %}

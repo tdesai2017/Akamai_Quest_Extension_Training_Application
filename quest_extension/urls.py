@@ -34,6 +34,7 @@ urlpatterns = [
     path('save_new_quest/<ldap>/<project_id>', views.save_new_quest),
     path('admin_update_project_description/<ldap>/<project_id>', views.admin_update_project_description),
     path('admin_update_project_name/<ldap>/<project_id>', views.admin_update_project_name),
+    path('admin_update_quest_picture/<ldap>/<quest_id>', views.admin_update_quest_picture),
 
 
 

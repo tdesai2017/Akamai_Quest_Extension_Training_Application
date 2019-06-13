@@ -16,13 +16,21 @@
 
 {% block redirect_to_quest_page %}
 
-    {% for quest in quests %}
-        <br>
-        <form method='GET' action='/quest/admin_quest_page_view_only/{{current_admin.admin_ldap}}/{{quest.id}}'>
-            <button type='submit'>{{quest.quest_name}} ({{quest.quest_path_number }})</button>
-        </form>
+    <br>
+    <form  method='GET' action='/quest/admin_quest_page_view_only/{{current_admin.admin_ldap}}/{{quest.id}}'>
+        <button id = 'image_submit_{{quest.id}}' type='submit'>
+        <div id = 'image_cropper'>
+            <img id = 'img' src="{{quest.quest_picture_url}}" onerror = "show_plain_button_instead('{{quest.id}}')" />
+        </div> 
+        {{quest.quest_name}} ({{quest.quest_path_number}})
+        </button>
 
-    {% endfor %}
 
+        <button id = 'button_submit_{{quest.id}}'>{{quest.quest_name}} ({{quest.quest_path_number}})</button>
+
+    </form>
+    <br>
+
+    
 {% endblock %}
 

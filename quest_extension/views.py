@@ -632,7 +632,6 @@ def get_admin_quest_page_view_only(request, ldap, quest_id):
 ######################################
 
 def get_user_home(request, ldap, project_id):
-
     
     if not validate_user_access(request, ldap):  
         return HttpResponseRedirect('/quest/user_login')
@@ -1425,7 +1424,7 @@ def user_change_password_request(request):
             
             FROM = 'quest-extension@akamai.com'
 
-            TO = ["tushar.sunil.desai@gmail.com"] # must be a list
+            TO = [current_user.user_email] # must be a list
 
             SUBJECT = "Quest Forgot Password Link!"
 

@@ -4,65 +4,8 @@
     <head>
         
         <title> {{ current_quest.quest_name }} </title>
-        <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_quest_page_style.css' %}">
-        <script> 
-
-        function validate_fr_answer(question_id){
-            var q_to_a = "{{ question_to_answers|escapejs }}";
-            var user_answer = document.getElementById('input_'+ question_id).value.trim();
-            var q_to_a_json = JSON.parse(q_to_a);
-            console.log (user_answer)
-            console.log (question_id)
-            var answer_to_this_question = q_to_a_json[question_id]
-                if (user_answer == answer_to_this_question) {
-                    document.getElementById('correct_' + question_id).style.display = 'inline'
-                    document.getElementById('wrong_' + question_id).style.display = 'none'
-
-                }
-                else {
-                    document.getElementById('wrong_' + question_id).style.display = 'inline'
-                    document.getElementById('correct_' + question_id).style.display = 'none'
-
-                }
-
-            return false;
-        }
-        
-        function validate_mc_answer(question_id){
-            var q_to_a = "{{ question_to_answers|escapejs }}";
-            var q_to_a_json = JSON.parse(q_to_a);
-            var answer_to_this_question = q_to_a_json[question_id]
-            
-            
-            var user_input= document.querySelectorAll('.input_' + question_id)
-            checked_list = []
-            for (var i=0;i<user_input.length;i++){
-                if (user_input[i].checked) {
-                    checked_list.push(user_input[i].value.trim())
-                }
-            }  
-            
-
-            user_answer = checked_list.sort().toString()
-            answer_to_this_question = answer_to_this_question.sort().toString()
-
-            if (user_answer == answer_to_this_question) {
-                    document.getElementById('correct_' + question_id).style.display = 'inline'
-                    document.getElementById('wrong_' + question_id).style.display = 'none'
-
-                }
-                else {
-                    document.getElementById('wrong_' + question_id).style.display = 'inline'
-                    document.getElementById('correct_' + question_id).style.display = 'none'
-
-                }
-
-            return false;
-        }
-        
-
-
-        </script>
+        <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_quest_page/user_quest_page_style.css' %}">
+        <script src= "{% static 'quest_extension/user_quest_page/user_quest_page_js.js' %}"></script>
     </head>
     <body>
 
@@ -116,11 +59,9 @@
 
 
                     {% if question.id not in have_correct_answer %}
-                         <!-- <form method = "POST" id = 'form_{{question.id}}' onsubmit = "return validate_fr_answer('{{question.id}}')" action = '/quest/validate_fr_question_response/{{ldap}}/{{current_quest.id}}'> -->
-                            <!-- {% csrf_token %} -->
+                       
                             Answer: <input form = 'validate_user_input_form' type = 'text' id = 'input_{{question.id}}' name = 'answer_{{question.id}}'>
-                             <button type= 'submit' onclick = 'return validate_fr_answer("{{question.id}}")' name='FR_response_id' value = '{{ question.id }}'>Check Answer!</button>
-                        <!-- </form> -->
+                             <button type= 'submit' onclick = 'return validate_fr_answer("{{question.id}}", "{{question_to_answers|escapejs}}" )' name='FR_response_id' value = '{{ question.id }}'>Check Answer!</button>
                         <br>
 
                         <p id = 'wrong_{{question.id}}' style = "display: none; color: red"> Sorry that's wrong, please try again! </p>
@@ -163,7 +104,7 @@
                         {% endfor %}
 
                         <br>
-                        <button type= 'submit' onclick ="return validate_mc_answer('{{question.id}}')" name= 'MC_response_id' value= '{{ question.id }}'>Check Answer!</button>
+                        <button type= 'submit' onclick ="return validate_mc_answer('{{question.id}}','{{question_to_answers|escapejs}}' )" name= 'MC_response_id' value= '{{ question.id }}'>Check Answer!</button>
                         <br>
                         <p id = 'wrong_{{question.id}}' style = "display: none; color: red"> Sorry that's wrong, please try again! </p>
                         <p id = 'correct_{{question.id}}' style = "display: none; color: green"> You are correct! </p>

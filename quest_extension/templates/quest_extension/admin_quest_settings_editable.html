@@ -3,11 +3,7 @@
 
     {% block stylesheet_js %}
     <link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/admin_quest_settings/admin_quest_settings_editable_style.css' %}">
-    <script> function update(info){
-            document.getElementById("update_" + info + "_button").style.display = "none";
-            document.getElementById("update_" + info + "_form").style.display = "inline"
-          } 
-        </script>
+    <script src = "{% static 'quest_extension/admin_quest_settings/admin_quest_settings_editable_js.js' %}"></script>
     {% endblock %}
 
     

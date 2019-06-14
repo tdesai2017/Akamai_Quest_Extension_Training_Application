@@ -5,13 +5,7 @@
   <title> Project Settings </title>
   {% block stylesheet %}
   {% endblock %}
-
-    <script> function update(info){
-        document.getElementById("update_" + info + "_button").style.display = "none";
-        document.getElementById("update_" + info + "_form").style.display = "inline"
-      } 
-    </script>
-
+  <script src = "{% static 'quest_extension/admin_project_settings/admin_project_settings_base_js.js' %}"></script>
 </head>
 
 <body>

@@ -17,6 +17,31 @@
     width: 700px;
 }
 
+
+[id*=image_submit] {
+    border: 0; 
+    background: transparent;
+ }
+
+ [id*="button_submit"]  {
+     display: none;
+ }
+
+#image_cropper {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+#img {
+    display: inline;
+    margin: 0 auto;
+    height: 100%;
+    width: auto;
+}
+
 /* Message classes */
 .success {
     color: lightgreen;

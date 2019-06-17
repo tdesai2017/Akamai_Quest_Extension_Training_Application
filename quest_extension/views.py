@@ -722,6 +722,8 @@ def get_user_quest_page(request, ldap, quest_id):
         question_to_answers[question.id] = list_of_correct_answers
 
     question_to_answers = json.dumps(question_to_answers)
+    all_teams_and_points = get_team_points_format(current_project)
+
 
     context = {'current_quest': current_quest, 
             'ldap': ldap, 
@@ -729,7 +731,10 @@ def get_user_quest_page(request, ldap, quest_id):
             'have_correct_answer': have_correct_answer,
             'format_2': format_2,
             'all_videos': all_videos,
-            'question_to_answers': question_to_answers}
+            'question_to_answers': question_to_answers,
+            'all_teams_and_points': all_teams_and_points,
+            'current_project': current_project}
+
 
     return render(request, 'quest_extension/user_quest_page.html', context)
 

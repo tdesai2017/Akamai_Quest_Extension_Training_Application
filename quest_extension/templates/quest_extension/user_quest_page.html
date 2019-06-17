@@ -6,26 +6,77 @@
         <title> {{ current_quest.quest_name }} </title>
         <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_quest_page/user_quest_page_style.css' %}">
         <script src= "{% static 'quest_extension/user_quest_page/user_quest_page_js.js' %}"></script>
+        
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
     </head>
     <body>
+        <div class="container-fluid">
 
-        <div class = centered>
+            <div class="col-sm-4 sidenav">
+                Test
+
+           
+
+            <div class="progress">
+                    <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 10%; background-color: green" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <div class="progress">
+                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <div class="progress">
+                    <div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <div class="progress">
+                    <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <div class="progress">
+                    <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+
+
+                    {% if current_project.project_has_teams %}
+                    <br>
+                    <br>
+                    <p>Progress:<p>
+                    <br>
+                    {% for team_data in all_teams_and_points.items %}
+                    {{ team_data.0 }}: {{team_data.1.0}} / {{team_data.1.1}}
+                    <!-- team_data.0 = team name -->
+                    <!-- team_data.1.0 = accumulated points by users on this team -->
+                    <!-- team.data.1.1 = total possible points that can be earned by this team if everyone has 100% completion -->
+                    <br>
+                    <br>
+                    <br>
+                    {% endfor %}
+                    {% endif %}
+
+
+            </div>
+            <div class="col-sm-8">
+
+                
+            
+
+
+        <!-- <div class = centered> -->
             <h1> {{ current_quest.quest_name }} </h1>
         <br>
-        </div>    
+        <!-- </div>     -->
 
         
-        <div class='container'>
+        <!-- <div class='container'> -->
                 <div id='my-text-area'>
                     {{ current_quest.quest_description|safe }} 
                  </div>
-            </div>
+            <!-- </div> -->
 
-        <div class = centered>
+        <!-- <div class = centered> -->
         <br>
-        <br>
-        <br>
-        <br>
+
 
         
         {% for video in all_videos %}
@@ -41,9 +92,7 @@
         {% endfor %}
 
         <br>
-        <br>
-        <br>
-        <br>
+
 
        
         
@@ -159,17 +208,18 @@
 
             <br>
             <br>
-            <br>
-            <br>
         {% endfor %}
 
     <button type = 'submit'> Save Answers </button>
     </form>
-    <br>
-    <br>
+
+
         <form id='home' action = '/quest/user_home/{{ ldap }}/{{current_project_id}}' method='GET'></form>
         
-        <button form = 'home' type = submit>Home</button>
-    </div>
+        <button form = 'home' style='margin-top:5px;' type = submit>Home</button>
+    <!-- </div> -->
+
+</div>
+</div>
     </body>
 </html>

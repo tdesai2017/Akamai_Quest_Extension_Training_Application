@@ -26,7 +26,7 @@ SECRET_KEY = 'ge8@i_%g2@!r0=1knnjzxh8=(-&enrtia!mxvc905@gw(989%@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['kbint.akamai.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

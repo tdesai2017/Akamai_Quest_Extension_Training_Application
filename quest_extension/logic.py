@@ -217,7 +217,12 @@ def get_team_points_format(current_project):
         total_possible_points_for_team = all_points_in_project * users_on_this_team
         
         #format = teamname -> (current points earned by team, total points that can be earned by team)
-        all_teams_and_points[team.team_name] = (current_points_for_team, total_possible_points_for_team)
+        width_for_display = 0
+        if total_possible_points_for_team == 0:
+            width_for_display = 0
+        else:
+            width_for_display = int(current_points_for_team/total_possible_points_for_team * 100)
+        all_teams_and_points[team.team_name] = (current_points_for_team, total_possible_points_for_team, width_for_display)
         
     return all_teams_and_points
 

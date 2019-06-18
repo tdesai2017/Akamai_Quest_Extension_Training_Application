@@ -14,28 +14,17 @@
 
     </head>
     <body>
-        <div class="container-fluid">
+        <div class="container-fluid" '>
 
             <div class="col-sm-4 sidenav">
-                Test
 
-           
+                <div id = 'constant_top_left'>
+                    <img src="https://i.imgur.com/1533RUp.png">
 
-            <div class="progress">
-                    <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 10%; background-color: green" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                  <div class="progress">
-                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                  <div class="progress">
-                    <div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                  <div class="progress">
-                    <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                  <div class="progress">
-                    <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
+                    <div id = 'project_name' ><h4>{{current_project.project_name}}</h4>
+                        <p id = 't_d_experiment'><small>A Tushar Desai Experiment </small></p>
+                    </div>
+                </div>
 
 
                     {% if current_project.project_has_teams %}
@@ -44,7 +33,10 @@
                     <p>Progress:<p>
                     <br>
                     {% for team_data in all_teams_and_points.items %}
-                    {{ team_data.0 }}: {{team_data.1.0}} / {{team_data.1.1}}
+                    {{ team_data.0 }}
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-info" role="progressbar" style = 'width: {{team_data.1.2}}%'  aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"> {{team_data.1.0}} points </div>
+                    </div>
                     <!-- team_data.0 = team name -->
                     <!-- team_data.1.0 = accumulated points by users on this team -->
                     <!-- team.data.1.1 = total possible points that can be earned by this team if everyone has 100% completion -->
@@ -56,7 +48,7 @@
 
 
             </div>
-            <div class="col-sm-8">
+            <div class="col-sm-8" style = 'position: relative'>
 
                 
             

@@ -47,3 +47,5 @@ function validate_mc_answer(question_id, q_to_a){
 
     return false;
 }
+
+

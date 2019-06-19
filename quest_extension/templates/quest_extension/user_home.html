@@ -26,13 +26,11 @@
     
     </script>
 
-    
-
 </head>
 
 
 
-<body>
+<body style>
 
 <div class="container-fluid" >
 <div class = 'row content'>
@@ -105,11 +103,10 @@
             <br>
     </div>
         
-    <div class="col-sm-8" style = 'position: relative'>
+    <div class="col-sm-8">
 
 
-
-    <form method = 'GET' action = '/quest/user_project_settings/{{ user.user_ldap }}/{{ current_project.id }}'>
+    <form style = 'float:right' method = 'GET' action = '/quest/user_project_settings/{{ user.user_ldap }}/{{ current_project.id }}'>
         
         <button type = 'submit' > Project Settings</button>
 
@@ -125,6 +122,7 @@
 
 
         <h1>{{ current_project.project_name}}</h1>
+        <hr>
         <!-- these two <br>s are here to make the admin home page most closely replicate that of the user home page -->
 
     <div class='container'>
@@ -135,47 +133,43 @@
 
     <!--format = teamname -> (current points earned by team, total points that can be earned by team)-->
   
-        
-
-    
-
-    <p>Welcome {{ user.user_first_name }} to the Quests!</p>
+    <br>
+    <p>Welcome <strong>{{ user.user_first_name }}</strong> to <strong>{{current_project.project_name}}</strong>!</p>
     <!-- If you are a part of a team... -->
     {% if current_user_project_team != None %}
-        <p>Your are on the team {{current_user_project_team.team_name}}!!!</p>
+        <p>Your are on the team <strong style = 'color: #42bcf4'>{{current_user_project_team.team_name}}</strong>!</p>
     {% endif %}
-    <p>You have {{ current_user_project_object.points }} points!</p>
+    <p>You have <strong style = 'color:#5cb85c'>{{ current_user_project_object.points }} points!</strong></p>
          
 
+    <div style="float:left;margin-top:25px; width:100%; ">
+            <h4><small>YOUR QUESTS</small></h4>
+      <hr>
+      </div>
+      
     {% for quest in quests %}
-    <br>
-        
-    <form method='GET' onsubmit='return canMoveForward( "{{quest.quest_path_number }}" );'  action='/quest/user_quest_page/{{user.user_ldap}}/{{quest.id}}'>
-
-
+    <div class= "hover13 imgContainer" style = 'display: inline-block; padding:10px'>
+        <form method='GET' onsubmit='return canMoveForward( "{{quest.quest_path_number }}" );'  action='/quest/user_quest_page/{{user.user_ldap}}/{{quest.id}}'>
         <button id = 'image_submit_{{quest.id}}' type='submit'>
             <div id = 'image_cropper'>
                 <img id = 'cropped_image' src="{{quest.quest_picture_url}}" onerror = "show_plain_button_instead('{{quest.id}}')" />
             </div> 
             {{quest.quest_name}} ({{quest.quest_path_number}})
-            </button>
-    
-    
+        </button>
         <button id = 'button_submit_{{quest.id}}'>{{quest.quest_name}} ({{quest.quest_path_number}})</button>
-    
-
-
-
         <!-- Add an icon if you have completed a quest -->
-        
         {% if current_user_project_object.current_quest.quest_path_number > quest.quest_path_number or current_user_project_object.completed_project == True %}
         &#10004;
         {% endif %}
-    </form>
-
+        </form>
+    </div>
     {% endfor %}
+
+    
     <br>
-    <a href = '/quest/user_project_page/{{user.user_ldap}}'>Back to Project Page</a>
+    <br>
+    <br>
+    <a href = '/quest/user_project_page/{{user.user_ldap}}' >Back to Project Page</a>
 
     
     </div>

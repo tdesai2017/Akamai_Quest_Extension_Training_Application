@@ -13,11 +13,11 @@
 
 
     </head>
-    <body>
+    <body id = 'body'>
         <div class="container-fluid" >
             <div class = 'row content'>
 
-            <div class="col-sm-4 sidenav">
+            <div class="col-sm-4 sidenav" >
 
                 <div id = 'constant_top_left'>
                     <img src="https://i.imgur.com/1533RUp.png">
@@ -108,10 +108,9 @@
             <div class="col-sm-8" style = 'position: relative'>
 
                 
-            
-
 
             <h1> {{ current_quest.quest_name }} </h1>
+            <hr>
         <br>
 
         
@@ -120,7 +119,6 @@
                  </div>
 
         <br>
-
 
         
         {% for video in all_videos %}
@@ -144,9 +142,8 @@
         {% csrf_token %}
 
         {% for question, answers, correct_answers in format_2 %}
-            <div class='question'>
-                <p>{{ question.question_text }}</p>
-
+            <div class='question' style = 'padding-bottom: 5px; color:rgb(94, 20, 20)'>
+                <strong >{{ question.question_text }}</strong>
             </div>
                 {% if question.question_type ==  'FR' %}
 
@@ -246,6 +243,7 @@
                         You completed this!
                     </div>
                 {% endif %}
+                <br>
 
             {% endif %}
 
@@ -266,8 +264,27 @@
 </div>
 </div>
 
-<footer class = 'contianer-fluid'>
-   
+
+<footer class="container-fluid">
 </footer>
+
+
+<!-- Script that will automatically make the sidebar and main content height the same -->
+<script>
+        var height_of_main = $('.col-sm-8').height()
+        var height_of_side_bar = $('.col-sm-4.sidenav').height()
+
+        if (height_of_main > height_of_side_bar) {
+            $('.col-sm-4.sidenav').height(height_of_main)
+            console.log (height_of_main)
+        }
+
+        else {
+            $('.col-sm-8').height(height_of_side_bar)
+            console.log (height_of_side_bar)
+
+        }
+            </script>
+
     </body>
 </html>

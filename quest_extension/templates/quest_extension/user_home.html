@@ -5,9 +5,12 @@
     <head>
 	<title>Quest home</title>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	
+    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_home_style.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
     <script>
     function show_plain_button_instead(quest_id){
 
@@ -23,16 +26,92 @@
     
     </script>
 
-    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_home_style.css' %}">
+    
 
-    </head>
+</head>
 
-    <body>
+
+
+<body>
+
+<div class="container-fluid" >
+<div class = 'row content'>
+
+    <div class="col-sm-4 sidenav">
+
+        <div id = 'constant_top_left'>
+            <img src="https://i.imgur.com/1533RUp.png">
+
+            <div id = 'project_name' ><h4>{{current_project.project_name}}</h4>
+                <p id = 't_d_experiment'><small>A Tushar Desai Experiment </small></p>
+            </div>
+        </div>
+
+
+            {% if current_project.project_has_teams %}
+            <br>
+            <br>
+            {% for team_data in all_teams_and_points.items %}
+            <p><strong>{{ team_data.0 }}</strong> </p>
+            <!-- {{team_data.1.0}} / {{team_data.1.1}} -->
+
+            <div class="progress" style="height:40px; margin-bottom: 0px; margin-top: 10px">
+                <div class="progress-bar progress-bar-striped progress-bar-info" role = 'progressbar'style="width:{{team_data.1.2}}%; font-size: 14px; line-height:40px; text-align: left;">
+                    {% if team_data.1.0 > 0 %} 
+                    <strong style = 'margin-left: 10px;'> {{team_data.1.2}}%</strong> <span style = 'font-size: 10px'>({{team_data.1.0}} points) </span>
+                    {% endif %}
+                </div>
+            </div> 
+            <br>
+
+
+            <!-- team_data.0 = team name -->
+            <!-- team_data.1.0 = accumulated points by users on this team -->
+            <!-- team.data.1.1 = total possible points that can be earned by this team if everyone has 100% completion -->
+
+            {% endfor %}
+            {% endif %}
+
+            <h4 style="margin-top:25px;">Recent Points Awarded</h4>
+
+            {% for record in recently_awarded_points %}
+
+            <!-- Record syntax = (+points team_name, user_name, quest_name) -->
+            <h5>
+                <span class="label label-success" >{{record.0}} </span>
+                <strong> &nbsp; {{ record.1 }}</strong> passed the <strong>{{record.2}}</strong> quest!
+            </h5>
+            {% endfor %}
+
+            <h4 style="margin-top:25px;">Individual Leaderboard</h4>
+
+            {% for record in leaderboard %}
+
+            <h5>
+                <!-- I made this first Record = None if there are no teams in the project -->
+            {% if record.0 != None %}
+                <span class="label label-danger" >{{record.0}}</span>
+                <strong> &nbsp; {{ record.1 }}</strong>  ({{record.2}} points)
+
+            {% else %}
+                <span class="label label-danger" >{{record.1}}</span>
+                ({{record.2}} points)
+            {% endif %}
+            </h5>
+
+            {% endfor %}
+            <br>
+           
+            <br>
+    </div>
+        
+    <div class="col-sm-8" style = 'position: relative'>
+
 
 
     <form method = 'GET' action = '/quest/user_project_settings/{{ user.user_ldap }}/{{ current_project.id }}'>
         
-        <button type = 'submit'> Project Settings</button>
+        <button type = 'submit' > Project Settings</button>
 
     </form>
 
@@ -45,10 +124,8 @@
     {% endif %}
 
 
-    <div class = centered>
         <h1>{{ current_project.project_name}}</h1>
         <!-- these two <br>s are here to make the admin home page most closely replicate that of the user home page -->
-    </div>
 
     <div class='container'>
             <div id='my-text-area'>
@@ -58,22 +135,7 @@
 
     <!--format = teamname -> (current points earned by team, total points that can be earned by team)-->
   
-    <div class = centered>
-        {% if current_project.project_has_teams %}
-        <br>
-        <br>
-        <p>Progress:<p>
-        <br>
-        {% for team_data in all_teams_and_points.items %}
-        {{ team_data.0 }}: {{team_data.1.0}} / {{team_data.1.1}}
-        <!-- team_data.0 = team name -->
-        <!-- team_data.1.0 = accumulated points by users on this team -->
-        <!-- team.data.1.1 = total possible points that can be earned by this team if everyone has 100% completion -->
-        <br>
-        <br>
-        <br>
-        {% endfor %}
-        {% endif %}
+        
 
     
 
@@ -93,7 +155,7 @@
 
         <button id = 'image_submit_{{quest.id}}' type='submit'>
             <div id = 'image_cropper'>
-                <img id = 'img' src="{{quest.quest_picture_url}}" onerror = "show_plain_button_instead('{{quest.id}}')" />
+                <img id = 'cropped_image' src="{{quest.quest_picture_url}}" onerror = "show_plain_button_instead('{{quest.id}}')" />
             </div> 
             {{quest.quest_name}} ({{quest.quest_path_number}})
             </button>
@@ -114,7 +176,34 @@
     {% endfor %}
     <br>
     <a href = '/quest/user_project_page/{{user.user_ldap}}'>Back to Project Page</a>
+
+    
     </div>
+    </div>
+    </div>  
+
+    <footer class = 'contianer-fluid'>
+   
+    </footer>
+
+
+
+<!-- Script that will automatically make the sidebar and main content height the same -->
+    <script>
+        var height_of_main = $('.col-sm-8').height()
+        var height_of_side_bar = $('.col-sm-4.sidenav').height()
+
+        if (height_of_main > height_of_side_bar) {
+            $('.col-sm-4.sidenav').height(height_of_main)
+            console.log (height_of_main)
+        }
+
+        else {
+            $('.col-sm-8').height(height_of_side_bar)
+            console.log (height_of_side_bar)
+
+        }
+            </script>
     </body>
     
 </html>

@@ -124,22 +124,24 @@ def validate_admin_access(request, ldap):
 #Checks whether you can go to the next question once you sumbit a new answer
 def go_to_next_quest(current_quest, current_user, current_project):
     num_questions_in_quest = len(Question.objects.filter(quest = current_quest, deleted = False))
-    # all_questions_in_quest = [question for question in Question.objects.filter(quest = current_quest, deleted = False)]
-    current_user_project = UserProject.objects.get(user = current_user, project = current_project)
-    # count_of_correctly_answered_questions = 0
-    # for question in all_questions_in_quest:
-    #     if (CorrectlyAnsweredQuestion.objects.filter(question = question, userproject = current_user_project)):
-    #         count_of_correctly_answered_questions += 1
-            
+    current_user_project = UserProject.objects.get(user = current_user, project = current_project)            
     all_question_ids_in_quest = Question.objects.filter(quest = current_quest).values_list('id', flat = True)
     count_of_correctly_answered_questions = len(CorrectlyAnsweredQuestion.objects.filter(userproject = current_user_project, question__in = all_question_ids_in_quest))
 
+    #If you have completed the quest
     if (count_of_correctly_answered_questions == num_questions_in_quest):
         users_user_project_object = UserProject.objects.get(user = current_user, project = current_project)
         #adds points for the completed quest to the user
         users_user_project_object.points += current_quest.quest_points_earned
         users_user_project_object.save()
         current_quest_num = current_quest.quest_path_number
+
+        completed_quest = CompletedQuest()
+        completed_quest.quest = current_quest
+        completed_quest.userproject = users_user_project_object
+        completed_quest.time_completed = datetime.now()
+        completed_quest.save()
+
         #If next quest exists
         if (Quest.objects.filter(quest_path_number = current_quest_num + 1, project = current_project)):
             next_quest = Quest.objects.get(quest_path_number = current_quest_num + 1, project = current_project)
@@ -558,6 +560,53 @@ def admin_validation(request, ldap, project_id = None, quest_id = None, question
 
     return None
  
+#Finds the top 5 most recently awarded points for this project
+
+def get_recently_awarded_points_format(current_project):
+    format = []
+
+    all_valid_completed_quests = CompletedQuest.objects.filter(userproject__project = current_project).order_by('-time_completed')[:5]
+
+    for completed_quest in all_valid_completed_quests:
+        
+        quest_name = completed_quest.quest.quest_name
+        user_first_name = completed_quest.userproject.user.user_first_name
+        quest_points_earned = completed_quest.quest.quest_points_earned
+        
+
+        #Things are different whether or not there is a team
+        if current_project.project_has_teams:
+            team_name = completed_quest.userproject.team.team_name
+            format.append( ('+' + str(quest_points_earned) +  ' ' + team_name, user_first_name, quest_name)  )
+        else:
+            format.append( ('+' + str(quest_points_earned), user_first_name, quest_name) )
+
+    return format
+
+
+def get_leaderboard_format(current_project):
+    format = []
+    top_user_projects = UserProject.objects.filter(project = current_project).order_by('-points')[:5]
+
+    for user_project in top_user_projects:
+
+        user_first_name = user_project.user.user_first_name
+        user_last_name = user_project.user.user_last_name
+        points = user_project.points
+
+
+        if current_project.project_has_teams:
+            team_name = user_project.team.team_name
+            format.append( (team_name, user_first_name + ' ' + user_last_name, points)  )
+        else:
+            format.append( (None, user_first_name + ' ' + user_last_name, points) )
+
+    return (format)
+    
+
+
+    
+
 
 
 

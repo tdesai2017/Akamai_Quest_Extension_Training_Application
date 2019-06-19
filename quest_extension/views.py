@@ -121,7 +121,6 @@ def create_api_question (request, ldap, quest_id):
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
-
         messages.warning(request, a[1])
         return a[0]
 
@@ -645,8 +644,8 @@ def get_user_home(request, ldap, project_id):
     quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
     current_user_project_team = current_user_project_object.team
     all_teams_and_points = get_team_points_format(current_project)
-    #Points information for teams
-    
+    recently_awarded_points = get_recently_awarded_points_format(current_project)
+    leaderboard = get_leaderboard_format(current_project)    
 
     context = {'quests':quests, 
                 'user': user, 
@@ -654,6 +653,8 @@ def get_user_home(request, ldap, project_id):
                 'current_user_project_object': current_user_project_object, 
                 'current_user_project_team': current_user_project_team,
                 'all_teams_and_points': all_teams_and_points,
+                'recently_awarded_points': recently_awarded_points,
+                'leaderboard': leaderboard,
                 }
     return render(request, 'quest_extension/user_home.html', context)
 
@@ -723,6 +724,9 @@ def get_user_quest_page(request, ldap, quest_id):
 
     question_to_answers = json.dumps(question_to_answers)
     all_teams_and_points = get_team_points_format(current_project)
+    recently_awarded_points = get_recently_awarded_points_format(current_project)
+    leaderboard = get_leaderboard_format(current_project)
+
 
 
     context = {'current_quest': current_quest, 
@@ -733,7 +737,9 @@ def get_user_quest_page(request, ldap, quest_id):
             'all_videos': all_videos,
             'question_to_answers': question_to_answers,
             'all_teams_and_points': all_teams_and_points,
-            'current_project': current_project}
+            'current_project': current_project,
+            'recently_awarded_points': recently_awarded_points,
+            'leaderboard': leaderboard}
 
 
     return render(request, 'quest_extension/user_quest_page.html', context)
@@ -1029,7 +1035,7 @@ def add_new_project(request, ldap):
             
             teams = []
             #if the project will have teams, detail this in the project model
-            if 'teams' in post_request.keys() and post_request['teams'] != '':
+            if 'teams' in post_request.keys() and post_request['teams'].strip() != '':
                 teams = post_request['teams'].split('\n')
                 #Removes blank teams
                 teams = [x for x in teams if len(x.strip())>0]

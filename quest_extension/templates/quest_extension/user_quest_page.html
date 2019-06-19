@@ -31,28 +31,60 @@
                     {% if current_project.project_has_teams %}
                     <br>
                     <br>
-                    <p>Progress:<p>
-                    <br>
                     {% for team_data in all_teams_and_points.items %}
-                    {{ team_data.0 }} {{team_data.1.0}} / {{team_data.1.1}}
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-striped progress-bar-info" role="progressbar" style = 'width: {{team_data.1.2}}%'  aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"> {{team_data.1.0}} points </div>
-                    </div>
+                    <p><strong>{{ team_data.0 }}</strong> </p>
+                    <!-- {{team_data.1.0}} / {{team_data.1.1}} -->
+
+                    <div class="progress" style="height:40px; margin-bottom: 0px; margin-top: 10px">
+                        <div class="progress-bar progress-bar-striped progress-bar-info" role = 'progressbar'style="width:{{team_data.1.2}}%; font-size: 14px; line-height:40px; text-align: left;">
+                            {% if team_data.1.0 > 0 %} 
+                            <strong style = 'margin-left: 10px;'> {{team_data.1.2}}%</strong> <span style = 'font-size: 10px'>({{team_data.1.0}} points) </span>
+                            {% endif %}
+                        </div>
+                    </div> 
+                    <br>
+
+
                     <!-- team_data.0 = team name -->
                     <!-- team_data.1.0 = accumulated points by users on this team -->
                     <!-- team.data.1.1 = total possible points that can be earned by this team if everyone has 100% completion -->
-                    
-                    <br>
+
                     {% endfor %}
                     {% endif %}
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
+
+                    <h4 style="margin-top:25px;">Recent Points Awarded</h4>
+
+                    {% for record in recently_awarded_points %}
+
+                    <!-- Record syntax = (+points team_name, user_name, quest_name) -->
+                    <h5>
+                        <span class="label label-success" >{{record.0}} </span>
+                        <strong> &nbsp; {{ record.1 }}</strong> passed the <strong>{{record.2}}</strong> quest!
+                    </h5>
+                    {% endfor %}
+
+                    <h4 style="margin-top:25px;">Individual Leaderboard</h4>
+
+                    {% for record in leaderboard %}
+
+                    <h5>
+                        <!-- I made this first Record = None if there are no teams in the project -->
+                    {% if record.0 != None %}
+                        <span class="label label-danger" >{{record.0}}</span>
+                        <strong> &nbsp; {{ record.1 }}</strong>  ({{record.2}} points)
+
+                    {% else %}
+                        <span class="label label-danger" >{{record.1}}</span>
+                        ({{record.2}} points)
+                    {% endif %}
+                    </h5>
+
+                    {% endfor %}
+
+
+
+
+
                     <br>
                     <br>
                     <br>
@@ -68,25 +100,25 @@
 
 
             </div>
+
+
+
+
+
             <div class="col-sm-8" style = 'position: relative'>
 
                 
             
 
 
-        <!-- <div class = centered> -->
             <h1> {{ current_quest.quest_name }} </h1>
         <br>
-        <!-- </div>     -->
 
         
-        <!-- <div class='container'> -->
                 <div id='my-text-area'>
                     {{ current_quest.quest_description|safe }} 
                  </div>
-            <!-- </div> -->
 
-        <!-- <div class = centered> -->
         <br>
 
 
@@ -229,7 +261,6 @@
         <form id='home' action = '/quest/user_home/{{ ldap }}/{{current_project_id}}' method='GET'></form>
         
         <button form = 'home' style='margin-top:5px;' type = submit>Home</button>
-    <!-- </div> -->
 
 </div>
 </div>

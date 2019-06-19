@@ -84,12 +84,14 @@ class UserProject(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null = True)
     archived = models.BooleanField(default = False)
 
-
+class CompletedQuest(models.Model):
+    quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
+    userproject = models.ForeignKey(UserProject, on_delete=models.CASCADE)
+    time_completed = models.DateTimeField(null = True)
 
 class CorrectlyAnsweredQuestion(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     userproject = models.ForeignKey(UserProject, on_delete=models.CASCADE, null=True)
-
     
 
 class Video(models.Model):

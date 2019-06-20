@@ -17,7 +17,7 @@
         <div class="container-fluid" >
             <div class = 'row content'>
 
-            <div class="col-sm-4 sidenav" >
+            <div class="col-sm-4 sidenav">
 
                 <div id = 'constant_top_left'>
                     <img src="https://i.imgur.com/1533RUp.png">
@@ -82,30 +82,11 @@
                     {% endfor %}
 
 
-
-
-
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-
-
             </div>
 
 
 
-
-
-            <div class="col-sm-8" style = 'position: relative'>
+            <div class="col-sm-8" style = 'margin-bottom: 500px''>
 
                 
 
@@ -271,20 +252,18 @@
 
 <!-- Script that will automatically make the sidebar and main content height the same -->
 <script>
-        var height_of_main = $('.col-sm-8').height()
-        var height_of_side_bar = $('.col-sm-4.sidenav').height()
+        var height_of_main = $('.col-sm-8').outerHeight(true)
+        var height_of_side_bar = $('.col-sm-4.sidenav').outerHeight(true)
+        
 
         if (height_of_main > height_of_side_bar) {
             $('.col-sm-4.sidenav').height(height_of_main)
-            console.log (height_of_main)
         }
 
         else {
             $('.col-sm-8').height(height_of_side_bar)
-            console.log (height_of_side_bar)
-
         }
-            </script>
+    </script>
 
     </body>
 </html>

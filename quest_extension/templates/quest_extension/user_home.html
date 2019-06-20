@@ -98,12 +98,10 @@
             </h5>
 
             {% endfor %}
-            <br>
-           
-            <br>
+            
     </div>
         
-    <div class="col-sm-8">
+    <div class="col-sm-8" style = 'margin-bottom: 500px'>
 
 
     <form style = 'float:right' method = 'GET' action = '/quest/user_project_settings/{{ user.user_ldap }}/{{ current_project.id }}'>
@@ -169,8 +167,9 @@
     <br>
     <br>
     <br>
-    <a href = '/quest/user_project_page/{{user.user_ldap}}' >Back to Project Page</a>
+    <a href = '/quest/user_project_page/{{user.user_ldap}}'>Back to Project Page</a>
 
+    
     
     </div>
     </div>
@@ -184,18 +183,18 @@
 
 <!-- Script that will automatically make the sidebar and main content height the same -->
     <script>
-        var height_of_main = $('.col-sm-8').height()
-        var height_of_side_bar = $('.col-sm-4.sidenav').height()
+        var height_of_main = $('.col-sm-8').outerHeight(true)
+        var height_of_side_bar = $('.col-sm-4.sidenav').outerHeight()
+
+        console.log(height_of_main)
+        console.log(height_of_side_bar)
 
         if (height_of_main > height_of_side_bar) {
             $('.col-sm-4.sidenav').height(height_of_main)
-            console.log (height_of_main)
         }
 
         else {
             $('.col-sm-8').height(height_of_side_bar)
-            console.log (height_of_side_bar)
-
         }
             </script>
     </body>

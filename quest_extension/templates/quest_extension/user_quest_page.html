@@ -80,6 +80,7 @@
                     </h5>
 
                     {% endfor %}
+                    <br>
 
 
             </div>
@@ -254,7 +255,6 @@
 <script>
         var height_of_main = $('.col-sm-8').outerHeight(true)
         var height_of_side_bar = $('.col-sm-4.sidenav').outerHeight(true)
-        
 
         if (height_of_main > height_of_side_bar) {
             $('.col-sm-4.sidenav').height(height_of_main)
@@ -262,8 +262,13 @@
 
         else {
             $('.col-sm-8').height(height_of_side_bar)
-        }
-    </script>
+            
+            $('.col-sm-8').css('margin-bottom', '0px');
+
+
+            }
+
+            </script>
 
     </body>
 </html>

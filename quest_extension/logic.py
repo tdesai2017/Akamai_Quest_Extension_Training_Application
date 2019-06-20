@@ -201,7 +201,7 @@ def can_admin_access_project(ldap, project_id):
 #Gets the team and points format that is used in the admin and user home pages
 def get_team_points_format(current_project):
     all_teams_and_points = OrderedDict()
-    all_teams_in_project = Team.objects.filter(project = current_project)
+    all_teams_in_project = Team.objects.filter(project = current_project).order_by('team_name')
     for team in all_teams_in_project:
         current_points_for_team = UserProject.objects.filter(team = team).aggregate(points = Sum('points'))
         current_points_for_team = current_points_for_team['points']

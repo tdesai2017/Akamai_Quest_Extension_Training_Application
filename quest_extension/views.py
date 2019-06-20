@@ -1982,7 +1982,7 @@ def get_admin_project_settings_view_only(request, ldap, project_id):
     list_of_admins = AdminProject.objects.filter(project = current_project).values_list('admin', flat = True)
     list_of_admins = Admin.objects.filter(pk__in=list_of_admins)
     has_teams = current_project.project_has_teams
-    list_of_teams = Team.objects.filter(project = current_project)
+    list_of_teams = Team.objects.filter(project = current_project).order_by('team_name')
     count_of_teams = len(list_of_teams)
 
     context = {

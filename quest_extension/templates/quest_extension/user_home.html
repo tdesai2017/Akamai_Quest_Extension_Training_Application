@@ -96,8 +96,8 @@
                 ({{record.2}} points)
             {% endif %}
             </h5>
-
             {% endfor %}
+            <br>
             
     </div>
         
@@ -184,7 +184,7 @@
 <!-- Script that will automatically make the sidebar and main content height the same -->
     <script>
         var height_of_main = $('.col-sm-8').outerHeight(true)
-        var height_of_side_bar = $('.col-sm-4.sidenav').outerHeight()
+        var height_of_side_bar = $('.col-sm-4.sidenav').outerHeight(true)
 
         console.log(height_of_main)
         console.log(height_of_side_bar)
@@ -195,7 +195,16 @@
 
         else {
             $('.col-sm-8').height(height_of_side_bar)
-        }
+            
+            $('.col-sm-8').css('margin-bottom', '0px');
+
+
+            }
+        console.log($('.col-sm-8').outerHeight(true))
+        console.log([$('.col-sm-4.sidenav').height(), $('.col-sm-8').height()] )
+
+
+
             </script>
     </body>
     

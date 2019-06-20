@@ -87,7 +87,7 @@
 
 
 
-            <div class="col-sm-8" style = 'margin-bottom: 500px''>
+        <div class="col-sm-8" style = 'margin-bottom: 900px'>
 
                 
 
@@ -252,9 +252,12 @@
 
 
 <!-- Script that will automatically make the sidebar and main content height the same -->
-<script>
+    <script>
         var height_of_main = $('.col-sm-8').outerHeight(true)
         var height_of_side_bar = $('.col-sm-4.sidenav').outerHeight(true)
+
+        console.log(height_of_main)
+        console.log(height_of_side_bar)
 
         if (height_of_main > height_of_side_bar) {
             $('.col-sm-4.sidenav').height(height_of_main)
@@ -267,6 +270,10 @@
 
 
             }
+        console.log($('.col-sm-8').outerHeight(true))
+        console.log([$('.col-sm-4.sidenav').height(), $('.col-sm-8').height()] )
+
+
 
             </script>
 

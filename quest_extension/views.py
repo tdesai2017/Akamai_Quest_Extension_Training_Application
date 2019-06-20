@@ -1139,6 +1139,10 @@ def admin_unarchive_project(request, ldap):
 ######################################
 def get_user_project_page(request, ldap):
 
+    print (validate_user_access(request, ldap))
+    print (request.session)
+
+
     if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
 

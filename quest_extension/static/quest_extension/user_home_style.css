@@ -69,6 +69,13 @@
 
     
 
+    .inlay{
+        position:absolute;
+        bottom:27px;
+        right:0px;
+        z-index:1;
+        }
+
 /* Message classes */
 .success {
     color: lightgreen;

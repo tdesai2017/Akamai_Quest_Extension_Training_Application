@@ -30,7 +30,7 @@ class Quest(models.Model):
     time_modified = models.DateTimeField(auto_now=True)
     #Path number determines the order that you want quests to be accessed
     quest_path_number = models.IntegerField()
-    quest_picture_url = models.CharField(max_length = 10000, blank=True, default = '')
+    quest_picture_url = models.CharField(max_length = 100000, blank=True, default = '')
 
 class Question(models.Model):
     QUESTION_TYPES = (('MC', 'MC'), ('FR', 'FR'), ('API', 'API'))

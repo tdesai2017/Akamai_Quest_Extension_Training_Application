@@ -148,17 +148,33 @@
     {% for quest in quests %}
     <div class= "hover13 imgContainer" style = 'display: inline-block; padding:10px'>
         <form method='GET' onsubmit='return canMoveForward( "{{quest.quest_path_number }}" );'  action='/quest/user_quest_page/{{user.user_ldap}}/{{quest.id}}'>
+        
         <button id = 'image_submit_{{quest.id}}' type='submit'>
             <div id = 'image_cropper'>
                 <img id = 'cropped_image' src="{{quest.quest_picture_url}}" onerror = "show_plain_button_instead('{{quest.id}}')" />
+                
+                {% if current_user_project_object.current_quest.quest_path_number > quest.quest_path_number or current_user_project_object.completed_project == True %}
+                <img id="q0" class="inlay" src="https://i.imgur.com/dwnpzfw.png" style="display: block;">
+                {% endif %}
+
             </div> 
             {{quest.quest_name}} ({{quest.quest_path_number}})
         </button>
-        <button id = 'button_submit_{{quest.id}}'>{{quest.quest_name}} ({{quest.quest_path_number}})</button>
-        <!-- Add an icon if you have completed a quest -->
-        {% if current_user_project_object.current_quest.quest_path_number > quest.quest_path_number or current_user_project_object.completed_project == True %}
-        &#10004;
-        {% endif %}
+
+
+        <!-- This is what is shown if there is no picture associated with a quest -->
+        <div id = 'button_submit_{{quest.id}}'>
+            <button >
+                {{quest.quest_name}} ({{quest.quest_path_number}})
+            </button>
+            <!-- Add an icon if you have completed a quest -->
+            {% if current_user_project_object.current_quest.quest_path_number > quest.quest_path_number or current_user_project_object.completed_project == True %}
+                &#10004;
+            {% endif %}
+        </div>
+
+
+
         </form>
     </div>
     {% endfor %}

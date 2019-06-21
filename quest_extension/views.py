@@ -154,6 +154,11 @@ def get_admin_home_editable(request, ldap, project_id):
     #page
     request.session['view_or_editable'] = 'editable'
 
+    if 'view_or_editable' not in request.session.keys():
+        print('its not here cheif')
+    else:
+        print ('HALOOOON',  request.session['view_or_editable'])
+
         
     current_admin = Admin.objects.get(admin_ldap = ldap)
     quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
@@ -238,6 +243,12 @@ def admin_update_project_description(request, ldap, project_id):
 
 def admin_update_project_name (request, ldap, project_id):
 
+    if 'view_or_editable' not in request.session.keys():
+        print('its not here cheif')
+    else:
+        print ('HALOOOON',  request.session['view_or_editable'])
+
+
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
@@ -258,19 +269,26 @@ def admin_update_project_name (request, ldap, project_id):
 
 
 
-def admin_update_quest_picture (request, ldap, quest_id):
-
-    current_quest = Quest.objects.get(id = quest_id)
-    project_id = current_quest.project.id
-
+def admin_update_quest_picture (request, ldap, project_id):
 
     #Validates if an admin can access this 
-    a = admin_validation(request, ldap, quest_id = quest_id) 
+    a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
         messages.warning(request, a[1])
         return a[0]
 
+    current_project = Project.objects.get(id = project_id)
+
     if request.method == 'POST':
+
+        quest_path_number = request.POST['quest_path_number']
+
+        if not Quest.objects.filter(project = current_project, quest_path_number = quest_path_number):
+            messages.error(request, 'Sorry, there is no quest in this project with this path number')
+            return redirect_to_correct_home_page(request.session['view_or_editable'], ldap, project_id)
+
+
+        current_quest = Quest.objects.get(project = current_project, quest_path_number = quest_path_number)
         current_quest.quest_picture_url = request.POST['new_picture_url']
         current_quest.save()
         messages.success(request, 'New Quest Picture Saved!')

@@ -9,8 +9,8 @@ function show(){
     }
 
     function show_update_picture(quest_id){
-        document.getElementById("edit_picture_container_" + quest_id).style.display = "inline";
-        document.getElementById('edit_picture_button_' + quest_id).style.display = 'none';
+        document.getElementById("edit_picture_container").style.display = "inline";
+        document.getElementById('edit_picture_button').style.display = 'none';
     }
 
     function show_plain_button_instead(quest_id){

@@ -50,24 +50,35 @@
 {% endblock %}
 
 
+
+
+
+
+
 {% block redirect_to_quest_page %}
 
-        <br>
-    <form  method='GET' action='/quest/admin_quest_page_editable/{{current_admin.admin_ldap}}/{{quest.id}}'>
+
+<div class= "hover13 imgContainer" style = 'display: inline-block; padding:10px'>
+        <form method='GET'  action='/quest/admin_quest_page_editable/{{current_admin.admin_ldap}}/{{quest.id}}'>
+        
         <button id = 'image_submit_{{quest.id}}' type='submit'>
-        <div id = 'image_cropper'>
-            <img id = 'img' src="{{quest.quest_picture_url}}" onerror = "show_plain_button_instead('{{quest.id}}')" />
-        </div> 
-        {{quest.quest_name}} ({{quest.quest_path_number}})
+            <div id = 'image_cropper'>
+                <img id = 'cropped_image' src="https://i.imgur.com/zInrCXu.png
+                " onerror = "show_plain_button_instead('{{quest.id}}')" />
+            </div> 
+            {{quest.quest_name}} ({{quest.quest_path_number}})
         </button>
 
 
-        <button id = 'button_submit_{{quest.id}}'>{{quest.quest_name}} ({{quest.quest_path_number}})</button>
-
-    </form>
-    <br>
+        <!-- This is what is shown if there is no picture associated with a quest -->
+        <div id = 'button_submit_{{quest.id}}'>
+            <button >
+                {{quest.quest_name}} ({{quest.quest_path_number}})
+            </button>
+           
+        </div>
+        </form>
+    </div> 
 
     
 {% endblock %}
-
-

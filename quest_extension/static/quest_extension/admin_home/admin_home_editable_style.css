@@ -31,7 +31,7 @@ div[id*="edit_picture_button"]{
 
 }
 
-#edit_name_container, div[id*="edit_picture_container"]{
+#edit_name_container, #edit_picture_container{
     display: none;
 }
 

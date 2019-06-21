@@ -1,148 +1,275 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-    
+
     <head>
 	<title>Quest home</title>
-    {% block style_js %}
-    {% endblock %}
-
-   
-
+	<meta charset="utf-8">
+    
     <script src="{% static 'quest_extension/admin_home/admin_home_base_js.js' %}"></script>   
     <script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
     <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script>
+    {% block style_js %}
+    {% endblock %}
+    
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
 
-</head>
+    <script>
+    function show_plain_button_instead(quest_id){
+
+        document.getElementById('image_submit_' + quest_id).style.display = 'none'
+        document.getElementById('button_submit_'+ quest_id).style.display = 'inline'
+    }
+
     
+    
+    </script>
 
-    <body>
+</head>
 
-        {% for message in messages %}
-        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-            <span>{{message}}</span>
+
+
+<body>
+
+<div class="container-fluid" >
+<div class = 'row content'>
+
+    <div class="col-sm-4 sidenav">
+
+        <div id = 'constant_top_left'>
+            <img src="https://i.imgur.com/1533RUp.png">
+
+            <div id = 'project_name' ><h4>{{current_project.project_name}}</h4>
+                <p id = 't_d_experiment'><small>A Tushar Desai Experiment </small></p>
+            </div>
         </div>
-        {% endfor %}
+
+
+            {% if current_project.project_has_teams %}
+            <br>
+            <br>
+            {% for team_data in all_teams_and_points.items %}
+            <p><strong>{{ team_data.0 }}</strong> </p>
+            <!-- {{team_data.1.0}} / {{team_data.1.1}} -->
+
+            <div class="progress" style="height:40px; margin-bottom: 0px; margin-top: 10px">
+                <div class="progress-bar progress-bar-striped progress-bar-info" role = 'progressbar'style="width:{{team_data.1.2}}%; font-size: 14px; line-height:40px; text-align: left;">
+                    {% if team_data.1.0 > 0 %} 
+                    <strong style = 'margin-left: 10px;'> {{team_data.1.2}}%</strong> <span style = 'font-size: 10px'>({{team_data.1.0}} points) </span>
+                    {% endif %}
+                </div>
+            </div> 
+            <br>
+
+
+            <!-- team_data.0 = team name -->
+            <!-- team_data.1.0 = accumulated points by users on this team -->
+            <!-- team.data.1.1 = total possible points that can be earned by this team if everyone has 100% completion -->
+
+            {% endfor %}
+            {% endif %}
+
+            <h4 style="margin-top:25px;">Recent Points Awarded</h4>
+
+            {% for record in recently_awarded_points %}
+
+            <!-- Record syntax = (+points team_name, user_name, quest_name) -->
+            <h5>
+                <span class="label label-success" >{{record.0}} </span>
+                <strong> &nbsp; {{ record.1 }}</strong> passed the <strong>{{record.2}}</strong> quest!
+            </h5>
+            {% endfor %}
+
+            <h4 style="margin-top:25px;">Individual Leaderboard</h4>
+
+            {% for record in leaderboard %}
+
+            <h5>
+                <!-- I made this first Record = None if there are no teams in the project -->
+            {% if record.0 != None %}
+                <span class="label label-danger" >{{record.0}}</span>
+                <strong> &nbsp; {{ record.1 }}</strong>  ({{record.2}} points)
+
+            {% else %}
+                <span class="label label-danger" >{{record.1}}</span>
+                ({{record.2}} points)
+            {% endif %}
+            </h5>
+            {% endfor %}
+            <br>
+            
+    </div>
+        
+    <div class="col-sm-8" style = 'margin-bottom: 500px'>
+
+            {% for message in messages %}
+            <div class="alert {{ message.tags }} alert-dismissible show" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <span>{{message}}</span>
+            </div>
+          {% endfor %}
+
+    <div style = 'float:right'>
+        <form  method = 'GET' action = '/quest/admin_project_info_page/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+            
+            <button type = 'submit'> Project Info</button>
+
+        </form>
 
         {% block project_settings %}
         {% endblock %}
-
-        <form method = 'GET' action = '/quest/admin_project_info_page/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <button type = 'submit'> Project Info</button>
-        </form>
-
-    <div class='centered'>
+    </div>
+    
         <h1>{{ current_project.project_name}}</h1>
 
         <div id = 'edit_name_button'>
-                <button onclick="show_update_name();" id = 'edit_name_button'> Edit Name </button>
-                </div>
-                <div id = 'edit_name_container'>
-                <form method = 'POST' action = '/quest/admin_update_project_name/{{current_admin.admin_ldap}}/{{current_project.id}}'> 
-                    {% csrf_token %}
-                    <input type ='text' name = 'project_name' value = '{{current_project.project_name}}'>
-                    <button type = 'submit'> Update Project Name</button>
-                </form>
-                </div>
-    </div>
+            <button onclick="show_update_name();" id = 'edit_name_button'> Edit Name </button>
+        </div>
+
+        <div id = 'edit_name_container'>
+            <form method = 'POST' action = '/quest/admin_update_project_name/{{current_admin.admin_ldap}}/{{current_project.id}}'> 
+                {% csrf_token %}
+                <input type ='text' name = 'project_name' value = '{{current_project.project_name}}'>
+                <button type = 'submit'> Update Project Name</button>
+            </form>
+        </div>
+
+        <hr>
+        <!-- these two <br>s are here to make the admin home page most closely replicate that of the user home page -->
 
     <div class='container'>
-        <div id='my-text-area'>
-            {{ current_project.project_description|safe }} 
-         </div>
-    </div>
-    
-    
-    <div id = 'edit_description_container'>
-
-            <form method='POST' id = 'test_form' action = "/quest/admin_update_project_description/{{current_admin.admin_ldap}}/{{current_project.id}}">
-                    {% csrf_token %}
-                    Project Description: 
-                    <br>
-                    <div id = 'edit-my-text-area'>
-                        <textarea id="area1" name="project_description" form = 'test_form'>
-                            {{current_project.project_description|safe}}
-                        </textarea>
-                    </div>
-                <br>
-                    <input type=submit name="submit" value="Update Project Description" onclick="nicEditors.findEditor('area1').saveContent();">
-            </form>
-    </div>
-    <div id = 'edit_description_button'>
-        <br>
-        <button onclick="show();" >Edit Description</button>
-    </div>
-    
-    <div class='centered'>
-         {% if current_project.project_has_teams %}
-        <br>
-        <br>
-        <p>Progress:<p>
-        <br>
-        {% for team_data in all_teams_and_points.items %}
-        {{ team_data.0 }}: {{team_data.1.0}} / {{team_data.1.1}}
-        <!-- team_data.0 = team name -->
-        <!-- team_data.1.0 = accumulated points by users on this team -->
-        <!-- team.data.1.1 = total possible points that can be earned by this team if everyone has 100% completion -->
-        <br>
-        <br>
-        {% endfor %}
-        {% endif %}
-     
-         
-
-
-
-        <p>Welcome Admin to the Quests!</p>
-        {% if current_project.project_has_teams %}
-        <p> You are on the team ___!!!</p>
-        {% endif %}
-        <p>You have ___ points!</p>
-            
-        
-        <div class = "wrapper">
-            {% block quest_create_form %}
-            {% endblock %}
+            <div id='my-text-area'>
+                {{ current_project.project_description|safe }} 
+             </div>
         </div>
-        
-        {% for quest in quests %}
-        
-
-        {% block redirect_to_quest_page %}
-        {% endblock %}
-
-        <div id = 'edit_picture_container_{{quest.id}}'>
-                <form method='POST' id = 'test_form' action = "/quest/admin_update_quest_picture/{{current_admin.admin_ldap}}/{{quest.id}}">
+    
+        <div id = 'edit_description_container'>
+                <form method='POST' id = 'test_form' action = "/quest/admin_update_project_description/{{current_admin.admin_ldap}}/{{current_project.id}}">
                         {% csrf_token %}
+                        Project Description: 
                         <br>
-                        Picture URL: <input type = 'text' name = 'new_picture_url' value = '{{quest.quest_picture_url}}'>
-                        <button type = submit > Update Picture</button>
-        </form>
-
+                        <div id = 'edit-my-text-area'>
+                            <textarea id="area1" name="project_description" form = 'test_form'>
+                                {{current_project.project_description|safe}}
+                            </textarea>
+                        </div>
+                    <br>
+                        <input type=submit name="submit" value="Update Project Description" onclick="nicEditors.findEditor('area1').saveContent();">
+                </form>
         </div>
-            <button id = 'edit_picture_button_{{quest.id}}' onclick="show_update_picture('{{quest.id}}');"> Edit Picture</button>
-        <br>
+        <div id = 'edit_description_button'>
+            <br>
+            <button onclick="show();" >Edit Description</button>
+        </div>
 
-        {% endfor %}
+  
+    <br>
+    <p>Welcome <strong>___</strong> to <strong>{{current_project.project_name}}</strong>!</p>
+    <!-- If you are a part of a team... -->
+    {% if current_project.project_has_teams %}
+        <p>Your are on the team <strong style = 'color: #42bcf4'>___</strong>!</p>
+    {% endif %}
+
+    <p>You have <strong style = 'color:#5cb85c'>___ points!</strong></p>
+
+   
+
+    <div style="float:left;margin-top:25px; width:100%; ">
+            <h4><small>YOUR QUESTS</small></h4>
+
+            <div class = "wrapper">
+                    {% block quest_create_form %}
+                    {% endblock %}
+                </div>
+            
+      <hr>
+      </div>
+      
+    {% for quest in quests %}
+    <div class= "hover13 imgContainer" style = 'display: inline-block; padding:10px'>
+        <form method='GET'  action='/quest/user_quest_page/{{user.user_ldap}}/{{quest.id}}'>
+        
+        <button id = 'image_submit_{{quest.id}}' type='submit'>
+            <div id = 'image_cropper'>
+                <img id = 'cropped_image' src="{{quest.quest_picture_url}}" onerror = "show_plain_button_instead('{{quest.id}}')" />
+                
+                {% if current_user_project_object.current_quest.quest_path_number > quest.quest_path_number or current_user_project_object.completed_project == True %}
+                <img id="q0" class="inlay" src="https://i.imgur.com/dwnpzfw.png" style="display: block;">
+                {% endif %}
+
+            </div> 
+            {{quest.quest_name}} ({{quest.quest_path_number}})
+        </button>
+
+
+        <!-- This is what is shown if there is no picture associated with a quest -->
+        <div id = 'button_submit_{{quest.id}}'>
+            <button >
+                {{quest.quest_name}} ({{quest.quest_path_number}})
+            </button>
+            <!-- Add an icon if you have completed a quest -->
+            {% if current_user_project_object.current_quest.quest_path_number > quest.quest_path_number or current_user_project_object.completed_project == True %}
+                &#10004;
+            {% endif %}
+        </div>
+
+
+
+        </form>
+    </div>
+    {% endfor %}
+
+    
+    <br>
+    <br>
+    <br>
+    {% block back %}
+    <a href= '/quest/admin_project_page/{{current_admin.admin_ldap}}'>Back to Projects Page</a>
+    {% endblock %}
+    
+    
+    </div>
+    </div>
+    </div>  
+
+    <footer class = 'contianer-fluid'>
+   
+    </footer>
+
+
+
+<!-- Script that will automatically make the sidebar and main content height the same -->
+    <script>
+        var height_of_main = $('.col-sm-8').outerHeight(true)
+        var height_of_side_bar = $('.col-sm-4.sidenav').outerHeight(true)
+
+       
+
+        if (height_of_main > height_of_side_bar) {
+            $('.col-sm-4.sidenav').height(height_of_main)
+        }
+
+        else {
+            $('.col-sm-8').height(height_of_side_bar)
+            
+            $('.col-sm-8').css('margin-bottom', '0px');
+
+
+            }
         
 
 
-        <br>
-        {% block back %}
-        <a href= '/quest/admin_project_page/{{current_admin.admin_ldap}}'>Back to Projects Page</a>
-        {% endblock %}
 
-    </div>
+            </script>
     </body>
-    
     
 </html>

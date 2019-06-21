@@ -1,5 +1,7 @@
 {% extends 'quest_extension/admin_home_base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
+
 
 {% block style_js %}
 
@@ -19,11 +21,11 @@
 
 
 {% block quest_create_form %}
-<div id = "new_quest">
+<div id = "new_quest" >
     <br>
     <form method='POST' id = 'new_quest_form' action = "/quest/save_new_quest/{{current_admin.admin_ldap}}/{{current_project.id}}">
             {% csrf_token %}
-            {{ quest_form }}
+            {{ quest_form|crispy }}
             <br>
             Quest Description: 
 

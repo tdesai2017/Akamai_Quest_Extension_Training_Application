@@ -1,5 +1,4 @@
 
-
 .container {
     padding-top: 3%;
     width: 100%;
@@ -28,6 +27,14 @@
     overflow: hidden;
     border-radius: 50%;
 }
+
+#img {
+    display: inline;
+    margin: 0 auto;
+    height: 100%;
+    width: auto;
+}
+
 
  #cropped_image {
     display: inline;
@@ -75,16 +82,3 @@
         right:0px;
         z-index:1;
         }
-
-/* Message classes */
-.success {
-    color: lightgreen;
-}
-
-.warning {
-    color: orange;
-}
-
-.error {
-    color: red;
-}

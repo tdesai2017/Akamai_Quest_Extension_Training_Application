@@ -160,13 +160,17 @@ def get_admin_home_editable(request, ldap, project_id):
     quest_form = QuestForm()
     #Only display all_teams_and_points in template if this project does in face use teams
     all_teams_and_points = get_team_points_format(current_project)
+    recently_awarded_points = get_recently_awarded_points_format(current_project)
+    leaderboard = get_leaderboard_format(current_project)
 
     
     context = {'quests':quests, 
     'quest_form': quest_form, 
     'current_project': current_project, 
     'current_admin': current_admin, 
-    'all_teams_and_points': all_teams_and_points
+    'all_teams_and_points': all_teams_and_points,
+    'recently_awarded_points': recently_awarded_points,
+    'leaderboard': leaderboard
     }
     return render(request, 'quest_extension/admin_home_editable.html', context)
 
@@ -294,11 +298,15 @@ def get_admin_home_view_only(request, ldap, project_id):
     current_project = Project.objects.get(id = project_id)
     quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
     all_teams_and_points = get_team_points_format(current_project)
+    recently_awarded_points = get_recently_awarded_points_format(current_project)
+    leaderboard = get_leaderboard_format(current_project)
 
     context = {'quests':quests,
-     'current_project': current_project,
-     'current_admin': current_admin,
-      'all_teams_and_points': all_teams_and_points}
+    'current_project': current_project,
+    'current_admin': current_admin,
+    'all_teams_and_points': all_teams_and_points,
+    'recently_awarded_points': recently_awarded_points,
+    'leaderboard': leaderboard}
     return render(request, 'quest_extension/admin_home_view_only.html', context)
 
 ######################################

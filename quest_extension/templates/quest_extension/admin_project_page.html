@@ -1,153 +1,259 @@
+
 {% load static %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-    
-    <head>
-	<title>Quest home</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+   
+
+    <title>Project Page</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/album/">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_project_page_style.css' %}">
     
     <script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/admin_project_page/admin_project_page_style.css' %}">
     <script src= "{% static 'quest_extension/admin_project_page/admin_project_page_js.js'%}"></script> 
+
+    <script>
+    function show_create_project_form(){
+        document.getElementById("create_project_button").style.display = "none";
+        document.getElementById("create_project_form").style.display = "inline"
+        document.getElementById("join_unarchive_button").style.display = "none";
+
+      } 
+
+      function show_join_unarchive_form(){
+        document.getElementById("join_unarchive_button").style.display = "none";
+        document.getElementById("join_unarchive_form").style.display = "inline"
+        document.getElementById("create_project_button").style.display = "none";
+
+      } 
+      
+    </script>
     
-    </head>
+  </head>
 
-    <body>
+  <body>
 
-    {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+{% for message in messages %}
+  <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+    {{ message }}
+  </div>
+{% endfor %}
 
-    <ul>
-        <li id = 'invalid_admin_pin'> - Please use a different admin pin for security purposes </li>
-    </ul>
-    <ul>
-        <li id = 'invalid_random_phrase'> - Please use a different random phrase for security purposes </li>
-    </ul>
 
+<div id = 'invalid_admin_pin' class="alert alert-danger alert-dismissible" role="alert">
+  <span>Please use a different admin pin for security purposes</span>
+</div>
+
+
+<div id = 'invalid_random_phrase' class="alert alert-danger alert-dismissible" role="alert">
+  <span>Please use a different random phrase for security purposes</span>
+</div>
+
+
+
+
+
+
+    <header>
+      
+
+      <div class="navbar navbar-dark bg-dark box-shadow">
+        
     <form method='GET' action = '/quest/admin_settings_info/{{current_admin.admin_ldap}}'>
-        <button type='submit'>Admin's Settings/Info</button>
+        <button class = 'btn'type='submit'>Admin's Settings/Info</button>
     </form>
 
+
+    <form method = 'GET' action = '/quest/admin_login'>
+        <button class = 'btn' type = 'submit'> Logout </button>
+    </form>
+        
+      </div>
+    </header>
+
+    <main role="main">
+
+      <section class="jumbotron text-center" style = 'background-color: white'>
+
+    <div class="container">
+
+    <h1 class="jumbotron-heading"  style = 'display:inline;'> 
+        
+         <img class = 'imageWithText' style="width:50px; height:50px; margin-right:6px; margin-bottom:4px;" src = 'https://i.imgur.com/1533RUp.png'>
+            Admin Project Terminal
     
+    
+    </h1>
+    <p class="jumbotron-heading2">Welcome <strong style = 'color:#42bcf4'>{{ current_admin.admin_first_name }}</strong> to your different Projects!</p>
+        
+    </div>
+    </section>
 
-    <div class='centered'>
-        <h1>Admin Project Control</h1>
+      <div class="album py-5 bg-light">
+        <div class="container">
 
-        <p>Welcome Admin to the different Projects!</p>
+            <div style = 'text-align: center'>
 
-        <div id='create_new_project'>
-            <button onclick="show();">Create New Project</button>
+            <div id = 'create_project_button' style = 'text-align: center; display:inline; '>
+            <button class = 'btn' style = 'background-color:#42bcf4; color: white' onclick = 'show_create_project_form()'> Create new project?</button>
+            </div>
+            <div id = 'join_unarchive_button' style = 'text-align: center; display:inline' >
+            <button class = 'btn' style = 'background-color:#42bcf4; color: white' onclick = 'show_join_unarchive_form()'> Join or Unarchive project?</button>
+            </div>
+
+
         </div>
 
-        <br>
 
-        
-    </div>
-
-    <div id = "container">
-        <br>
-        <form onsubmit = "return new_pin_and_random_phrase('{{ all_admin_pins|escapejs }}', '{{all_random_phrases|escapejs }}');" method='POST' id = 'new_project_form' action = "/quest/add_new_project/{{current_admin.admin_ldap}}">
-                {% csrf_token %}
-                {{ project_form }}
-                <br>
-                Project Description: 
-
-                <br>
-
-                <div id = 'my-text-area'>
-                    <textarea id="area1" name="project_description" form = 'new_project_form'></textarea>
-                    <br>
-                    <br>
-                    <p>Teams (If you do not want your project to include teams, leave this section blank): </p>
-                    <textarea id="teams" name="teams" form = 'new_project_form'></textarea>
-
-                </div>
-                <br>
-                <input type=submit name="submit" value="Submit New Project" onclick="nicEditors.findEditor('area1').saveContent();">
-
-        </form>
-
-        <button id = 'hide' type= submit onclick="hide();"> Hide </button>
-    </div>
-
-
-
-    <div class= 'centered'>
-        {% for project in list_of_projects %}
-        <br>
-        {% if project.project_editable %}
-
-        <form method='GET' action='/quest/admin_home_editable/{{current_admin.admin_ldap}}/{{project.id}}'>
-            <button type='submit'>{{project.project_name}}</button>
-            <div id='editable'>
-                Editable
-            </div>
-        </form>
-
-
-        {% else %}
-
-        <form method='GET' action='/quest/admin_home_view_only/{{current_admin.admin_ldap}}/{{project.id}}'>
-            <button type='submit'>{{project.project_name}}</button>
-            <div id='not_editable'>
-                    Not Editable
-            </div>
-        </form>
-
-        {% endif %}
-
-        {% endfor %}
-
-        <br>
-        <br>
-        <form method = 'POST' action = '/quest/admin_unarchive_project/{{current_admin.admin_ldap}}'>
-            {% csrf_token %}
-            Unarchive a previous project:
+        <div id = 'create_project_form' style = 'text-align: center; display:none;'>
     
-            <select name="project_to_unarchive_id" required>
-                {% for project in list_of_archived_projects %}
-                    <option value="{{project.id}}"> {{project.project_name}} </option>
-                {% endfor %}
-            </select>
-            <button type = 'submit'> Submit </button>
-        </form>
+          <form onsubmit = "return new_pin_and_random_phrase('{{ all_admin_pins|escapejs }}', '{{all_random_phrases|escapejs }}');" method='POST' id = 'new_project_form' action = "/quest/add_new_project/{{current_admin.admin_ldap}}">
+              {% csrf_token %}
+              {{ project_form }}
+              <br>
+              Project Description: 
 
-        <br>
-        
-        <form method = 'POST' action='/quest/join_project/{{current_admin.admin_ldap}}'>
-            {% csrf_token %}
-        <p>Want to become a secondary admin for someone else's project?
-            Please be careful when editing!! If both admins are
-            editing at the same time you may get some wonky results :(
-        <p>
-                Project Name: 
-                <select name="project_name" required>
-                    {% for project in list_of_all_projects %}
-                        <option value="{{project.project_name}}"> {{project.project_name}} </option>
-                    {% endfor %}
-                </select>
+              <br>
 
+              <div id = 'my-text-area'>
+                  <textarea id="area1" name="project_description" form = 'new_project_form'></textarea>
+                  <br>
+                  <br>
+                  <p>Teams (If you do not want your project to include teams, leave this section blank): </p>
+                  <textarea id="teams" name="teams" form = 'new_project_form'></textarea>
+
+              </div>
+              <br>
+              <br>
+              <input class = 'btn btn-primary my-2' type=submit name="submit" value="Submit New Project" onclick="nicEditors.findEditor('area1').saveContent();">
+
+          </form>
+      </div>
+
+
+      <div id = 'join_unarchive_form' style = 'text-align: center; display:none;'>
+
+
+              <form method = 'POST' action = '/quest/admin_unarchive_project/{{current_admin.admin_ldap}}'>
+                  {% csrf_token %}
+                  Unarchive a previous project:
+          
+                  <select name="project_to_unarchive_id" required>
+                      {% for project in list_of_archived_projects %}
+                          <option value="{{project.id}}"> {{project.project_name}} </option>
+                      {% endfor %}
+                  </select>
+                  <br>
+                  <button class = 'btn btn-primary my-2' style = 'font-size: 10px; line-height: 7px'  type = 'submit'> Unarchive </button>
+              </form>
+              <br>
+              <br>
+
+
+
+              <form method = 'POST' action='/quest/join_project/{{current_admin.admin_ldap}}'>
+                  {% csrf_token %}
+              <p>Want to become a secondary admin for someone else's project?
+                  Please be careful when editing!! If both admins are
+                  editing at the same time you may get some wonky results :(
+              <p>
+                      Project Name: 
+                      <select name="project_name" required>
+                          {% for project in list_of_all_projects %}
+                              <option value="{{project.project_name}}"> {{project.project_name}} </option>
+                          {% endfor %}
+                      </select>
+      
+                  
+                  Admin Pin: <input type = 'text' name= 'project_admin_pin'>
+                  <br>
+                  <button class = 'btn btn-primary my-2' style = 'font-size: 10px; line-height: 7px' type ='submit' name = 'project_id' value = '{{project.id}}'>Join</button>
+      
+              </form>
+          </div>
+                <br>
+                <br>
+
+          <div class="row">
+
+            {% for project in list_of_projects %}
+
+            <div class="col-md-4">
+              <div class="card mb-4 box-shadow">
+                <!-- <img class="card-img-top" style = "height:100%; width:100%;" src="https://i.imgur.com/1533RUp.png" alt="Card image cap"> -->
+                <div class="card-body">
+                  <p>
+                    <strong style = 'color: #42bcf4; font-size: 20px '>{{project.project_name}}</strong>
+                </p>
+                <br> 
+
+
+
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+
+
+                      {% if project.project_editable %}
+                      <form method='GET' action='/quest/admin_home_editable/{{current_admin.admin_ldap}}/{{project.id}}'>
+                          <div id= 'project_button'>
+                            <button class ='btn btn-success' type='submit'>Explore</button>
+                        </div>       
+                        <div id='editable'>
+                          <small>(Editable)</small>
+
+                          </div>
+                    </form>
             
-            Admin Pin: <input type = 'text' name= 'project_admin_pin'>
+            
+                    {% else %}
+            
+                    <form method='GET' action='/quest/admin_home_view_only/{{current_admin.admin_ldap}}/{{project.id}}'>
+                      <div id= 'project_button'>
+                        <button class ='btn btn-success' type='submit'>Explore</button>
+                      </div>                      
+                      <div id='not_editable'>
+                          <small>(Not Editable)</small>
+                      </div>
+                    </form>
+            
+                    {% endif %}
 
-            <button type = 'submit'> Join Project </button>
-
-        </form>
-
-    <br>
-    <br>
-    <form method = 'GET' action = '/quest/admin_login'>
-    <button type = 'submit'> Logout </button>
-    </form>
 
 
-</div>
-    </body>
-    
+
+
+
+                    </div>
+                    
+                    
+                    <!-- {% if project.completed_project %}
+                    <small class="text-muted text-success">Completed</small>
+                    {% else %}
+                    <small class="text-muted">Incomplete</small>
+                    {% endif %} -->
+
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <footer class="text-muted">
+      <div class="container">
+        
+      </div>
+    </footer>
+
+   
+  </body>
 </html>

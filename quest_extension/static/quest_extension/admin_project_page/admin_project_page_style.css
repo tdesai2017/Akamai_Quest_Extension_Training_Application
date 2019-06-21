@@ -1,5 +1,5 @@
 
-
+/* 
 .centered {
   text-align: center;
 }
@@ -8,7 +8,7 @@ h1 {
   padding-top: 3%;
   text-decoration: underline;
   color: black; font-family: 'Trocchi', serif; font-size: 45px; font-weight: normal; line-height: 48px; margin: 0;
-}
+} */
 
 
 #container {
@@ -30,9 +30,9 @@ width: 700px;
 height: 200px;
 }
 
-#hide {
+/* #hide {
 text-align: right
-}
+} */
 
 #editable {
   color: lightgreen
@@ -45,18 +45,5 @@ text-align: right
 
 #invalid_random_phrase, #invalid_admin_pin {
   display: None;
-  color: red
-}
+} 
 
-/* Message classes */
-.success {
-  color: lightgreen;
-}
-
-.warning {
-  color: orange;
-}
-
-.error {
-  color: red;
-}

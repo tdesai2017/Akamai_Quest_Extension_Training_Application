@@ -15,27 +15,26 @@ document.getElementById("create_new_project").style.display = "inline";
 }
 
 function new_pin_and_random_phrase(taken_pins, taken_random_phrases) {
-console.log ('I am here')
-document.getElementById("invalid_admin_pin").style.display = 'none';
-document.getElementById("invalid_random_phrase").style.display = 'none';
-pin_input = document.getElementById("id_project_admin_pin").value;
-random_phrase_input = document.getElementById("id_project_random_phrase").value;
-var all_admin_pins = JSON.parse(taken_pins);
-var all_random_phrases =  JSON.parse(taken_random_phrases);
-console.log (all_admin_pins.includes(pin_input));
-console.log (all_random_phrases.includes(random_phrase_input));
-if (all_admin_pins.includes(pin_input) || all_random_phrases.includes(random_phrase_input)) {
-    if (all_admin_pins.includes(pin_input)){
-        document.getElementById("invalid_admin_pin").style.display = 'inline';
+    document.getElementById("invalid_admin_pin").style.display = 'none';
+    document.getElementById("invalid_random_phrase").style.display = 'none';
+    pin_input = document.getElementById("id_project_admin_pin").value;
+    random_phrase_input = document.getElementById("id_project_random_phrase").value;
+    var all_admin_pins = JSON.parse(taken_pins);
+    var all_random_phrases =  JSON.parse(taken_random_phrases);
+    
+    if (all_admin_pins.includes(pin_input) || all_random_phrases.includes(random_phrase_input)) {
+        console.log('I am here')
+        if (all_admin_pins.includes(pin_input)){
+            document.getElementById("invalid_admin_pin").style.display = 'block';
+        }
+        if (all_random_phrases.includes(random_phrase_input)){
+            document.getElementById("invalid_random_phrase").style.display = 'block';
+        }
+        return false;
     }
-    if (all_random_phrases.includes(random_phrase_input)){
-        document.getElementById("invalid_random_phrase").style.display = 'inline';
+    else {
+        return true;
     }
-    return false;
-}
-else {
-    return true;
-}
 
 
-}
+    }

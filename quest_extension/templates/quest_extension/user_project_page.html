@@ -1,4 +1,5 @@
 
+{% load static %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -8,10 +9,11 @@
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/album/">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/user_project_page_style.css' %}">
 
     <script>
-    function show_join_project(){
-        document.getElementById("join_or_archive").style.display = "none";
+    function show_join_project_user(){
+        document.getElementById("join_or_unarchive").style.display = "none";
         document.getElementById("join_project").style.display = "inline"
       } 
 
@@ -32,24 +34,7 @@
 
 
     <header>
-      <!-- <div class="collapse bg-dark" id="navbarHeader">
-        <div class="container">
-          <div class="row">
-            <div class="col-sm-8 col-md-7 py-4">
-              <h4 class="text-white">About</h4>
-              <p class="text-muted">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
-            </div>
-            <div class="col-sm-4 offset-md-1 py-4">
-              <h4 class="text-white">Contact</h4>
-              <ul class="list-unstyled">
-                <li><a href="#" class="text-white">Follow on Twitter</a></li>
-                <li><a href="#" class="text-white">Like on Facebook</a></li>
-                <li><a href="#" class="text-white">Email me</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div> -->
+      
 
       <div class="navbar navbar-dark bg-dark box-shadow">
         <form method='GET' action = '/quest/user_settings_info/{{current_user.user_ldap}}'>
@@ -67,29 +52,27 @@
 
       <section class="jumbotron text-center" style = 'background-color: white'>
 
+    <div class="container">
 
-
-
-
-
-        <div class="container">
-            
-              
-                      
-            
-            <img style="width:70px; height:70px; margin-right:6px; margin-bottom:4px;" src = 'https://i.imgur.com/1533RUp.png'>
-          <h1 class="jumbotron-heading"  style = 'display:inline; margin-top: 100px'>Project Terminal</h1>
-          <p class="jumbotron-heading2">Welcome <strong style = 'color:#42bcf4'>{{ current_user.user_first_name }}</strong> to the different Projects!</p>
-         
-        </div>
-      </section>
+    <h1 class="jumbotron-heading"  style = 'display:inline;'> 
+        
+         <img class = 'imageWithText' style="width:50px; height:50px; margin-right:6px; margin-bottom:4px;" src = 'https://i.imgur.com/1533RUp.png'>
+            User Project Terminal
+    
+    
+    </h1>
+    <p class="jumbotron-heading2">Welcome <strong style = 'color:#42bcf4'>{{ current_user.user_first_name }}</strong> to your different Projects!</p>
+        
+    </div>
+    </section>
 
       <div class="album py-5 bg-light">
         <div class="container">
 
-            <div id = 'join_or_archive' style = 'text-align: center;'>
-            <button class = 'btn' style = 'background-color:#42bcf4; color: white' onclick = 'show_join_project()'> Join or Archive Project?</button>
+            <div id = 'join_or_unarchive' style = 'text-align: center;'>
+            <button class = 'btn' style = 'background-color:#42bcf4; color: white' onclick = 'show_join_project_user()'> Join or Unarchive Project?</button>
             </div>
+            
 
             <div id = 'join_project' style = 'text-align: center; display:none;'>
                 
@@ -103,7 +86,7 @@
                         {% endfor %}
                     </select>
                     <br>
-                    <button class = 'btn btn-primary my-2' style = 'font-size: 10px; line-height: 7px'  type = 'submit'> Submit </button>
+                    <button class = 'btn btn-primary my-2' style = 'font-size: 10px; line-height: 7px'  type = 'submit'> Unarchive </button>
                 </form>
                 
                 <br>
@@ -120,7 +103,7 @@
                         {{ add_new_project_form }}
                         Team: <input type = 'text', name = 'team'>
                         <br>
-                        <button class = 'btn btn-primary my-2' style = 'font-size: 10px; line-height: 7px' type ='submit' name = 'project_id' value = '{{project.id}}'>Add</button>
+                        <button class = 'btn btn-primary my-2' style = 'font-size: 10px; line-height: 7px' type ='submit' name = 'project_id' value = '{{project.id}}'>Join</button>
             
                     </form>
             </div>

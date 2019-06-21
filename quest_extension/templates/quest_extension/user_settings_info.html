@@ -8,42 +8,73 @@
     <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/settings_info/user_settings_info_style.css' %}">
     
     <title> User Settings/Info </title>
-    <script src="{% static 'quest_extension/settings_info/user_settings_info_js.js' %}"></script>   
+    <script src="{% static 'quest_extension/settings_info/user_settings_info_js.js' %}"></script>  
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+ 
 </head>
 
 
 <body>
 
-    {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <span>{{message}}</span>
+        </div>
+    {% endfor %}
 
-        <ul>
-            <li id = 'low'> - Please include a lowercase letter </li>
-        </ul>
-        <ul>
-            <li id = 'up'> - Please include an uppercase letter </li>
-        </ul>
-        <ul>
-            <li id = 'num'> - Please include a number </li>
-        </ul>
-        <ul>
-            <li id = 'char'>- Please make sure that your password is at least 8 characters long</li>
-        </ul>
-    
-        <ul>
-            <li id = 'same'>- Please make sure that your passwords match</li>
-        </ul>
 
-        <ul>
-            <li id = 'email'>- Please make sure that your email is valid </li>
-        </ul>
-    
-    
+
+    <div id = 'low' class="alert alert-danger alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <span>Please include a lowercase letter</span>
+    </div>
+
+    <div id = 'up' class="alert alert-danger alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <span>Please include an uppercase letter</span>
+    </div>
+
+    <div id = 'num' class="alert alert-danger alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <span>Please include a number</span>
+    </div>
+
+    <div id = 'char' class="alert alert-danger alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <span>Please make sure that your password is at least 8 characters long</span>
+    </div>
+
+    <div id = 'same' class="alert alert-danger alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <span>Please make sure that your passwords match</span>
+    </div>
+
+    <div id = 'email' class="alert alert-danger alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <span>Please make sure that your email is valid</span>
+    </div>
+
+
+    <div style = 'text-align: center'>
     <p>LDAP: {{current_user.user_ldap}}</p>
     <button id = 'update_ldap_button' onclick="update('ldap')"> Update LDAP</button>
     <form id = 'update_ldap_form' method='POST' action= '/quest/update_user_ldap/{{current_user.user_ldap}}'>
@@ -102,7 +133,7 @@
     <form method = 'GET' action = '/quest/user_project_page/{{current_user.user_ldap}}'>
         <button type='submit'> Back </button>
     </form>
-
+</div>
 
     
 </body>

@@ -142,7 +142,7 @@
                         
                     {%for message in messages %}
                             {%if question.id|slugify in message.tags %}
-                            <p class="{{ message.tags }}"> {{message}} </p>   
+                            <p class="{{ message.tags }}" style = 'display:inline-block'> {{message}} </p>   
                         {%endif%}
                     {%endfor%}
 
@@ -160,7 +160,7 @@
 
                     {%for message in messages %}
                             {%if question.id|slugify in message.tags %}
-                            <p class="{{ message.tags }}"> {{message}} </p>   
+                            <p class="{{ message.tags }}" style = 'display:inline-block'> {{message}} </p>   
                         {%endif%}
                     {%endfor%}
                     {% endif %}
@@ -183,7 +183,7 @@
                         
                         {%for message in messages %}
                             {%if question.id|slugify in message.tags %}
-                            <p class="{{ message.tags }}"> {{message}} </p>   
+                            <p class="{{ message.tags }}" style = 'display:inline-block'> {{message}} </p>   
                         {%endif%}
                     {%endfor%}
                         
@@ -200,7 +200,7 @@
 
                         {%for message in messages %}
                             {%if question.id|slugify in message.tags %}
-                            <p class="{{ message.tags }}"> {{message}} </p>   
+                            <p class="{{ message.tags }}" style = 'display:inline-block' > {{message}} </p>   
                         {%endif%}
                     {%endfor%}
 
@@ -215,7 +215,7 @@
 
                     {%for message in messages %}
                         {%if question.id|slugify in message.tags %}
-                            <p class="{{ message.tags }}"> {{message}} </p>   
+                            <p class="{{ message.tags }}" style = 'display:inline-block'> {{message}} </p>   
                         {%endif%}
                     {%endfor%}
                 {% endif %}

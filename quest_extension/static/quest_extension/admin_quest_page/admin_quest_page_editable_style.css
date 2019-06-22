@@ -1,6 +1,4 @@
-.centered {
-    text-align: center;
-}
+
 
 
 
@@ -21,7 +19,6 @@
 
 .container {
     padding-top: 3%;
-    text-align: center;
     width: 100%;
 
 }
@@ -33,7 +30,6 @@
 
 
 #edit_description_container {
-    text-align: center;
     display: none;
   }
   
@@ -49,21 +45,33 @@ textarea {
     height: 300px;
     }
 
-#edit_description_button{
-    text-align: center;
-
+.col-sm-4 {
+background-color:#f1f1f1; position: absolute;  height:100%
 }
 
-
-/* Message classes */
-.success {
-    color: lightgreen;
+#constant_top_left img {
+  width:70px; height:70px; margin-right:6px; margin-bottom:4px;
 }
 
-.warning {
-    color: orange;
+#constant_top_left #project_name {
+  display:inline-block;
+  position:
+  relative;top:10px;
 }
 
-.error {
-    color: red;
+#constant_top_left #t_d_experiment {
+  margin-top:-9px;
+  color:grey;
 }
+
+/* Set gray background color and 100% height */ 
+.sidenav { background-color: #f1f1f1; height: 100%; } 
+/* Set black background color, white text and some padding */ 
+footer { background-color: #555; color: white; padding: 15px; } 
+/* On small screens, set height to 'auto' for sidenav and grid */ 
+@media screen and (max-width: 767px) 
+{ 
+.sidenav { height: auto; padding: 15px; } 
+.row.content {height: auto;} 
+}
+ 

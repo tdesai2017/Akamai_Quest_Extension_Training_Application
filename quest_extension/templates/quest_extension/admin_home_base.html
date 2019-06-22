@@ -34,7 +34,6 @@
 
 
 <body>
-{{request.session.view_or_editable}}
 <div class="container-fluid" >
 <div class = 'row content'>
 
@@ -195,7 +194,7 @@
                     {% csrf_token %}
                     <br>
                     New URL: <input type = 'text' name = 'new_picture_url'>
-                    Quest Path Number: <input type = 'number' name = 'new_picture_url'>
+                    Quest Path Number: <input type = 'number' name = 'quest_path_number'>
 
                     <button type = submit > Update Picture</button>
         </form>

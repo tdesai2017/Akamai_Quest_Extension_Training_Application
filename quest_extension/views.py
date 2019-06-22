@@ -153,12 +153,6 @@ def get_admin_home_editable(request, ldap, project_id):
     #editable and view only pages, we will know if we were in an editable or view_only
     #page
     request.session['view_or_editable'] = 'editable'
-
-    if 'view_or_editable' not in request.session.keys():
-        print('its not here cheif')
-    else:
-        print ('HALOOOON',  request.session['view_or_editable'])
-
         
     current_admin = Admin.objects.get(admin_ldap = ldap)
     quests = Quest.objects.filter(project = current_project).order_by('quest_path_number')
@@ -242,15 +236,6 @@ def admin_update_project_description(request, ldap, project_id):
 
 
 def admin_update_project_name (request, ldap, project_id):
-
-    if 'view_or_editable' not in request.session.keys():
-        print('its not here chief')
-    else:
-        print ('HALOOOON',  request.session['view_or_editable'])
-
-    print (request.session.keys())
-
-
 
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -353,6 +338,8 @@ def get_admin_quest_page_editable(request, ldap, quest_id):
     fr_input_form = TakeInFreeResponseForm()
     video_form = VideoForm()
     all_videos = Video.objects.filter(quest = current_quest)
+    recently_awarded_points = get_recently_awarded_points_format(current_project)
+    leaderboard = get_leaderboard_format(current_project)  
 
     format = create_admin_quest_page_format(list_of_questions)
 
@@ -362,7 +349,9 @@ def get_admin_quest_page_editable(request, ldap, quest_id):
      'current_project_id': current_project_id,
      'video_form': video_form,
      'all_videos': all_videos, 
-     'current_admin': current_admin    
+     'current_admin': current_admin,
+     'recently_awarded_points': recently_awarded_points,
+     'leaderboard': leaderboard,   
      }
     return render(request, 'quest_extension/admin_quest_page_editable.html', context)
 
@@ -643,6 +632,8 @@ def get_admin_quest_page_view_only(request, ldap, quest_id):
     fr_input_form = TakeInFreeResponseForm()
     all_videos = Video.objects.filter(quest = current_quest)
     video_form = VideoForm()
+    recently_awarded_points = get_recently_awarded_points_format(current_project)
+    leaderboard = get_leaderboard_format(current_project)  
 
 
     format = create_admin_quest_page_format(list_of_questions)
@@ -654,7 +645,9 @@ def get_admin_quest_page_view_only(request, ldap, quest_id):
     'current_project_id': current_project_id,
     'all_videos': all_videos,
     'current_admin': current_admin,
-    'video_form': video_form}
+    'video_form': video_form,
+    'recently_awarded_points': recently_awarded_points,
+    'leaderboard' : leaderboard}
     return render(request, 'quest_extension/admin_quest_page_view_only.html', context)
 
 ######################################

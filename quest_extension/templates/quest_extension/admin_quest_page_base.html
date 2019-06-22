@@ -4,119 +4,196 @@
     <head>
         
         <title> {{ current_quest.quest_name }} </title>
-    
-              
-        {% block stylesheet_js %}
-        {% endblock %}
 
+    {% block stylesheet_js %}
+    {% endblock %}
+    <script src= "{% static 'quest_extension/admin_quest_page/admin_quest_page_base_js.js' %}" ></script>
+    <script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
+    <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script>
     
-        <script src="http://js.nicedit.com/nicEdit-latest.js" type="text/javascript"></script>
-        <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script>
-        <script src= "{% static 'quest_extension/admin_quest_page/admin_quest_page_base_js.js' %}" ></script>
 
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
 
 
     </head>
-    <body>
+    <body id = 'body'>
+        <div class="container-fluid" >
+            <div class = 'row content'>
 
-    {% for message in messages %}
-    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-        </button>
-        <span>{{message}}</span>
-    </div>
-    {% endfor %}
+            <div class="col-sm-4 sidenav">
 
+                <div id = 'constant_top_left'>
+                    <img src="https://i.imgur.com/1533RUp.png">
 
-    {% block admin_quest_settings %}
-    {% endblock %}
-
-    <div class = 'centered'>
-        {% block forms_and_undo %}
-        {% endblock %}
-
-        <h1> {{ current_quest.quest_name }} </h1>
-        <div id = 'edit_name_button'>
-            <button onclick="show_update_name();" id = 'edit_name_button'> Edit Name </button>
-        </div>
-        <div id = 'edit_name_container'>
-            <form method = 'POST' action = '/quest/admin_update_quest_name/{{current_admin.admin_ldap}}/{{current_quest.id}}'> 
-                {% csrf_token %}
-                <input type ='text' name = 'quest_name' value = {{current_quest.quest_name}}>
-                <button type = 'submit'> Update Quest Name</button>
-            </form>
-        </div>
-   
-    </div>
-    <div class='container'>
-        <div id='my-text-area'>
-            <br>
-            <html> {{ current_quest.quest_description|safe }} </html>
-        </div>
-    </div>
-    <div id = 'edit_description_container'>
-
-            <form method='POST' id = 'edit_description_form' action = "/quest/admin_update_quest_description/{{current_admin.admin_ldap}}/{{current_quest.id}}">
-                    {% csrf_token %}
-                    Quest Description: 
-                    <br>
-                    <div id = 'edit-my-text-area'>
-                        <textarea id="area1" name="quest_description" form = 'edit_description_form'>
-                            {{current_quest.quest_description}}
-                        </textarea>
+                    <div id = 'project_name' ><h4>{{current_quest.project.project_name}}</h4>
+                        <p id = 't_d_experiment'><small>A Tushar Desai Experiment </small></p>
                     </div>
+                </div>
+
+
+                    {% if current_project.project_has_teams %}
+                    <br>
+                    <br>
+                    {% for team_data in all_teams_and_points.items %}
+                    <p><strong>{{ team_data.0 }}</strong> </p>
+                    <!-- {{team_data.1.0}} / {{team_data.1.1}} -->
+
+                    <div class="progress" style="height:40px; margin-bottom: 0px; margin-top: 10px">
+                        <div class="progress-bar progress-bar-striped progress-bar-info" role = 'progressbar'style="width:{{team_data.1.2}}%; font-size: 14px; line-height:40px; text-align: left;">
+                            {% if team_data.1.0 > 0 %} 
+                            <strong style = 'margin-left: 10px;'> {{team_data.1.2}}%</strong> <span style = 'font-size: 10px'>({{team_data.1.0}} points) </span>
+                            {% endif %}
+                        </div>
+                    </div> 
+                    <br>
+
+
+                    <!-- team_data.0 = team name -->
+                    <!-- team_data.1.0 = accumulated points by users on this team -->
+                    <!-- team.data.1.1 = total possible points that can be earned by this team if everyone has 100% completion -->
+
+                    {% endfor %}
+                    {% endif %}
+
+                    <h4 style="margin-top:25px;">Recent Points Awarded</h4>
+
+                    {% for record in recently_awarded_points %}
+
+                    <!-- Record syntax = (+points team_name, user_name, quest_name) -->
+                    <h5>
+                        <span class="label label-success" >{{record.0}} </span>
+                        <strong> &nbsp; {{ record.1 }}</strong> passed the <strong>{{record.2}}</strong> quest!
+                    </h5>
+                    {% endfor %}
+
+                    <h4 style="margin-top:25px;">Individual Leaderboard</h4>
+
+                    {% for record in leaderboard %}
+
+                    <h5>
+                        <!-- I made this first Record = None if there are no teams in the project -->
+                    {% if record.0 != None %}
+                        <span class="label label-danger" >{{record.0}}</span>
+                        <strong> &nbsp; {{ record.1 }}</strong>  ({{record.2}} points)
+
+                    {% else %}
+                        <span class="label label-danger" >{{record.1}}</span>
+                        ({{record.2}} points)
+                    {% endif %}
+                    </h5>
+
+                    {% endfor %}
+                    <br>
+
+
+            </div>
+
+
+
+        <div class="col-sm-8" style = 'margin-bottom: 900px'>
+
+
+            {% for message in messages %}
+            <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+                <span>{{message}}</span>
+            </div>
+            {% endfor %}
+
+            <div style = 'float:right'>
+                {% block admin_quest_settings %}
+                {% endblock %}
+            </div>
+
+            {% block forms_and_undo %}
+            {% endblock %}
+            
+            <h1> {{ current_quest.quest_name }} </h1>
+
+            <div id = 'edit_name_button'>
+                    <button onclick="show_update_name();" id = 'edit_name_button'> Edit Name </button>
+                </div>
+                <div id = 'edit_name_container'>
+                    <form method = 'POST' action = '/quest/admin_update_quest_name/{{current_admin.admin_ldap}}/{{current_quest.id}}'> 
+                        {% csrf_token %}
+                        <input type ='text' name = 'quest_name' value = {{current_quest.quest_name}}>
+                        <button type = 'submit'> Update Quest Name</button>
+                    </form>
+                </div>
+
+
+            <hr>
+        <br>
+
+        <div class='container'>
+            <div id='my-text-area'>
+                {{ current_quest.quest_description|safe }} 
+            </div>
+        </div>
+
+        <div id = 'edit_description_container'>
+
+                <form method='POST' id = 'edit_description_form' action = "/quest/admin_update_quest_description/{{current_admin.admin_ldap}}/{{current_quest.id}}">
+                        {% csrf_token %}
+                        Quest Description: 
+                        <br>
+                        <div id = 'edit-my-text-area'>
+                            <textarea id="area1" name="quest_description" form = 'edit_description_form'>
+                                {{current_quest.quest_description}}
+                            </textarea>
+                        </div>
+                    <br>
+                        <input type=submit name="submit" value="Update Quest Description" onclick="nicEditors.findEditor('area1').saveContent();">
+                </form>
                 <br>
-                    <input type=submit name="submit" value="Update Quest Description" onclick="nicEditors.findEditor('area1').saveContent();">
-            </form>
+        </div>
+        <div id = 'edit_description_button'>
             <br>
-    </div>
-    <div id = 'edit_description_button'>
-        <br>
-        <button onclick="show_edit_description();">Edit Description</button>
-    </div>
+            <button onclick="show_edit_description();">Edit Description</button>
+        </div>
+        
 
-
-    <div class = 'centered'>
-        <br>
-        <br>
-        <br>
         <br>
         {% for video in all_videos %}
 
-                <iframe width="560" 
-                height="315" 
-                src="https://www.youtube.com/embed/{{video.video_url}}" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
-                allowfullscreen></iframe>
-                
-            <form method='POST' action = '/quest/delete_video/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
-                {% csrf_token %}
-                <button type='submit' 
-                    name = delete 
-                    value = {{video.id}} 
-                    onclick="return confirm('Are you sure you want to delete this video');">
-                    Delete Video
-                </button>
-            </form>
-            <br>
-            <br>
+        <iframe width="560" 
+        height="315" 
+        src="https://www.youtube.com/embed/{{video.video_url}}" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen></iframe>
+        
+       <br>
+       <br>
 
+    <form method='POST' action = '/quest/delete_video/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
+        {% csrf_token %}
+        <button type='submit' 
+            name = delete 
+            value = {{video.id}} 
+            onclick="return confirm('Are you sure you want to delete this video');">
+            Delete Video
+        </button>
+    </form>
+    <br>
+    <br>
 
         {% endfor %}
 
-        <br>
-        <br>
+        
         <div id = 'add_new_video'>
                 <button onclick="show();">Include Video</button>
             </div>
         
-            <br>
         
             <div id = 'video_form'>
                 <form method='POST' action= '/quest/save_video/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
@@ -163,16 +240,47 @@
 
             {% block edit_deletequestion %}
             {% endblock %}
+            <br>
+            {% endfor %}
+
+
+            {% block home %}
+            {% endblock %}
+
+</div>
+</div>
+</div>
+
+
+<footer class="container-fluid">
+</footer>
+
+
+<!-- Script that will automatically make the sidebar and main content height the same -->
+    <script>
+        var height_of_main = $('.col-sm-8').outerHeight(true)
+        var height_of_side_bar = $('.col-sm-4.sidenav').outerHeight(true)
+
+        console.log(height_of_main)
+        console.log(height_of_side_bar)
+
+        if (height_of_main > height_of_side_bar) {
+            $('.col-sm-4.sidenav').height(height_of_main)
+        }
+
+        else {
+            $('.col-sm-8').height(height_of_side_bar)
             
+            $('.col-sm-8').css('margin-bottom', '0px');
 
-            <br>
-            <br>
-        {% endfor %}
-        
-        {% block home %}
-        {% endblock %}
 
-        
-    </div>
-         </body>
-    </html>
+            }
+        console.log($('.col-sm-8').outerHeight(true))
+        console.log([$('.col-sm-4.sidenav').height(), $('.col-sm-8').height()] )
+
+
+
+            </script>
+
+    </body>
+</html>

@@ -22,11 +22,10 @@
     <script>
     function show_plain_button_instead(quest_id){
 
-        document.getElementById('image_submit_' + quest_id).style.display = 'none'
-        document.getElementById('button_submit_'+ quest_id).style.display = 'inline'
+        $('#image_submit_' + quest_id).remove()
+        $('#button_submit_'+ quest_id).show()
     }
 
-    
     
     </script>
 

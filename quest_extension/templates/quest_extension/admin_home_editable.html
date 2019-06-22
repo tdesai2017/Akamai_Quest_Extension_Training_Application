@@ -51,10 +51,6 @@
 
 
 
-
-
-
-
 {% block redirect_to_quest_page %}
 
 
@@ -63,8 +59,7 @@
         
         <button id = 'image_submit_{{quest.id}}' type='submit'>
             <div id = 'image_cropper'>
-                <img id = 'cropped_image' src="https://i.imgur.com/zInrCXu.png
-                " onerror = "show_plain_button_instead('{{quest.id}}')" />
+                <img id = 'cropped_image' src="{{quest.quest_picture_url}}" onerror = "show_plain_button_instead('{{quest.id}}')"/>
             </div> 
             {{quest.quest_name}} ({{quest.quest_path_number}})
         </button>

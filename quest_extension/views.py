@@ -244,9 +244,12 @@ def admin_update_project_description(request, ldap, project_id):
 def admin_update_project_name (request, ldap, project_id):
 
     if 'view_or_editable' not in request.session.keys():
-        print('its not here cheif')
+        print('its not here chief')
     else:
         print ('HALOOOON',  request.session['view_or_editable'])
+
+    print (request.session.keys())
+
 
 
     #Validates if an admin can access this 
@@ -1166,7 +1169,6 @@ def admin_unarchive_project(request, ldap):
 def get_user_project_page(request, ldap):
 
     print (validate_user_access(request, ldap))
-    print (request.session)
 
 
     if not validate_user_access(request, ldap):

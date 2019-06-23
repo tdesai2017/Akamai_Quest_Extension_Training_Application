@@ -627,6 +627,7 @@ def get_admin_quest_page_view_only(request, ldap, quest_id):
 
     current_admin = Admin.objects.get(admin_ldap = ldap)
     current_quest = Quest.objects.get(id = quest_id)
+    current_project = current_quest.project
     current_project_id = current_quest.project.id
     list_of_questions = Question.objects.filter(quest = current_quest, deleted=False).order_by('time_modified')
     fr_input_form = TakeInFreeResponseForm()

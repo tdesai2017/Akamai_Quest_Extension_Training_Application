@@ -1,5 +1,6 @@
 {% extends 'quest_extension/login_base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block stylesheet %}
 <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/login/admin_login_style.css' %}">
@@ -8,12 +9,12 @@
 
 
 {% block login_welcome %}
-<h1>Admin Login</h1>
+Admin Login
 {% endblock %}
 
 {% block sign_up %}
 <form method='GET' action='/quest/new_admin'>
-    <button type = 'submit'> Admin Sign Up! </button>
+    <button class = 'btn' style = 'background-color: #42bcf4; color:white; margin: 10px' type = 'submit'> Admin Sign Up! </button>
 </form>
 {% endblock %}
 
@@ -22,8 +23,8 @@
 <div id= 'container'>
         <form id='login' method='POST' action ='/quest/admin_login_to_account'>
             {% csrf_token %}
-            {{ login_form }}
-            <button id = 'submit_login' type="submit">Submit</button>
+            {{ login_form|crispy }}
+            <button class='btn' style = 'background-color: #42bcf4; color:white' id = 'submit_login' type="submit">Login</button>
         </form> 
 {% endblock %}
 
@@ -34,7 +35,7 @@
         <br>
         <br>
         LDAP:
-        <input type='text' name='ldap'>
+        <input type='text' name='ldap' class = 'form-control'>
         <button id = 'new_password_ldap' type="submit">Submit</button>
     </form>
 {% endblock %}

@@ -1,5 +1,6 @@
 {% extends 'quest_extension/login_base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block stylesheet %}
 <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/login/user_login_style.css' %}">
@@ -7,12 +8,12 @@
 
 
 {% block login_welcome %}
-<h1>User Login</h1>
+User Login
 {% endblock %}
 
 {% block sign_up %}
 <form method='GET' action='/quest/new_user'>
-    <button type = 'submit'> Sign Up! </button>
+    <button class = 'btn' style = 'background-color: #42bcf4; color:white; margin: 10px' type = 'submit'> User Sign Up! </button>
 </form>
 {% endblock %}
 
@@ -21,8 +22,9 @@
 <div id= 'container'>
         <form id='login' method='POST' action ='/quest/user_login_to_account'>
             {% csrf_token %}
-            {{ login_form }}
-            <button id = 'submit_login' type="submit">Submit</button>
+            {{ login_form|crispy }}
+            <button class='btn' style = 'background-color: #42bcf4; color:white' id = 'submit_login' type="submit">Login</button>
+
         </form> 
 {% endblock %}
 

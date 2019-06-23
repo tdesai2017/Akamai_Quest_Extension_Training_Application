@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 
     <head>
@@ -134,7 +135,7 @@
         <div id = 'edit_name_container'>
             <form method = 'POST' action = '/quest/admin_update_project_name/{{current_admin.admin_ldap}}/{{current_project.id}}'> 
                 {% csrf_token %}
-                <input type ='text' name = 'project_name' value = '{{current_project.project_name}}'>
+                <input class = 'form-control' type ='text' name = 'project_name' value = '{{current_project.project_name}}'>
                 <button type = 'submit'> Update Project Name</button>
             </form>
         </div>
@@ -193,8 +194,8 @@
             <form method='POST' id = 'test_form' action = "/quest/admin_update_quest_picture/{{current_admin.admin_ldap}}/{{current_project.id}}">
                     {% csrf_token %}
                     <br>
-                    New URL: <input type = 'text' name = 'new_picture_url'>
-                    Quest Path Number: <input type = 'number' name = 'quest_path_number'>
+                    New URL: <input class = 'form-control' type = 'text' name = 'new_picture_url'>
+                    Quest Path Number: <input class = 'form-control' type = 'number' name = 'quest_path_number'>
 
                     <button type = submit > Update Picture</button>
         </form>

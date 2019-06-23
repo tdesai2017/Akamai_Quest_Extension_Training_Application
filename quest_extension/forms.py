@@ -64,8 +64,8 @@ class AddNewProjectForm(forms.Form):
 
 
 class LoginForm(forms.Form):
-    ldap = forms.CharField(max_length=45, label= 'LDAP')
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'autocomplete' : 'new-password'}))
+    ldap = forms.CharField(max_length=45, label= '', widget=forms.TextInput(attrs={'placeholder': 'LDAP'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'autocomplete' : 'new-password', 'placeholder': 'Password'}), label = '')
 
 
 

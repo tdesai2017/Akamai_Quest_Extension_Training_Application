@@ -124,7 +124,7 @@
         {% csrf_token %}
 
         {% for question, answers, correct_answers in format_2 %}
-            <div class='question' style = 'padding-bottom: 5px; color:rgb(94, 20, 20)'>
+            <div class='question' style = 'padding-bottom: 5px;'>
                 <strong >{{ question.question_text }}</strong>
             </div>
                 {% if question.question_type ==  'FR' %}

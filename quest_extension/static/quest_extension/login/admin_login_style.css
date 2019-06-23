@@ -1,58 +1,15 @@
-#container {
-    width: 400px;
-    margin: 0 auto;
-}
-
-label {
-    display: block;
-    width: 10em;
-    float: left; /* makes the element act like inline block */
-    clear: left; /* clears any left floats so before so this should start on new line */
-    padding-bottom: 1em;
-
-    
-  }
-
-  #submit_login{
-    display: block;
-    width: 10em;
-    float: left; /* makes the element act like inline block */
-    clear: left;
-
-  }
-
-  
-  #login input {
-    width: 10em;
-    float: left;
-  }
-
-  a {
-    float:left;
-    clear:left;
-    font-size: 100%;
-  }
-
-#forgot_password, #ldap_for_new_password {
-    display: block;
-    float: left; /* makes the element act like inline block */
-    clear: left;
-}
 
 #ldap_for_new_password {
   display: none;
 }
 
 
-/* Message classes */
-.success {
-  color: lightgreen;
-}
+body {background-color:#eee;}
+.container-fluid {padding:50px;}
+.container{background-color:white;padding:50px;   }
+#title{font-family: 'Lobster', cursive;;}
 
-.warning {
-  color: orange;
-}
-
-.error {
-  color: red;
-}
+.col-centered{
+  float: none;
+  margin: 0 auto;
+  }

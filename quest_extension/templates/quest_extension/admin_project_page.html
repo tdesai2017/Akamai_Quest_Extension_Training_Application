@@ -66,24 +66,19 @@
     <span aria-hidden="true">&times;</span>
   </button>
   <span>Please use a different random phrase for security purposes</span>
+  
 </div>
-
-
-
-
 
     <header>
       
-
       <div class="navbar navbar-dark bg-dark box-shadow">
         
-    <form method='GET' action = '/quest/admin_settings_info/{{current_admin.admin_ldap}}'>
-        <button class = 'btn' type='submit'>Admin's Settings/Info</button>
-    </form>
-
-
     <form method = 'GET' action = '/quest/admin_login'>
         <button class = 'btn' type = 'submit'> Logout </button>
+    </form>
+
+    <form method='GET' action = '/quest/admin_settings_info/{{current_admin.admin_ldap}}'>
+        <button class = 'btn' type='submit'>Admin's Settings/Info</button>
     </form>
         
       </div>

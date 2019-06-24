@@ -37,19 +37,19 @@
     </div>
   {% endfor %}
 
-
     <header>
       
-
       <div class="navbar navbar-dark bg-dark box-shadow">
+
+          <form method='POST' action = '/quest/user_logout/{{ current_user.user_ldap}}'>
+            {% csrf_token%}
+            <button class = 'btn' type = 'submit', name = 'logout'>Logout</button>
+        </form>
+
         <form method='GET' action = '/quest/user_settings_info/{{current_user.user_ldap}}'>
             <button class = 'btn' type='submit'>User's Settings/Info</button>
         </form>
 
-        <form method='POST' action = '/quest/user_logout/{{ current_user.user_ldap}}'>
-                {% csrf_token%}
-                <button class = 'btn' type = 'submit', name = 'logout'>Logout</button>
-            </form>
       </div>
     </header>
 

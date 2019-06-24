@@ -8,385 +8,443 @@
     <script src = "{% static 'quest_extension/admin_project_info_page/admin_project_info_page_js.js' %}"></script>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
 
     
 </head>
 <body>
 
-    {% for message in messages %}
-    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-        </button>
-        <span>{{message}}</span>
-    </div>
-    {% endfor %}
 
-    <!-- The "Back" button location is determined on whether the project is editable or only viewable  -->
-    {% if view_or_editable == 'view' %}
-    <form method = 'GET' action = '/quest/admin_home_view_only/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-        <button type = 'submit'> Back </button>
-    </form>
-    {% endif %}
-
-    {% if view_or_editable == 'editable' %}
-    <form method = 'GET' action = '/quest/admin_home_editable/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-        <button type = 'submit'> Back </button>
-    </form>
-
-    {% endif %}
-    
-    <div class = 'centered'>
-        <h1> Project Information </h1>
-
-        <p> Project Name: {{current_project.project_name}}</p>
-        <br>
-
-        <h3> Entire Project Queries</h3>
-
-        <button id = 'search_above_button' onclick="search('above')"> Search users above (inclusive) ___ current quest:</button>
-        <form id = 'search_above_form' method = 'POST' action = '/quest/search_above/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p>Search users above (inclusive) ___ current quest:</p>
-            {% csrf_token %}
-            
-            Quest Path Number:
-            <select name="above" required>
-                {% for quest_number in quest_path_number_list %}
-                <option value = {{quest_number}}> {{quest_number}} </option>
-                {% endfor %}
-            </select>
-
-            <button type = 'submit'> Submit </button>
-        </form>
-
-        <br>
-        <br>
-
-        <button id = 'search_below_button' onclick="search('below')"> Search users below (inclusive) ___ current quest:</button>
-        <form id = 'search_below_form' method = 'POST' action = '/quest/search_below/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p>Search users below (inclusive) ___ current quest:</p>
-            {% csrf_token %}
-
-            Quest Path Number:    
-            <select name="below" required>
-                {% for quest_number in quest_path_number_list %}
-                <option value = {{quest_number}}> {{quest_number}} </option>
-                {% endfor %}
-            </select>
-
-            <button type = 'submit'> Submit </button>
-        </form>
-
-        <br>
-        <br>
-
-        <button id = 'search_at_button' onclick="search('at')"> Search for users at ___ current quest:</button>
-        <form  id = 'search_at_form' method = 'POST' action = '/quest/search_at/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p>Search for users at ___ current quest:</p>
-            {% csrf_token %}
-            
-            Quest Path Number: 
-            <select name="at" required>
-                {% for quest_number in quest_path_number_list %}
-                <option value = {{quest_number}}> {{quest_number}} </option>
-                {% endfor %}
-            </select>
-
-            <button type = 'submit'> Submit </button>
-        </form>
-
-        <br>
-        <br>
-
-        <button id = 'search_ldap_button' onclick="search('ldap')"> Search for one user's information (ldap):</button>
-        <form id = 'search_ldap_form' method = 'POST' action = '/quest/search_by_user_ldap/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p>Search for one user's information (ldap):</p>
-            {% csrf_token %}
-            
-            LDAP: 
-            <select name="user" required>
-                {% for user_ldap in user_ldaps_list %}
-                <option value = {{user_ldap}}> {{user_ldap}} </option>
-                {% endfor %}
-            </select>
-
-            <button type = 'submit'> Submit </button>
-        </form>
-
-        <br>
-        <br>
-
-        <button id = 'search_user_name_button' onclick="search('user_name')"> Search for one user's information (name):</button>
-        <form id = 'search_user_name_form' method = 'POST' action = '/quest/search_by_user_name/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p>Search for one user's information (name):</p>
-            {% csrf_token %}
-           
-            First name: 
-            <select name="first" required>
-                    {% for user_first_name in user_first_name_list %}
-                    <option value = '{{user_first_name}}'> {{user_first_name}} </option>
-                    {% endfor %}
-                </select>
-
-
-            Last name: 
-            <select name="last" required>
-                    {% for user_last_name in user_last_name_list %}
-                    <option value = '{{user_last_name}}'> {{user_last_name}} </option>
-                    {% endfor %}
-                </select>
-
-
-            <button type = 'submit'> Submit </button>
-        </form>
-        
-        <br>
-        <br>
-
-        <button id = 'search_all_users_button' onclick="search('all_users')"> See information for all users in this project: </button>
-        <form id = 'search_all_users_form' method = 'POST' action = '/quest/search_all_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p> See information for all users in this project: </p>
-            {% csrf_token %}
-            <button type = 'submit'> Submit </button>
-        </form>
-
-        <br>
-        <br>
-
-        <button id = 'search_all_complete_users_button' onclick="search('all_complete_users')"> See information for all users who have completed the project: </button>
-        <form id = 'search_all_complete_users_form' method = 'POST' action = '/quest/search_completed_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p> See information for all users who have completed the project: </p>
-            {% csrf_token %} 
-            <button type = 'submit'> Submit </button>
-        </form>
-
-        <br>
-        <br>
-
-        <button id = 'search_all_incomplete_users_button' onclick="search('all_incomplete_users')"> See information for all users who have not completed the project: </button>
-        <form id = 'search_all_incomplete_users_form' method = 'POST' action = '/quest/search_not_completed_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p> See information for all users who have not completed the project: </p>
-            {% csrf_token %} 
-            <button type = 'submit'> Submit </button>
-        </form>
-    <br>
-    <br>
-    <br>
-
-
-        {% if current_project.project_has_teams %}
-        
-        <h3> Team Queries</h3>
-
-
-        <button id = 'search_team_above_button' onclick="search('team_above')"> Search team members above (inclusive) ___ current quest:</button>
-        <form id = 'search_team_above_form' method = 'POST' action = '/quest/search_team_above/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p>Search team members above (inclusive) ___ current quest:</p>
-            {% csrf_token %}
-            Team Name: <input type = 'text' name = 'team_name'>
-
-            Quest Path Number:
-            <select name="above" required>
-                {% for quest_number in quest_path_number_list %}
-                <option value = {{quest_number}}> {{quest_number}} </option>
-                {% endfor %}
-            </select>
-
-            <button type = 'submit'> Submit </button>
-        </form>
-
-        <br>
-        <br>
-
-        <button id = 'search_team_below_button' onclick="search('team_below')"> Search team members below (inclusive) ___ current quest:</button>
-        <form id = 'search_team_below_form' method = 'POST' action = '/quest/search_team_below/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p>Search team members below (inclusive) ___ current quest:</p>
-            {% csrf_token %}
-            Team Name: <input type = 'text' name = 'team_name'>
-            Quest Path Number: 
-            <select name="below" required>
-                {% for quest_number in quest_path_number_list %}
-                <option value = {{quest_number}}> {{quest_number}} </option>
-                {% endfor %}
-            </select>
-            <button type = 'submit'> Submit </button>
-        </form>
-
-        <br>
-        <br>
-
-        <button id = 'search_team_at_button' onclick="search('team_at')"> Search for team members at ___ current quest:</button>
-        <form  id = 'search_team_at_form' method = 'POST' action = '/quest/search_team_at/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p>Search for team members at ___ current quest:</p>
-            {% csrf_token %}
-            Team Name: <input type = 'text' name = 'team_name'>
-            Quest Path Number: 
-            <select name="at" required>
-                {% for quest_number in quest_path_number_list %}
-                <option value = {{quest_number}}> {{quest_number}} </option>
-                {% endfor %}
-            </select>
-            <button type = 'submit'> Submit </button>
-        </form>
-
-        <br>
-        <br>
-
-        <button id = 'search_team_ldap_button' onclick="search('team_ldap')"> Search for one team member's information (ldap):</button>
-        <form id = 'search_team_ldap_form' method = 'POST' action = '/quest/search_team_by_user_ldap/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p>Search for one team members's information (ldap):</p>
-            {% csrf_token %}
-            Team Name: <input type = 'text' name = 'team_name'>
-            LDAP: 
-            <select name="user" required>
-                {% for user_ldap in user_ldaps_list %}
-                <option value = {{user_ldap}}> {{user_ldap}} </option>
-                {% endfor %}
-            </select>
-            <button type = 'submit'> Submit </button>
-        </form>
-
-        <br>
-        <br>
-
-        <button id = 'search_team_user_name_button' onclick="search('team_user_name')"> Search for one team member's information (name):</button>
-        <form id = 'search_team_user_name_form' method = 'POST' action = '/quest/search_team_by_user_name/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p>Search for one team member's information (name):</p>
-            {% csrf_token %}
-            Team Name: <input type = 'text' name = 'team_name'>
-            First name: 
-            <select name="first" required>
-                    {% for user_first_name in user_first_name_list %}
-                    <option value = '{{user_first_name}}'> {{user_first_name}} </option>
-                    {% endfor %}
-                </select>
-
-
-            Last name: 
-            <select name="last" required>
-                    {% for user_last_name in user_last_name_list %}
-                    <option value = '{{user_last_name}}'> {{user_last_name}} </option>
-                    {% endfor %}
-                </select>
-            <button type = 'submit'> Submit </button>
-        </form>
-        
-        <br>
-        <br>
-
-        <button id = 'search_team_name_button' onclick="search('team_name')"> Search entire team information (team name):</button>
-        <form id = 'search_team_name_form' method = 'POST' action = '/quest/search_team_all_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p>Search entire team information (team name):</p>
-            {% csrf_token %}
-            Team Name: <input type = 'text' name = 'team_name' required>
-            <button type = 'submit'> Submit </button>
-        </form>
-
-        <br>
-        <br>
-
-        <button id = 'search_team_all_complete_users_button' onclick="search('team_all_complete_users')"> See information for all team members who have completed the project: </button>
-        <form id = 'search_team_all_complete_users_form' method = 'POST' action = '/quest/search_team_completed_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p> See information for all team members who have completed the project: </p>
-            {% csrf_token %} 
-            Team Name: <input type = 'text' name = 'team_name'>
-            <button type = 'submit'> Submit </button>
-        </form>
-
-        <br>
-        <br>
-
-        <button id = 'search_team_all_incomplete_users_button' onclick="search('team_all_incomplete_users')"> See information for all team members who have not completed the project: </button>
-        <form id = 'search_team_all_incomplete_users_form' method = 'POST' action = '/quest/search_team_not_completed_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-            <p> See information for all team members who have not completed the project: </p>
-            {% csrf_token %} 
-            Team Name: <input type = 'text' name = 'team_name'>
-            <button type = 'submit'> Submit </button>
-        </form>
-
-        {% endif %}
-
-
-
-
-
-
-
-
-
-
-
-       
-
-    <br>
-    <br>
-
-<!-- I couldn't figure out how to put these 'titles' directly above the results -->
-    <h4>Query: {{query}}</h4>
-    <h5> Count: {{count}} </h5>
-
-
-    <p class = 'block1'> Name: </p>
-    <p class = 'block2'> LDAP: </p>
-
-    {% if current_project.project_has_teams %}
-    <p class = 'block3'> Team: </p>
-    {% endif %}
-
-    <p class = 'block4'> User Email:  </p>
-    <p class = 'block5'> Current Quest Name: </p>
-    <p class = 'block6'> Current Quest Path Number: </p>
-    <p class = 'block7'> Points: </p>
-    <p class = 'block8'> Has Completed Project: </p>
-
-    <br>
-
-
+{% for message in messages %}
+<div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+</button>
+<span>{{message}}</span>
 </div>
-{% for user_project_record in user_project_info %}
-    <div class = 'container'>
-        <div class = 'block1'>
-            <p>{{user_project_record.user.user_first_name}} {{user_project_record.user.user_last_name}}<p>
-        </div>
-
-        <div class = 'block2'>
-            <p>{{user_project_record.user.user_ldap}}</p>
-        </div>
-
-        {% if current_project.project_has_teams %}
-        <div class = 'block3'>
-            <p>{{user_project_record.team.team_name}}</p>
-        </div>
-        {% endif %}
-
-        <div class = 'block4'>
-            <p>{{user_project_record.user.user_email}}</p>
-        </div>
-
-        <div class = 'block5'>
-            <p>{{user_project_record.current_quest.quest_name}}</p>
-        </div>
-
-        <div class = 'block6'>
-            <p>{{user_project_record.current_quest.quest_path_number}}/{{num_quests_in_project}}</p>
-        </div>
-
-        <div class = 'block7'>
-            <p>{{user_project_record.points}}/{{num_points_in_project}}</p>
-        </div>
-
-        <div class = 'block8'>
-                <p>{{user_project_record.completed_project}}</p>
-            </div>
-    </div>
 {% endfor %}
 
 
+{% if view_or_editable == 'view' %}
+<form method = 'GET' action = '/quest/admin_home_view_only/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+    <button class = 'btn btn-link' style = 'padding:15px' type = 'submit'> Back </button>
+</form>
+{% endif %}
+
+{% if view_or_editable == 'editable' %}
+<form method = 'GET' action = '/quest/admin_home_editable/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+    <button class = 'btn btn-link' style = 'padding:15px' type = 'submit'> Back </button>
+</form>
+
+{% endif %}
 
 
+<div class="container-fluid">
+    <div class="container">
+        <h2 class="text-center" id="title" style = 'color: #42bcf4;'>
+                "{{current_project.project_name }}" Query Information
+        </h2>
+            <hr>
+        <div class="row">
+        <div class="col-4">
+
+        <h3>Entire Project Queries</h3>
+        <br>
+        <div style = 'margin-left: 10%;'>
+        <p><u><strong> Above/Below/At </strong></u></p>
+
+                <button id = 'search_above_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('above')"> <strong>Above</strong> quest number ___</button>
+                <form id = 'search_above_form' method = 'POST' action = '/quest/search_above/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+                    <p>Search users above (inclusive) quest number ___: </p>
+                    {% csrf_token %}
+                    
+                    Quest Path Number:
+                    <select name="above" required>
+                        {% for quest_number in quest_path_number_list %}
+                        <option value = {{quest_number}}> {{quest_number}} </option>
+                        {% endfor %}
+                    </select>
+                    <br>
+        
+                    <button class = 'btn btn-success' type = 'submit'> Submit </button>
+                </form>
+        
+                <br>
+                <br>
+        
+                <button id = 'search_below_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('below')"> <strong>Below</strong> quest number ___</button>
+                <form id = 'search_below_form' method = 'POST' action = '/quest/search_below/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+                    <p>Search users below (inclusive) quest number ___:</p>
+                    {% csrf_token %}
+        
+                    Quest Path Number:    
+                    <select name="below" required>
+                        {% for quest_number in quest_path_number_list %}
+                        <option value = {{quest_number}}> {{quest_number}} </option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <button class = 'btn btn-success' type = 'submit'> Submit </button>
+                </form>
+        
+                <br>
+                <br>
+        
+                <button id = 'search_at_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('at')"> <strong>At</strong> quest number ___</button>
+                <form  id = 'search_at_form' method = 'POST' action = '/quest/search_at/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+                    <p>Search for users at quest number:</p>
+                    {% csrf_token %}
+                    
+                    Quest Path Number: 
+                    <select name="at" required>
+                        {% for quest_number in quest_path_number_list %}
+                        <option value = {{quest_number}}> {{quest_number}} </option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <button class = 'btn btn-success' type = 'submit'> Submit </button>
+                </form>
+        
+                <br>
+                <br>
+        
+                <p><u><strong> Single User </strong></u></p>
+
+                <button id = 'search_ldap_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('ldap')"> <strong>LDAP</strong> equal to ___</button>
+                <form id = 'search_ldap_form' method = 'POST' action = '/quest/search_by_user_ldap/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+                    <p>Search for one user's information (ldap):</p>
+                    {% csrf_token %}
+                    
+                    LDAP: 
+                    <select name="user" required>
+                        {% for user_ldap in user_ldaps_list %}
+                        <option value = {{user_ldap}}> {{user_ldap}} </option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <button class = 'btn btn-success' type = 'submit'> Submit </button>
+                </form>
+        
+                <br>
+                <br>
+        
+                <button id = 'search_user_name_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('user_name')"> <strong>Name</strong> equal to ___</button>
+                <form id = 'search_user_name_form' method = 'POST' action = '/quest/search_by_user_name/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+                    <p>Search for one user's information (name):</p>
+                    {% csrf_token %}
+                   
+                    First name: 
+                    <select name="first" required>
+                            {% for user_first_name in user_first_name_list %}
+                            <option value = '{{user_first_name}}'> {{user_first_name}} </option>
+                            {% endfor %}
+                        </select>
+                    <br>
+                    <br>
+                        
+                    Last name: 
+                    <select name="last" required>
+                            {% for user_last_name in user_last_name_list %}
+                            <option value = '{{user_last_name}}'> {{user_last_name}} </option>
+                            {% endfor %}
+                        </select>
+        
+                        <br>
+                        <br>
+                        <button class = 'btn btn-success' type = 'submit'> Submit </button>
+                    </form>
+                
+                <br>
+                <br>
+        
+                <p><u><strong> All/Completion</strong></u></p>
+
+                <button id = 'search_all_users_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('all_users')"> <strong>All</strong> users in this project: </button>
+                <form id = 'search_all_users_form' method = 'POST' action = '/quest/search_all_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+                    <p> See information for all users in this project: </p>
+                    {% csrf_token %}
+                    <button class = 'btn btn-success' type = 'submit'> Submit </button>
+                </form>
+        
+                <br>
+                <br>
+        
+                <button id = 'search_all_complete_users_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('all_complete_users')"> <strong>All</strong> users who have <strong>completed</strong> the project: </button>
+                <form id = 'search_all_complete_users_form' method = 'POST' action = '/quest/search_completed_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+                    <p> See information for all users who have completed the project: </p>
+                    {% csrf_token %} 
+                    <button class = 'btn btn-success' type = 'submit'> Submit </button>
+                </form>
+        
+                <br>
+                <br>
+        
+                <button id = 'search_all_incomplete_users_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('all_incomplete_users')"> <strong>All</strong> users who have <strong>not completed</strong> the project: </button>
+                <form id = 'search_all_incomplete_users_form' method = 'POST' action = '/quest/search_not_completed_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+                    <p> See information for all users who have not completed the project: </p>
+                    {% csrf_token %} 
+                    <button class = 'btn btn-success' type = 'submit'> Submit </button>
+                </form>
+            <br>
+            <br>
+            <br>
+        
+        </div>
+    </div>
+
+<!-- spacer div -->
+        <div class = 'col-4'></div>
+
+
+        <div class="col-4 ">
+
+                {% if current_project.project_has_teams %}
+                
+                <h3>Team Queries</h3>
+                <br>
+
+                <div style = 'margin-left: 10%'>
+                <p><u><strong> Above/Below/At </strong></u></p>
+
+                <button id = 'search_team_above_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('team_above')"> <strong>Above</strong> quest number ___</button>
+                <form id = 'search_team_above_form' method = 'POST' action = '/quest/search_team_above/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+                    <p>Search team members above (inclusive) quest number ___:</p>
+                    {% csrf_token %}
+                    Team Name: <input class = 'form-control' type = 'text' name = 'team_name'>
+                    <br>
+                    <br>
+        
+                    Quest Path Number:
+                    <select name="above" required>
+                        {% for quest_number in quest_path_number_list %}
+                        <option value = {{quest_number}}> {{quest_number}} </option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <button class = 'btn btn-success' type = 'submit'> Submit </button>
+                </form>
+        
+                <br>
+                <br>
+        
+                <button id = 'search_team_below_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('team_below')"> <strong>Below</strong> quest number ___</button>
+                <form id = 'search_team_below_form' method = 'POST' action = '/quest/search_team_below/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+                    <p>Search team members below (inclusive) quest number ___:</p>
+                    {% csrf_token %}
+                    Team Name: <input class = 'form-control' type = 'text' name = 'team_name'>
+                    <br>
+                    <br>
+                    Quest Path Number: 
+                    <select name="below" required>
+                        {% for quest_number in quest_path_number_list %}
+                        <option value = {{quest_number}}> {{quest_number}} </option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <button class = 'btn btn-success' type = 'submit'> Submit </button>
+                </form>
+        
+                <br>
+                <br>
+                
+        
+                <button id = 'search_team_at_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('team_at')"> <strong>At</strong> quest number ___</button>
+                <form  id = 'search_team_at_form' method = 'POST' action = '/quest/search_team_at/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+                    <p>Search for team members at quest number ___:</p>
+                    {% csrf_token %}
+                    Team Name: <input class = 'form-control' type = 'text' name = 'team_name'>
+                    <br>
+                    <br>
+                    Quest Path Number: 
+                    <select name="at" required>
+                        {% for quest_number in quest_path_number_list %}
+                        <option value = {{quest_number}}> {{quest_number}} </option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <button class = 'btn btn-success' type = 'submit'> Submit </button>
+                </form>
+        
+                <br>
+                <br>
+        
+                <p><u><strong> Single User </strong></u></p>
+
+                <button id = 'search_team_ldap_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('team_ldap')"> <strong>LDAP</strong> equal to ___ </button>
+                <form id = 'search_team_ldap_form' method = 'POST' action = '/quest/search_team_by_user_ldap/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+                    <p>Search for one team members's information (ldap):</p>
+                    {% csrf_token %}
+                    Team Name: <input class = 'form-control' type = 'text' name = 'team_name'>
+                    <br>
+                    <br>
+                    LDAP: 
+                    <select name="user" required>
+                        {% for user_ldap in user_ldaps_list %}
+                        <option value = {{user_ldap}}> {{user_ldap}} </option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <button class = 'btn btn-success' type = 'submit'> Submit </button>
+                </form>
+        
+                <br>
+                <br>
+        
+                <button id = 'search_team_user_name_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('team_user_name')"> <strong>Name</strong> equal to ___</button>
+                <form id = 'search_team_user_name_form' method = 'POST' action = '/quest/search_team_by_user_name/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+                    <p>Search for one team member's information (name):</p>
+                    {% csrf_token %}
+                    Team Name: <input class = 'form-control' type = 'text' name = 'team_name'>
+                    <br>
+                    First name: 
+                    <select name="first" required>
+                            {% for user_first_name in user_first_name_list %}
+                            <option value = '{{user_first_name}}'> {{user_first_name}} </option>
+                            {% endfor %}
+                        </select>
+                    <br>
+                    <br>
+        
+        
+                    Last name: 
+                    <select name="last" required>
+                            {% for user_last_name in user_last_name_list %}
+                            <option value = '{{user_last_name}}'> {{user_last_name}} </option>
+                            {% endfor %}
+                        </select>
+                        <br>
+                        <br>
+                        <button class = 'btn btn-success' type = 'submit'> Submit </button>
+                    </form>
+                
+                <br>
+                <br>
+        
+                <p><u><strong>All/Completion</strong></u></p>
+                <button id = 'search_team_name_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('team_name')"> <strong>All</strong> users in team ___</button>
+                <form id = 'search_team_name_form' method = 'POST' action = '/quest/search_team_all_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+                    <p>Search entire team information (team name):</p>
+                    {% csrf_token %}
+                    Team Name: <input class = 'form-control' type = 'text' name = 'team_name' required>
+                    <br>
+                    <button class = 'btn btn-success' type = 'submit'> Submit </button>
+                </form>
+        
+                <br>
+                <br>
+        
+                <button id = 'search_team_all_complete_users_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('team_all_complete_users')"> <strong>All</strong> users in team who have completed the project </button>
+                <form id = 'search_team_all_complete_users_form' method = 'POST' action = '/quest/search_team_completed_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+                    <p> See information for all team members who have completed the project: </p>
+                    {% csrf_token %} 
+                    Team Name: <input class = 'form-control' type = 'text' name = 'team_name'>
+                    <br>
+                    <button class = 'btn btn-success' type = 'submit'> Submit </button>
+                </form>
+        
+                <br>
+                <br>
+        
+                <button id = 'search_team_all_incomplete_users_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('team_all_incomplete_users')"> <strong>All</strong> users in team who have not completed the project </button>
+                <form id = 'search_team_all_incomplete_users_form' method = 'POST' action = '/quest/search_team_not_completed_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
+                    <p> See information for all team members who have not completed the project: </p>
+                    {% csrf_token %} 
+                    Team Name: <input class = 'form-control' type = 'text' name = 'team_name'>
+                    <br>
+                    <button class = 'btn btn-success' type = 'submit'> Submit </button>
+                </form>
+        
+                {% endif %}
+        
+        </div>
+        </div>
+        </div>
+        </div>
+    </div>
+
+
+
+
+<!-- Splits queries into 8 columns-->
+
+<div style = 'text-align: center'>
+<h2>Query = {{query}} ({{count}})</h2>
+<br>
+<br>
+</div>
+<div style="position:relative;display:block;width:100%;height:16px; text-align: center">
+
+        <div style="position:relative;display:inline-block;width:12%;">
+            <strong><u>Name:</u></strong>
+        </div>
+        <div style="position:relative;display:inline-block;width:12%;">
+            <strong><u>LDAP:</u></strong>
+        </div>
+
+        {% if current_project.project_has_teams %}
+        <div style="position:relative;display:inline-block;width:12%;">
+            <strong><u>Team:</u></strong>
+        </div>
+        {% endif %}
+
+        <div style="position:relative;display:inline-block;width:12%;">
+            <strong><u>Email:</u></strong>
+        </div>
+        <div style="position:relative;display:inline-block;width:12%;">
+            <strong><u>Quest Name:</u></strong>
+        </div>
+        <div style="position:relative;display:inline-block;width:12%;">
+            <strong><u>Current Quest Path Number:</u></strong>
+        </div>
+        <div style="position:relative;display:inline-block;width:12%;">
+            <strong><u>Points:</u></strong>
+        </div>
+        <div style="position:relative;display:inline-block;width:12%;">
+            <strong><u>Has completed Project:</u></strong>
+    </div>
+</div>
+<br>
+<br>
+    
+
+        <div style="position:relative;display:block;width:100%;height:16px; text-align: center">
+                {% for user_project_record in user_project_info %}
+
+                <div style="position:relative;display:inline-block;width:12%;">
+                    <p>{{user_project_record.user.user_first_name}} {{user_project_record.user.user_last_name}}<p>
+                </div>
+                <div style="position:relative;display:inline-block;width:12%;">
+                    <p>{{user_project_record.user.user_ldap}}</p>
+                </div>
+
+                {% if current_project.project_has_teams %}
+                <div style="position:relative;display:inline-block;width:12%;">
+                    <p>{{user_project_record.team.team_name}}</p>
+                </div>
+                {% endif %}
+
+                <div style="position:relative;display:inline-block;width:12%;">
+                    <p>{{user_project_record.user.user_email}}</p>
+                </div>
+                <div style="position:relative;display:inline-block;width:12%;">
+                    <p>{{user_project_record.current_quest.quest_name}}</p>
+                </div>
+                <div style="position:relative;display:inline-block;width:12%;">
+                    <p>{{user_project_record.current_quest.quest_path_number}}/{{num_quests_in_project}}</p>
+                </div>
+                <div style="position:relative;display:inline-block;width:12%;">
+                    <p>{{user_project_record.points}}/{{num_points_in_project}}</p>
+                </div>
+                <div style="position:relative;display:inline-block;width:12%;">
+                    <p>{{user_project_record.completed_project}}</p>
+            </div>
+
+                {% endfor %}
+
+               </div>
 
  
 </body>

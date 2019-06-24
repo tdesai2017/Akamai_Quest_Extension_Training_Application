@@ -2194,7 +2194,7 @@ def search_by_user_ldap(request, ldap, project_id):
         post_request = request.POST
         user_requested_for = post_request['user']
 
-        user_project_info = search_by_ldap_helper(request, user_requested_for, current_project)
+        user_project_info = search_by_ldap_helper(request, user_requested_for, current_project).order_by('current_quest__quest_path_number')
 
         if user_project_info == None:
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
@@ -2227,7 +2227,7 @@ def search_by_user_name(request, ldap, project_id):
         user_first_name = post_request['first']
         user_last_name = post_request['last']
 
-        user_project_info = search_by_name_helper(request, user_first_name, user_last_name, current_project)
+        user_project_info = search_by_name_helper(request, user_first_name, user_last_name, current_project).order_by('current_quest__quest_path_number')
 
         if user_project_info == None:
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
@@ -2259,7 +2259,7 @@ def search_above(request, ldap, project_id):
         post_request = request.POST
         above = post_request ['above']
 
-        user_project_info = search_above_helper(request, above, current_project, highest_quest_path_number)
+        user_project_info = search_above_helper(request, above, current_project, highest_quest_path_number).order_by('current_quest__quest_path_number')
 
         if user_project_info == None:
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
@@ -2292,7 +2292,7 @@ def search_below(request, ldap, project_id):
         post_request = request.POST
         below = post_request ['below']
 
-        user_project_info = search_below_helper(request, below, current_project, lowest_quest_path_number)
+        user_project_info = search_below_helper(request, below, current_project, lowest_quest_path_number).order_by('current_quest__quest_path_number')
 
         if user_project_info == None:
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
@@ -2322,7 +2322,7 @@ def search_at(request, ldap, project_id):
         post_request = request.POST
         at = post_request ['at']
 
-        user_project_info = search_at_helper(request, at, current_project)
+        user_project_info = search_at_helper(request, at, current_project).order_by('current_quest__quest_path_number')
 
         if user_project_info == None:
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
@@ -2352,7 +2352,7 @@ def search_all_users(request, ldap, project_id):
     if request.method == 'POST':
         post_request = request.POST
 
-        user_project_info = search_all_helper(request, current_project)
+        user_project_info = search_all_helper(request, current_project).order_by('current_quest__quest_path_number')
 
         if user_project_info == None:
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
@@ -2383,7 +2383,7 @@ def search_completed_users(request, ldap, project_id):
     if request.method == 'POST':
         post_request = request.POST
 
-        user_project_info = search_completed_helper(request, current_project)
+        user_project_info = search_completed_helper(request, current_project).order_by('current_quest__quest_path_number')
 
         if user_project_info == None:
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
@@ -2415,7 +2415,7 @@ def search_not_completed_users(request, ldap, project_id):
     if request.method == 'POST':
         post_request = request.POST
 
-        user_project_info = search_not_completed_helper(request, current_project)
+        user_project_info = search_not_completed_helper(request, current_project).order_by('current_quest__quest_path_number')
 
         if user_project_info == None:
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
@@ -2455,7 +2455,7 @@ def search_team_by_user_ldap(request, ldap, project_id):
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
         team_requested_for = Team.objects.get(team_name = team_name, project = current_project)
-        user_project_info = search_by_ldap_helper(request, user_requested_for, current_project)
+        user_project_info = search_by_ldap_helper(request, user_requested_for, current_project).order_by('current_quest__quest_path_number')
 
         # Verifies that the given ldap if valid and has a record corresponding to his team
         if (user_project_info != None) and user_project_info.filter(team = team_requested_for):
@@ -2497,7 +2497,7 @@ def search_team_by_user_name(request, ldap, project_id):
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
         team_requested_for = Team.objects.get(team_name = team_name, project = current_project)
-        user_project_info = search_by_name_helper(request, user_first_name, user_last_name, current_project)
+        user_project_info = search_by_name_helper(request, user_first_name, user_last_name, current_project).order_by('current_quest__quest_path_number')
 
         if (user_project_info != None) and user_project_info.filter(team = team_requested_for): 
             user_project_info = user_project_info.filter(team = team_requested_for)
@@ -2537,7 +2537,7 @@ def search_team_above(request, ldap, project_id):
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
         team_requested_for = Team.objects.get(team_name = team_name, project = current_project)
-        user_project_info = search_above_helper(request, above, current_project, highest_quest_path_number)
+        user_project_info = search_above_helper(request, above, current_project, highest_quest_path_number).order_by('current_quest__quest_path_number')
 
         if (user_project_info != None):
             user_project_info = user_project_info.filter(team = team_requested_for)
@@ -2577,7 +2577,7 @@ def search_team_below(request, ldap, project_id):
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
         team_requested_for = Team.objects.get(team_name = team_name, project = current_project)
-        user_project_info = search_below_helper(request, below, current_project, lowest_quest_path_number)
+        user_project_info = search_below_helper(request, below, current_project, lowest_quest_path_number).order_by('current_quest__quest_path_number')
 
         if (user_project_info != None):
             user_project_info = user_project_info.filter(team = team_requested_for)
@@ -2615,7 +2615,7 @@ def search_team_at(request, ldap, project_id):
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
         team_requested_for = Team.objects.get(team_name = team_name, project = current_project)
-        user_project_info = search_at_helper(request, at, current_project)
+        user_project_info = search_at_helper(request, at, current_project).order_by('current_quest__quest_path_number')
 
         # Verifies that the given ldap if valid and has a record corresponding to his team
         if (user_project_info != None):
@@ -2653,7 +2653,7 @@ def search_team_all_users(request, ldap, project_id):
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
         
         team_requested_for = Team.objects.get(team_name = team_name, project = current_project)
-        user_project_info = search_all_helper(request, current_project)
+        user_project_info = search_all_helper(request, current_project).order_by('current_quest__quest_path_number')
 
         # Verifies that the given ldap if valid and has a record corresponding to his team
         if (user_project_info != None):
@@ -2690,7 +2690,7 @@ def search_team_completed_users(request, ldap, project_id):
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
         team_requested_for = Team.objects.get(team_name = team_name, project = current_project)
-        user_project_info = search_completed_helper(request, current_project)
+        user_project_info = search_completed_helper(request, current_project).order_by('current_quest__quest_path_number')
 
         # Verifies that the given ldap if valid and has a record corresponding to his team
         if (user_project_info != None):
@@ -2728,7 +2728,7 @@ def search_team_not_completed_users(request, ldap, project_id):
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
         team_requested_for = Team.objects.get(team_name = team_name, project = current_project)
-        user_project_info = search_not_completed_helper(request, current_project)
+        user_project_info = search_not_completed_helper(request, current_project).order_by('current_quest__quest_path_number')
 
         # Verifies that the given ldap if valid and has a record corresponding to his team
         if (user_project_info != None):

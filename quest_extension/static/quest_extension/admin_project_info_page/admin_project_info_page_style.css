@@ -1,19 +1,10 @@
-.centered {
-    text-align: center;
-}
 
 .block1, .block2, .block3, .block4, .block4, .block5, .block6, .block7, .block8 {
     display: inline-block;
     text-align: center;
     padding: 10px;
-    
 }
 
-.container {
-    width: 100%;
-    text-align: center;
-
-}
 
 form[id^="search"]{
     display: none;
@@ -21,15 +12,16 @@ form[id^="search"]{
 
 
 
-/* Message classes */
-.success {
-	color: lightgreen;
-}
+body {background-color:#eee;}
+.container-fluid {padding:50px;}
+.container{background-color:white;padding:50px;   }
+#title{font-family: 'Lobster', cursive;;}
 
-.warning {
-	color: orange;
-}
+.col-centered{
+  float: none;
+  margin: 0 auto;
+  }
 
-.error {
-	color: red;
-}
+  .row button[type^="submit"]{
+        margin-top: 15px; 
+  }

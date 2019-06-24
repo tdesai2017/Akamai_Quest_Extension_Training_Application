@@ -6,50 +6,71 @@
     <title>User Settings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel= "stylesheet" type="text/css" href="{% static 'quest_extension/user_project_settings_style.css' %}">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+
 </head>
 <body>
 
-    <h1> Project Settings </h1>
+    {% for message in messages %}
+    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <span>{{message}}</span>
+    </div>
+    {% endfor %}
+
+
+    <div class="container-fluid">
+        <div class="container">
+            <h2 class="text-center" id="title" style = 'color: #42bcf4;'>
+                    "{{current_project.project_name }}" Settings
+            </h2>
+                <hr>
+            <div class="row">
+            <div class="col-md-5 col-centered">
+                    <p><strong>Team:</strong> {{current_user_project.team.team_name}}</p>
 
     <br>
 
-    Project Name: {{current_project.project_name}}
+    <p> <strong>Current Points:</strong> {{current_user_project.points}}</p>
 
-    <br>
-    <br>
-
-    Team: {{current_user_project.team.team_name}}
-
-    <br>
-    <br>
-
-    Current Points: {{current_user_project.points}}
-
-    <br>
     <br>
 
 
     <form method = 'POST' action = '/quest/user_archive_project/{{current_user.user_ldap}}/{{current_project.id}}'>
         {% csrf_token %}
-        <button id = 'archive_project_button' type= 'submit' onclick="return confirm('You will still have full access' 
-         + ' to this project once archived, it will simply no longer be displayed with your unarchived projects.')"> Archive Project </button>
-      </form>
+        <button class = 'btn btn-warning' id = 'archive_project_button' type= 'submit' style= 'color:white' onclick="return confirm('You will still have full access' 
+            + ' to this project once archived, it will simply no longer be displayed with your unarchived projects.')"> Archive Project </button>
+        </form>
 
-      <br>
-      <br>
+        <br>
+        <br>
 
     <form method='POST' action = '/quest/remove_user_project/{{ current_user.user_ldap }}/{{current_project.id}}'>
         {% csrf_token %}
-        <button id = 'remove_project_button' onclick="return confirm('Are you sure you want to remove this project (All data submitted and all questions answered for this project will be deleted)?');" type = 'submit' > Remove Project </button>
+        <button class = 'btn btn-danger' id = 'remove_project_button' onclick="return confirm('Are you sure you want to remove this project (All data submitted and all questions answered for this project will be deleted)?')" type = 'submit' > Remove Project </button>
     </form>
-    
+
     <br>
     <br>
+
 
     <form method = 'GET' action = '/quest/user_home/{{current_user.user_ldap}}/{{current_project.id}}'>
-        <button type = 'submit'> Back </button>
-
+        <button class = 'btn btn-link' style = 'padding:0'type = 'submit'> Back </button>
     </form>
+
+    
+
+            </div>
+            </div>
+        </div>
+	</div>
 
 
     

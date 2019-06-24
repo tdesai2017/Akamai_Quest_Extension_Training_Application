@@ -7,14 +7,21 @@
 }
 
 #update_password_button {
-height: 50px;
-width: 100px;
-}
-
+    height: 50px;
+    width: 10xw0px;
+    }
+    
 /* Password Warnings */
 #low, #up, #num, #char, #same, #email {
     display: None;
+    }
 
-  }
-
-
+    body {background-color:#eee;}
+    .container-fluid {padding:50px;}
+    .container{background-color:white;padding:50px;   }
+    #title{font-family: 'Lobster', cursive;;}
+    
+    .col-centered{
+      float: none;
+      margin: 0 auto;
+      }

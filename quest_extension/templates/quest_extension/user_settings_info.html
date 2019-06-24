@@ -5,9 +5,9 @@
 
    
     
-    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/settings_info/user_settings_info_style.css' %}">
     
     <title> User Settings/Info </title>
+    <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/settings_info/user_settings_info_style.css' %}">
     <script src="{% static 'quest_extension/settings_info/user_settings_info_js.js' %}"></script>  
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -80,10 +80,8 @@
 
     <div class="container-fluid">
 			<div class="container">
-						{% block login_welcome %}
-						{% endblock %}
                 <h2 class="text-center" id="title" style = 'color: #42bcf4;'>
-                {{current_user.user_first_name}}'s Settings
+                {{current_user.user_first_name}}'s User Settings
                 </h2>
 				 <hr>
 				<div class="row">
@@ -141,7 +139,7 @@
                         </form>
                         
                         <form method = 'GET' style = 'margin-top: 5%' action = '/quest/user_project_page/{{current_user.user_ldap}}'>
-                            <button class = 'btn btn-link' id = 'back_button' type='submit'> Back </button> 
+                            <button class = 'btn btn-link' style = 'padding:0'id = 'back_button' type='submit'> Back </button> 
                         </form>
 				</div>
 

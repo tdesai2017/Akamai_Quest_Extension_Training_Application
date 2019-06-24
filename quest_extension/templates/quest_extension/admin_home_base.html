@@ -129,14 +129,15 @@
         <h1>{{ current_project.project_name}}</h1>
 
         <div id = 'edit_name_button'>
-            <button onclick="show_update_name();" id = 'edit_name_button'> Edit Name </button>
+            <button class='btn' style = 'background-color: #42bcf4; color:white' onclick="show_update_name();" id = 'edit_name_button'> Edit Name </button>
         </div>
 
         <div id = 'edit_name_container'>
             <form method = 'POST' action = '/quest/admin_update_project_name/{{current_admin.admin_ldap}}/{{current_project.id}}'> 
                 {% csrf_token %}
-                <input class = 'form-control' type ='text' name = 'project_name' value = '{{current_project.project_name}}'>
-                <button type = 'submit'> Update Project Name</button>
+                <strong>Project Name: </strong>
+                <input class = 'form-control' type ='text' name = 'project_name' style = 'width:50%' value = '{{current_project.project_name}}'>
+                <button class='btn btn-success' type = 'submit' style = 'margin-top: 15px'> Confirm Update </button>
             </form>
         </div>
 
@@ -152,7 +153,7 @@
         <div id = 'edit_description_container'>
                 <form method='POST' id = 'test_form' action = "/quest/admin_update_project_description/{{current_admin.admin_ldap}}/{{current_project.id}}">
                         {% csrf_token %}
-                        Project Description: 
+                        <strong>Project Description: </strong>
                         <br>
                         <div id = 'edit-my-text-area'>
                             <textarea id="area1" name="project_description" form = 'test_form'>
@@ -160,12 +161,12 @@
                             </textarea>
                         </div>
                     <br>
-                        <input type=submit name="submit" value="Update Project Description" onclick="nicEditors.findEditor('area1').saveContent();">
+                        <input class = 'btn btn-success' type=submit name="submit" value="Confirm Update" onclick="nicEditors.findEditor('area1').saveContent();" style = 'margin-top: 15px'>
                 </form>
         </div>
         <div id = 'edit_description_button'>
             <br>
-            <button onclick="show();" >Edit Description</button>
+            <button class='btn' style = 'background-color: #42bcf4; color:white' onclick="show();" >Edit Description</button>
         </div>
 
   
@@ -183,7 +184,7 @@
     <div style="float:left;margin-top:25px; width:100%; ">
             <h4><small>YOUR QUESTS</small></h4>
 
-    <div class = "wrapper">
+    <div class = "wrapper" style = 'width:50%'>
         {% block quest_create_form %}
         {% endblock %}
     </div>
@@ -194,14 +195,15 @@
             <form method='POST' id = 'test_form' action = "/quest/admin_update_quest_picture/{{current_admin.admin_ldap}}/{{current_project.id}}">
                     {% csrf_token %}
                     <br>
-                    New URL: <input class = 'form-control' type = 'text' name = 'new_picture_url'>
-                    Quest Path Number: <input class = 'form-control' type = 'number' name = 'quest_path_number'>
+                    <strong>New URL:</strong> <input class = 'form-control' type = 'text' name = 'new_picture_url'>
+                    <br>
+                    <strong>Quest Path Number:</strong> <input class = 'form-control' type = 'number' name = 'quest_path_number' style = 'width:50%'>
 
-                    <button type = submit > Update Picture</button>
-        </form>
+                    <button class='btn btn-success' type = 'submit' style = 'margin-top: 15px'> Confirm Update </button>
+                </form>
     
         </div>
-            <button id = 'edit_picture_button' onclick="show_update_picture();"> Edit Picture</button>
+            <button class='btn' id = 'edit_picture_button' style = 'background-color: #42bcf4; color:white' onclick="show_update_picture();"> Update Quest Picture</button>
        
             
       <hr>

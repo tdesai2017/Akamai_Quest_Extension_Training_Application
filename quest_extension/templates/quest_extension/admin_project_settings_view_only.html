@@ -6,17 +6,19 @@
 {% endblock %}
 
 {% block teams %}
-<h3> Teams (View Only) - {{count_of_teams}} total </h3>
-  {% for team in list_of_teams %}
-  <p> {{ team.team_name }}</p>
+<strong> Teams (View Only) - {{count_of_teams}} total </strong>
+  <ul>
+{% for team in list_of_teams %}
+  <li> {{ team.team_name }}</li>
   {% endfor %}
+  </ul>
 {% endblock %}
 
 
 {% block remove_all_users %}
 <form method = 'POST' action = '/quest/remove_all_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
   {% csrf_token %}
-  <button id = 'remove_all_users_button' type= 'submit' onclick="return confirm('WARNING: If you remove all users, all data regarding their progress will be lost')"> Remove All Users </button>
+  <button  id = 'remove_all_users_button' type= 'submit' onclick="return confirm('WARNING: If you remove all users, all data regarding their progress will be lost')"> Remove All Users </button>
 </form>
 <br>
 <br>
@@ -26,7 +28,7 @@
 {% block back %}
 
 <form method = 'GET' action= '/quest/admin_home_view_only/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-    <button type='submit'> Back </button>
+    <button class = 'btn btn-link' style = 'padding:0px' type='submit'> Back </button>
 </form>
 
 {% endblock %}

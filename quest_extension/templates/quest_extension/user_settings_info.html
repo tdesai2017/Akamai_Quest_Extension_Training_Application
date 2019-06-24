@@ -118,10 +118,9 @@
                             <button class = 'btn btn-success' type = 'submit' style = 'margin-top:15px;'> Confirm Update </button>
                         </form>
                      
-                        <br>
-                        <br>
+                        
                     
-                    
+                        <p style = 'margin-top: 30px;'><strong>Update Password:</strong></p>
                         <button id = 'update_password_button' class='btn' style = 'background-color: #42bcf4; color:white' onclick="update('password')"> Update Password</button>
                     
                         <form onsubmit = 'return validate_password();' id = 'update_password_form' method='POST' action= '/quest/update_user_password/{{current_user.user_ldap}}'>

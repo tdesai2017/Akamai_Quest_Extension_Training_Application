@@ -6,35 +6,34 @@
     display: none;
 }
 
-#delete_project_button {
+
+body {background-color:#eee;}
+.container-fluid {padding:50px;}
+.container{background-color:white;padding:50px;   }
+#title{font-family: 'Lobster', cursive;;}
+
+.col-centered{
+  float: none;
+  margin: 0 auto;
+  }
+
+  #remove_as_admin {
     color: white;
-    background-color: red; 
+    background-color: rgb(255,204,0);
+    padding: 15px 32px;
+
+}
+
+ #delete_project_button {
+    color: white;
+    background-color: rgb(204, 51, 0); 
     padding: 15px 32px;
 }
 
 #remove_all_users_button {
     color: white;
-    background-color: orange;
-    padding: 15px 32px;
+    background-color: rgb(255,153,102);
+    padding: 15px 32px; 
+    
 
-}
-
-#archive_project_button {
-    color: white;
-    background-color: rgb(221, 221, 18);
-    padding: 15px 32px;
-
-}
-
-/* Message classes */
-.success {
-    color: lightgreen;
-}
-
-.warning {
-    color: orange;
-}
-
-.error {
-    color: red;
 }

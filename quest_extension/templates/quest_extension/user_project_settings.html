@@ -29,7 +29,7 @@
     <div class="container-fluid">
         <div class="container">
             <h2 class="text-center" id="title" style = 'color: #42bcf4;'>
-                    "{{current_project.project_name }}" Settings
+                    "{{current_project.project_name }}" User Settings
             </h2>
                 <hr>
             <div class="row">
@@ -42,7 +42,7 @@
 
     <br>
 
-
+<p><strong>Archive Project:</strong></p>
     <form method = 'POST' action = '/quest/user_archive_project/{{current_user.user_ldap}}/{{current_project.id}}'>
         {% csrf_token %}
         <button class = 'btn btn-warning' id = 'archive_project_button' type= 'submit' style= 'color:white' onclick="return confirm('You will still have full access' 
@@ -52,6 +52,7 @@
         <br>
         <br>
 
+     <p><strong>Remove Project:</strong></p>
     <form method='POST' action = '/quest/remove_user_project/{{ current_user.user_ldap }}/{{current_project.id}}'>
         {% csrf_token %}
         <button class = 'btn btn-danger' id = 'remove_project_button' onclick="return confirm('Are you sure you want to remove this project (All data submitted and all questions answered for this project will be deleted)?')" type = 'submit' > Remove Project </button>

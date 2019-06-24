@@ -118,10 +118,10 @@
     <div style = 'float:right'>
         <form  method = 'GET' action = '/quest/admin_project_info_page/{{current_admin.admin_ldap}}/{{current_project.id}}'>
             
-            <button type = 'submit'> Project Info</button>
+            <button class = 'btn' style = 'margin:10px' type = 'submit'> Project Info</button>
 
         </form>
-
+        
         {% block project_settings %}
         {% endblock %}
     </div>
@@ -195,9 +195,9 @@
             <form method='POST' id = 'test_form' action = "/quest/admin_update_quest_picture/{{current_admin.admin_ldap}}/{{current_project.id}}">
                     {% csrf_token %}
                     <br>
-                    <strong>New URL:</strong> <input class = 'form-control' type = 'text' name = 'new_picture_url'>
+                    <strong>New URL:</strong> <input class = 'form-control' type = 'text' name = 'new_picture_url' required>
                     <br>
-                    <strong>Quest Path Number:</strong> <input class = 'form-control' type = 'number' name = 'quest_path_number' style = 'width:50%'>
+                    <strong>Quest Path Number:</strong> <input class = 'form-control' type = 'number' name = 'quest_path_number' style = 'width:50%' required>
 
                     <button class='btn btn-success' type = 'submit' style = 'margin-top: 15px'> Confirm Update </button>
                 </form>
@@ -242,24 +242,25 @@
     <script>
         var height_of_main = $('.col-sm-8').outerHeight(true)
         var height_of_side_bar = $('.col-sm-4.sidenav').outerHeight(true)
+        console.log(height_of_main)
+        console.log(height_of_side_bar)
 
        
 
         if (height_of_main > height_of_side_bar) {
-            $('.col-sm-4.sidenav').height(height_of_main)
+            $('.col-sm-4.sidenav').height((height_of_main) + 60)
         }
 
         else {
-            $('.col-sm-8').height(height_of_side_bar)
+            $('.col-sm-8').height((height_of_side_bar) + 60)
             
             $('.col-sm-8').css('margin-bottom', '0px');
 
 
             }
-        
 
-
-
+            console.log($('.col-sm-8').outerHeight(true))
+            console.log($('.col-sm-4.sidenav').outerHeight(true))
             </script>
     </body>
     

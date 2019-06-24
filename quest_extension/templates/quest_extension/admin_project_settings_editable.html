@@ -8,23 +8,25 @@
 
 
 {% block teams %}
-<h3> Teams - {{count_of_teams}} total </h3>
-  {% for team in list_of_teams %}
-  <p> {{ team.team_name }}</p>
+<strong> Teams - {{count_of_teams}} total </strong>
+  <ul>
+{% for team in list_of_teams %}
+  <li> {{ team.team_name }}</li>
   {% endfor %}
+  </ul>
 
 <!-- I'm using "update" even in the button and form names here just so that I
 can use the js method from above -->
-<button id = 'update_add_team_button' onclick="update('add_team')"> Add another team </button>
+<button class='btn' style = 'background-color: #42bcf4; color:white;' id = 'update_add_team_button' onclick="update('add_team')"> Add another team </button>
     <form id = 'update_add_team_form' method='POST' action= '/quest/add_team/{{current_admin.admin_ldap}}/{{current_project.id}}'>
         {% csrf_token %}
         <label> Team to add: </label>
-        <input type='text' name = 'add_team_name'>
-        <button type = 'submit'> Confirm Update </button>
+        <input class = 'form-control' type='text' name = 'add_team_name'>
+        <button class = 'btn btn-success' style = 'margin-top: 15px; margin-bottom: 15px;'  type = 'submit'> Confirm Update </button>
     </form>
 <br>
 <br>
-    <button id = 'update_delete_team_button' onclick="update('delete_team')"> Delete a Team </button>
+    <button class='btn' style = 'background-color: #42bcf4; color:white;'  id = 'update_delete_team_button' onclick="update('delete_team')"> Delete a Team </button>
     <form id = 'update_delete_team_form' method='POST' action= '/quest/delete_team/{{current_admin.admin_ldap}}/{{current_project.id}}'>
         {% csrf_token %}
         <lable> Team to delete: </lable>
@@ -34,8 +36,8 @@ can use the js method from above -->
         {% endfor %}
         </select>
 
-
-        <button type = 'submit'> Confirm Update </button>
+        <br>
+        <button class = 'btn btn-success' style = 'margin-top: 15px; margin-bottom: 15px;' type = 'submit'> Confirm Update </button>
         
     </form>
 <br>
@@ -45,7 +47,7 @@ can use the js method from above -->
 {% block back %}
 
 <form method = 'GET' action= '/quest/admin_home_editable/{{current_admin.admin_ldap}}/{{current_project.id}}'>
-    <button type='submit'> Back </button>
+    <button class = 'btn btn-link' style = 'padding:0px' type='submit'> Back </button>
 </form>
 
 {% endblock %}

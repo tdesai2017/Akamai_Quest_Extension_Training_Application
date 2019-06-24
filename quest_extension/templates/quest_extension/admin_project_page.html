@@ -200,12 +200,9 @@
               <div class="card mb-4 box-shadow">
                 <!-- <img class="card-img-top" style = "height:100%; width:100%;" src="https://i.imgur.com/1533RUp.png" alt="Card image cap"> -->
                 <div class="card-body">
-                  <p>
-                    <strong style = 'color: #42bcf4; font-size: 20px '>{{project.project_name}}</strong>
+                  <p style = 'margin: 0'>
+                    <strong style = 'color: #42bcf4; font-size: 20px'>{{project.project_name}}</strong>
                 </p>
-                <br> 
-
-
 
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
@@ -213,44 +210,61 @@
 
                       {% if project.project_editable %}
                       <form method='GET' action='/quest/admin_home_editable/{{current_admin.admin_ldap}}/{{project.id}}'>
-                          <div id= 'project_button'>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <div id= 'project_button'>
                             <button class ='btn btn-success' type='submit'>Explore</button>
-                        </div>       
-                        <div id='editable'>
-                          <small>(Editable)</small>
+                        </div> 
 
+                        <div id='editable' style = 'display:inline-block'>
+                            <small>(Editable)</small>
                           </div>
-                    </form>
+                      </form>
+                          
+                          
+                          
+                    <div style = 'margin-left:30%;' >
+                    <div class="c100 p75 green" >
+                        <span>75%</span>
+                        <div class="slice">
+                            <div class="bar"></div>
+                            <div class="fill"></div>
+                        </div>
+                    </div>
+                  </div>
             
             
                     {% else %}
             
                     <form method='GET' action='/quest/admin_home_view_only/{{current_admin.admin_ldap}}/{{project.id}}'>
+                      <br>
+                      <br>
+                      <br>
+                      <br>
                       <div id= 'project_button'>
                         <button class ='btn btn-success' type='submit'>Explore</button>
-                      </div>                      
+                      </div>  
+
                       <div id='not_editable'>
-                          <small>(Not Editable)</small>
+                          <small>(Uneditable)</small>
                       </div>
                     </form>
+
+
+                    <div style = 'margin-left:30%;' >
+                        <div class="c100 p75 green" >
+                            <span>75%</span>
+                            <div class="slice">
+                                <div class="bar"></div>
+                                <div class="fill"></div>
+                            </div>
+                        </div>
+                      </div>
             
                     {% endif %}
-
-
-
-
-
-
-                    </div>
-                    
-                    
-                    <!-- {% if project.completed_project %}
-                    <small class="text-muted text-success">Completed</small>
-                    {% else %}
-                    <small class="text-muted">Incomplete</small>
-                    {% endif %} -->
-
-
+                  </div>
                   </div>
                 </div>
               </div>

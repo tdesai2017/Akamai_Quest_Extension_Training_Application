@@ -1,30 +1,31 @@
 {% extends 'quest_extension/new_account_base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block new_account_welcome %}
-<h1>New Admin Signup!</h1>
+Admin Sign-up!
 {% endblock %}
 
 {% block stylesheet_js %}
 <link rel="stylesheet" type="text/css" href="{% static 'quest_extension/new_account/new_admin_style.css' %}">
 <script src= "{% static 'quest_extension/new_account/new_admin_js.js' %}"></script>
 
-<script>
-</script>
 {% endblock %}
 
 {% block login %}
 <form method='GET' action='/quest/admin_login'>
-    <button type = 'submit'> Login </button>
+    <button class = 'btn' style = 'background-color: #42bcf4; color:white; margin: 10px' type = 'submit'> Login </button>
 </form>
 {% endblock %}
 
 {% block account_form %}
 <form method='POST' id = 'admin_form' action = '/quest/add_new_admin' onsubmit = "return validate_password();">
     {% csrf_token %}
-    {{ admin_form }}
-    <label for="retyped_password">Retype Password:</label>
-    <input id = "retyped_password" type="password" name="retyped_password" maxlength="200" >
-    <button form = 'admin_form' type= 'submit'> Submit </button> 
+    {{ admin_form|crispy }}
+    <!-- <input type="checkbox" onclick="reveal('div_id_admin_password')">Show Password -->
+
+    <input class = 'form-control' id = "retyped_password" type="password" name="retyped_password" maxlength="200" placeholder = 'Retype Password' required>
+    <button form = 'admin_form' class='btn' style = 'background-color: #42bcf4; color:white; margin-top : 15px' id = 'submit_sign_up' type="submit">Sign up!</button>
+
 </form>
 {% endblock %}

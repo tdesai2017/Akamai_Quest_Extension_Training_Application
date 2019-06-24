@@ -1,28 +1,21 @@
-#container {
-    width: 400px;
-    margin: 0 auto;
-}
 
-label, button {
-    display: block;
-    width: 10em;
-    float: left; /* makes the element act like inline block */
-    clear: left; /* clears any left floats so before so this should start on new line */
-    
+
+
+body {background-color:#eee;}
+.container-fluid {padding:50px;}
+.container{background-color:white;padding:50px;   }
+#title{font-family: 'Lobster', cursive;;}
+
+.col-centered{
+  float: none;
+  margin: 0 auto;
   }
 
-  label {
-    padding-bottom: 1em;
-
-  }
-  
-  input {
-    width: 10em;
-    float: left;
-  }
 
   /* Password Warnings */
   #low, #up, #num, #char, #same, #email {
     display: None;
 
   }
+
+

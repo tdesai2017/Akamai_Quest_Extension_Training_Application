@@ -21,16 +21,16 @@ class QuestionForm(forms.ModelForm):
 
 
 class UserForm(forms.ModelForm):
-    user_password = forms.CharField(widget=forms.PasswordInput(attrs={'autocomplete' : 'new-password'}))
+    user_ldap = forms.CharField(label = '', widget=forms.TextInput(attrs={'placeholder':'LDAP'}))
+    user_first_name = forms.CharField(label = '', widget=forms.TextInput(attrs={ 'placeholder':'First Name'}))
+    user_last_name = forms.CharField(label = '',widget=forms.TextInput(attrs={ 'placeholder':'Last Name'}))
+    user_email = forms.CharField(label = '', widget=forms.TextInput(attrs={ 'placeholder':'Email'}))
+    user_password = forms.CharField(label = '', widget=forms.PasswordInput(attrs={'placeholder':'Password'}))
     class Meta:
         model = models.User
         fields = ['user_ldap', 'user_first_name', 'user_last_name', 'user_email', 
                    'user_password',]
-        labels = {'user_ldap': 'LDAP',
-                  'user_first_name': 'First Name',
-                  'user_last_name': 'Last Name',
-                  'user_email': 'Email', 
-                  'user_password': 'Password'}
+        
 
 
 #For free response questions
@@ -84,17 +84,15 @@ class ForgotPasswordForm(forms.Form):
         
 
 class AdminForm(forms.ModelForm):
-    admin_password = forms.CharField(widget=forms.PasswordInput(attrs={'autocomplete' : 'new-password'}))
+    admin_ldap = forms.CharField(label = '', widget=forms.TextInput(attrs={'placeholder' : 'LDAP'}))
+    admin_first_name = forms.CharField(label = '', widget=forms.TextInput(attrs={'placeholder' : 'First Name'}))
+    admin_last_name = forms.CharField(label = '', widget=forms.TextInput(attrs={'placeholder' : 'Last Name'}))
+    admin_email = forms.CharField(label = '', widget=forms.TextInput(attrs={'placeholder' : 'Email'}))
+    admin_password = forms.CharField(label = '', widget=forms.PasswordInput(attrs={'placeholder': 'Password', 'autocomplete' : 'new-password'}))
     class Meta:
         model = models.Admin
         fields = ['admin_ldap', 'admin_first_name', 'admin_last_name', 'admin_email', 
                    'admin_password',]
-        labels = {'admin_ldap': 'LDAP',
-                  'admin_first_name': 'First Name',
-                  'admin_last_name': 'Last Name',
-                  'admin_email': 'Email', 
-                  'admin_password': 'Password'}
-
-
+       
 
 

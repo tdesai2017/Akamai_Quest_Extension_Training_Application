@@ -1,9 +1,8 @@
 {% extends 'quest_extension/new_account_base.html' %}
-
 {% load static %}
-
+{% load crispy_forms_tags %}
 {% block new_account_welcome %}
-<h1>New User Signup!</h1>
+User Sign-up
 {% endblock %}
 
 {% block stylesheet_js %}
@@ -13,7 +12,7 @@
 
 {% block login %}
 <form method='GET' action='/quest/user_login'>
-    <button type = 'submit'> Login </button>
+    <button class = 'btn' style = 'background-color: #42bcf4; color:white; margin: 10px' type = 'submit'> Login </button>
 </form>
 {% endblock %}
 
@@ -21,9 +20,9 @@
 {% block account_form %}
 <form method='POST' id = 'user_form' action = '/quest/add_new_user' onsubmit = "return validate_password()">
     {% csrf_token %}
-    {{ user_form }}
-    <label for="retyped_password">Retype Password:</label>
-    <input id = "retyped_password" type="password" name="retyped_password" maxlength="200" >
-    <button id = 'submit' form = 'user_form' type= 'submit'> Submit </button> 
+    {{ user_form|crispy }}
+    <input class = 'form-control' id = "retyped_password" type="password" name="retyped_password" placeholder = 'Retype Password' maxlength="200" required>
+    <button class='btn' style = 'background-color: #42bcf4; color:white; margin-top : 15px' id = 'submit_sign_up' type="submit">Sign up!</button>
+
 </form>
 {% endblock %}

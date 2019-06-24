@@ -1,24 +1,17 @@
-#container {
-    width: 400px;
-    margin: 0 auto;
+
+#ldap_for_new_password {
+  display: none;
 }
 
-label, button {
-    display: block;
-    width: 10em;
-    float: left; /* makes the element act like inline block */
-    clear: left; /* clears any left floats so before so this should start on new line */
-    
-  }
 
-  label {
-    padding-bottom: 1em;
+body {background-color:#eee;}
+.container-fluid {padding:50px;}
+.container{background-color:white;padding:50px;   }
+#title{font-family: 'Lobster', cursive;;}
 
-  }
-  
-  input {
-    width: 10em;
-    float: left;
+.col-centered{
+  float: none;
+  margin: 0 auto;
   }
 
 

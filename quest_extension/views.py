@@ -1171,9 +1171,17 @@ def get_user_project_page(request, ldap):
     current_user = User.objects.get(user_ldap = ldap)
 
     #Only include projects that there is a AdminProject link for - we don't want to include projects that the admin archived
+
+    projects_and_percentages = []
     user_projects = UserProject.objects.filter(user = current_user, archived = False).values_list('project', flat=True)
-    user_projects = Project.objects.filter(pk__in=user_projects)    
-    
+    user_projects = Project.objects.filter(pk__in=user_projects) 
+
+    for project in user_projects:
+        current_user_project = UserProject.objects.get(project = project, user = current_user)
+        quests_completed = CompletedQuest.objects.filter(userproject = current_user_project).count()
+        total_quests = Quest.objects.filter(project = project).count()
+        percentage_complete = int(quests_completed / total_quests * 100)
+        projects_and_percentages.append((project, percentage_complete))     
 
     #this is a lits of archived AdminProjects
     list_of_archived_projects = UserProject.objects.filter(user = current_user, archived = True).values_list('project', flat=True)
@@ -1182,7 +1190,7 @@ def get_user_project_page(request, ldap):
     add_new_project_form = AddNewProjectForm()
 
     context = {'current_user': current_user,
-    'user_projects': user_projects,
+    'projects_and_percentages': projects_and_percentages,
     'add_new_project_form': add_new_project_form,
     'list_of_archived_projects': list_of_archived_projects}
     return render(request, 'quest_extension/user_project_page.html', context)

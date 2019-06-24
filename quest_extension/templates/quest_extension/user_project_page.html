@@ -117,8 +117,7 @@
 
           <div class="row">
 
-            {% for project in user_projects %}
-
+            {% for project, project_percentage_complete in projects_and_percentages %}
             <div class="col-md-4">
               <div class="card mb-4 box-shadow">
                 <!-- <img class="card-img-top" style = "height:100%; width:100%;" src="https://i.imgur.com/1533RUp.png" alt="Card image cap"> -->
@@ -141,8 +140,8 @@
                         </form>
                     </div>
 
-                    <div class="c100 p25 green" style = 'margin-bottom: -1%; margin-top:5%; margin-right:10%;'>
-                        <span>25%</span>
+                    <div class="c100 p{{project_percentage_complete}} green" style = 'margin-bottom: -1%; margin-top:5%; margin-right:10%;'>
+                        <span>{{project_percentage_complete}}%</span>
                         <div class="slice">
                             <div class="bar"></div>
                             <div class="fill"></div>

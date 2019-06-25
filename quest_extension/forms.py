@@ -13,6 +13,7 @@ class QuestForm(forms.ModelForm):
 #Records the name of a question
 class QuestionForm(forms.ModelForm):
     """A form for Free Response Questions to be made"""
+    question_text = forms.CharField(label = 'Question Text:')
     class Meta:
         model = models.Question
         fields = ['question_text']
@@ -35,6 +36,7 @@ class UserForm(forms.ModelForm):
 
 #For free response questions
 class CorrectAnswerForm(forms.ModelForm):
+    answer_text = forms.CharField(label = 'Answer Text:')
     class Meta:
         model = models.CorrectAnswer
         fields = ['answer_text']
@@ -49,10 +51,10 @@ class ProjectForm(forms.ModelForm):
 
 #For MC Questions
 class RightAnswerForm(forms.Form):
-    correct_choices = forms.CharField(widget=forms.Textarea)
+    correct_choices = forms.CharField(label = 'Correct Answers:', widget=forms.Textarea)
 
 class WrongAnswerForm(forms.Form):
-    incorrect_choices = forms.CharField(widget=forms.Textarea)
+    incorrect_choices = forms.CharField(label = 'Incorrect Answers:', widget=forms.Textarea)
 
 #-------
 
@@ -67,6 +69,7 @@ class LoginForm(forms.Form):
 
 
 class VideoForm(forms.ModelForm):
+    video_url = forms.CharField(label = 'Video URL:' )
     class Meta:
         model = models.Video
         fields = ['video_url']

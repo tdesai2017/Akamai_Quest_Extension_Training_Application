@@ -126,8 +126,10 @@
                 <div id = 'edit_name_container'>
                     <form method = 'POST' action = '/quest/admin_update_quest_name/{{current_admin.admin_ldap}}/{{current_quest.id}}'> 
                         {% csrf_token %}
-                        <input type ='text' name = 'quest_name' value = {{current_quest.quest_name}}>
-                        <button type = 'submit'> Update Quest Name</button>
+                        <strong>Quest Name:</strong>
+                        <input class = 'form-control' style = 'width:30%' type ='text' name = 'quest_name' value = {{current_quest.quest_name}}>
+                        <br>
+                        <button class = 'btn btn-success' type = 'submit'> Confirm Update</button>
                     </form>
                 </div>
 
@@ -145,7 +147,7 @@
 
                 <form method='POST' id = 'edit_description_form' action = "/quest/admin_update_quest_description/{{current_admin.admin_ldap}}/{{current_quest.id}}">
                         {% csrf_token %}
-                        Quest Description: 
+                        <strong>Quest Description: </strong>
                         <br>
                         <div id = 'edit-my-text-area'>
                             <textarea id="area1" name="quest_description" form = 'edit_description_form'>
@@ -153,7 +155,8 @@
                             </textarea>
                         </div>
                     <br>
-                        <input type=submit name="submit" value="Update Quest Description" onclick="nicEditors.findEditor('area1').saveContent();">
+                    <br>
+                        <input class = 'btn btn-success' type=submit name="submit" value="Update Quest Description" onclick="nicEditors.findEditor('area1').saveContent();">
                 </form>
                 <br>
         </div>
@@ -203,8 +206,6 @@
                     <div style = 'width: 30%'>
                     {{ video_form|crispy }}
                     </div>
-                    <br>
-                    <br>
                     <button class = 'btn btn-success' type = submit>Attach Video</button>
                 </form>
             </div>
@@ -224,7 +225,7 @@
                         <br>
                          <button class = 'btn btn-default' style = 'line-height: 13px' type= 'submit' onclick = 'return validate_fr_answer("{{question.id}}", "{{question_to_answers|escapejs}}" )' name='FR_response_id' value = '{{ question.id }}'>Check Answer!</button>
                     <br>
-                   
+                    <br>
                 {% endif %}
 
                 {% if question.question_type == 'MC' %}
@@ -233,17 +234,20 @@
                     {% endfor %}
                     <br>
                     <button class = 'btn btn-default' style = 'line-height: 13px' type= 'submit'>Check Answer!</button>
-                    
+                    <br>
+                    <br>
                 {% endif %}
 
                 {% if question.question_type == 'API' %}
                     <input name = 'answer_{{question.id}}' type = checkbox value = 'completed_task'> Completed Task! </button>
+                    <br>
+                    <br>
                 {% endif %}
-                <br>
-                <br>
+                
 
             {% block edit_deletequestion %}
             {% endblock %}
+            <br>
             <br>
             {% endfor %}
 

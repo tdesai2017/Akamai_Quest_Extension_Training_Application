@@ -1,5 +1,11 @@
 
 
+.asteriskField {
+  display: none;
+}
+
+
+
 #new_question_form {
   display: none;
 }

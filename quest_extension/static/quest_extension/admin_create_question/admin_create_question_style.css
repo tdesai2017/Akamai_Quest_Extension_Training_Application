@@ -1,16 +1,13 @@
-
-/* Password Warnings */
-#low, #up, #num, #char, #same {
-    display: None;
-    }
-
 body {background-color:#eee;}
 .container-fluid {padding:50px;}
 .container{background-color:white;padding:50px;   }
 #title{font-family: 'Lobster', cursive;;}
 
 .col-centered{
-  float: none;
-  margin: 0 auto;
-  }
+float: none;
+margin: 0 auto;
+}
 
+.asteriskField {
+  display: none;
+}

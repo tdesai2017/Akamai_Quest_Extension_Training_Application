@@ -14,7 +14,7 @@
 {% block admin_quest_settings %}
 <form method='GET' action ='/quest/admin_quest_settings_editable/{{current_admin.admin_ldap}}/{{current_quest.id}}'> 
     {% csrf_token %}
-    <button class = 'btn btn-default' style = 'margin:10px' type='submit'> Quest Settings (View Only) </button>
+    <button class = 'btn btn-default' style = 'margin:10px' type='submit'> Quest Settings (Editable) </button>
 </form>
 {% endblock %}
 

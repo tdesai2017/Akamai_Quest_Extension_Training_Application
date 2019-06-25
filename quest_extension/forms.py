@@ -83,9 +83,9 @@ class VideoForm(forms.ModelForm):
 #-----------------
 
 class ForgotPasswordForm(forms.Form):
-    pin = forms.CharField(max_length=100, label='PIN')
-    new_password = forms.CharField(label = 'New Password', widget=forms.PasswordInput(attrs={'autocomplete' : 'new-password'}))
-    retype_new_password = forms.CharField( label= 'Retype Password', widget=forms.PasswordInput(attrs={'autocomplete' : 'new-password'} ))
+    pin = forms.CharField(max_length=100, label='PIN:')
+    new_password = forms.CharField(label = 'New Password:', widget=forms.PasswordInput(attrs={'autocomplete' : 'new-password'}))
+    retype_new_password = forms.CharField( label= 'Retype Password:', widget=forms.PasswordInput(attrs={'autocomplete' : 'new-password'} ))
         
 
 class AdminForm(forms.ModelForm):

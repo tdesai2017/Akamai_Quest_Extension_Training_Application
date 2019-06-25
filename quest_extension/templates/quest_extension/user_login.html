@@ -23,8 +23,8 @@ User Login
         <form id='login' method='POST' action ='/quest/user_login_to_account'>
             {% csrf_token %}
             {{ login_form|crispy }}
+            <br>
             <button class='btn' style = 'background-color: #42bcf4; color:white' id = 'submit_login' type="submit">Login</button>
-
         </form> 
 {% endblock %}
 

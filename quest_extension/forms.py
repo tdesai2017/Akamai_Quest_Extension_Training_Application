@@ -5,6 +5,11 @@ from . import models
 
 
 class QuestForm(forms.ModelForm):
+    quest_name = forms.CharField(label = 'Quest Name:')
+    quest_points_earned = forms.CharField(label = 'Quest Points Earned:')
+    quest_path_number = forms.CharField(label = 'Quest Path Number:')
+    quest_picture_url = forms.CharField(label = 'Quest Picture URL:')
+
     class Meta:
         model = models.Quest
         fields = ['quest_name', 'quest_points_earned', 'quest_path_number', 'quest_picture_url']

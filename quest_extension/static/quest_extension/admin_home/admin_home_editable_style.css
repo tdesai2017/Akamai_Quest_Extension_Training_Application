@@ -1,4 +1,7 @@
-
+.asteriskField {
+    display: none;
+  }
+  
 .container {
     padding-top: 3%;
     width: 100%;

@@ -131,7 +131,7 @@
 
                     {% if question.id not in have_correct_answer %}
                        
-                    Answer: <input class = 'form-control' style = 'width:30%' form = 'validate_user_input_form' type = 'text' id = 'input_{{question.id}}' name = 'answer_{{question.id}}'>
+                    <input class = 'form-control' style = 'width:30%' form = 'validate_user_input_form' type = 'text' id = 'input_{{question.id}}' name = 'answer_{{question.id}}' placeholder = 'answer...'>
                     <br>
                              <button class = 'btn btn-default' style = 'line-height: 13px' type= 'submit' onclick = 'return validate_fr_answer("{{question.id}}", "{{question_to_answers|escapejs}}" )' name='FR_response_id' value = '{{ question.id }}'>Check Answer!</button>
                         <br>

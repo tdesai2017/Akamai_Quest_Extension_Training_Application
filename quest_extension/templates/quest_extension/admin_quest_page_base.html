@@ -156,7 +156,7 @@
                         </div>
                     <br>
                     <br>
-                        <input class = 'btn btn-success' type=submit name="submit" value="Update Quest Description" onclick="nicEditors.findEditor('area1').saveContent();">
+                        <input class = 'btn btn-success' type=submit name="submit" value= "Confirm Update" onclick="nicEditors.findEditor('area1').saveContent();">
                 </form>
                 <br>
         </div>
@@ -221,7 +221,7 @@
                 <strong style = 'color: #42bcf4' >{{ question.question_text }}</strong>
             </div>
                 {% if question.question_type ==  'FR' %}
-                        Answer: <input class = 'form-control' style = 'width: 30%' id = 'input_{{question.id}}' name = 'answer_{{question.id}}'>
+                        <input class = 'form-control' style = 'width: 30%' id = 'input_{{question.id}}' name = 'answer_{{question.id}}' placeholder = 'answer...'>
                         <br>
                          <button class = 'btn btn-default' style = 'line-height: 13px' type= 'submit' onclick = 'return validate_fr_answer("{{question.id}}", "{{question_to_answers|escapejs}}" )' name='FR_response_id' value = '{{ question.id }}'>Check Answer!</button>
                     <br>

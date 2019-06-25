@@ -1,6 +1,8 @@
 
 
-
+#new_question_form {
+  display: none;
+}
 
 .admin_buttons button{ 
     line-height:10px;

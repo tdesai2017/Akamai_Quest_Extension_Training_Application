@@ -1187,11 +1187,9 @@ def get_user_project_page(request, ldap):
     list_of_archived_projects = UserProject.objects.filter(user = current_user, archived = True).values_list('project', flat=True)
     list_of_archived_projects = Project.objects.filter(pk__in=list_of_archived_projects)
 
-    add_new_project_form = AddNewProjectForm()
 
     context = {'current_user': current_user,
     'projects_and_percentages': projects_and_percentages,
-    'add_new_project_form': add_new_project_form,
     'list_of_archived_projects': list_of_archived_projects}
     return render(request, 'quest_extension/user_project_page.html', context)
 

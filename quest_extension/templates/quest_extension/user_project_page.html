@@ -1,5 +1,6 @@
 
 {% load static %}
+{% load crispy_forms_tags %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -105,8 +106,11 @@
             
                     <form id = 'add_new_project' method='POST' action = '/quest/add_user_project_page/{{ current_user.user_ldap }}'>
                         {% csrf_token %}
-                        {{ add_new_project_form }}
-                        Team: <input type = 'text', name = 'team'>
+                        Random Phrase: 
+                        <input class = 'form-control' style = 'display:inline; width: 20%; background-color: transparent; height: 25px;' type = 'text', name = 'random_phrase'>
+                        &nbsp
+                        Team: 
+                        <input class = 'form-control' style = 'display:inline; width: 20%; background-color: transparent; height: 25px;' type = 'text', name = 'team'>
                         <br>
                         <button class = 'btn btn-primary my-2' style = 'font-size: 10px; line-height: 7px' type ='submit' name = 'project_id' value = '{{project.id}}'>Join</button>
             

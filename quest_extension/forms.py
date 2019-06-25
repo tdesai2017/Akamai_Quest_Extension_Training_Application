@@ -59,9 +59,6 @@ class WrongAnswerForm(forms.Form):
 class TakeInFreeResponseForm(forms.Form):
     answer = forms.CharField()
 
-class AddNewProjectForm(forms.Form):
-    random_phrase = forms.CharField()
-
 
 class LoginForm(forms.Form):
     ldap = forms.CharField(max_length=45, label= '', widget=forms.TextInput(attrs={'placeholder': 'LDAP'}))

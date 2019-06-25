@@ -131,9 +131,9 @@
 
                     {% if question.id not in have_correct_answer %}
                        
-                            Answer: <input class = 'form-control' style = 'width: 30%' form = 'validate_user_input_form'>
-                            <br>
-                             <button class = 'btn btn-default' type= 'submit' onclick = 'return validate_fr_answer("{{question.id}}", "{{question_to_answers|escapejs}}" )' name='FR_response_id' value = '{{ question.id }}'>Check Answer!</button>
+                    Answer: <input class = 'form-control' style = 'width:30%' form = 'validate_user_input_form' type = 'text' id = 'input_{{question.id}}' name = 'answer_{{question.id}}'>
+                    <br>
+                             <button class = 'btn btn-default' style = 'line-height: 13px' type= 'submit' onclick = 'return validate_fr_answer("{{question.id}}", "{{question_to_answers|escapejs}}" )' name='FR_response_id' value = '{{ question.id }}'>Check Answer!</button>
                         <br>
 
                         <p id = 'wrong_{{question.id}}' style = "display: none; color: red"> Sorry that's wrong, please try again! </p>
@@ -176,7 +176,7 @@
                         {% endfor %}
 
                         <br>
-                        <button class = 'btn btn-default' type= 'submit' onclick ="return validate_mc_answer('{{question.id}}','{{question_to_answers|escapejs}}' )" name= 'MC_response_id' value= '{{ question.id }}'>Check Answer!</button>
+                        <button class = 'btn btn-default' style = 'line-height: 13px' type= 'submit' onclick ="return validate_mc_answer('{{question.id}}','{{question_to_answers|escapejs}}' )" name= 'MC_response_id' value= '{{ question.id }}'>Check Answer!</button>
                         <br>
                         <p id = 'wrong_{{question.id}}' style = "display: none; color: red"> Sorry that's wrong, please try again! </p>
                         <p id = 'correct_{{question.id}}' style = "display: none; color: green"> You are correct! </p>

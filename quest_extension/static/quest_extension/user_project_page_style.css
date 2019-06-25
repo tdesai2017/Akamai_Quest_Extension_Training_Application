@@ -1,4 +1,9 @@
 
+
+.asteriskField {
+	display: none;
+}
+
 .imageWithText{ width:auto; 
 	height:1.5em; 
 	vertical-align:text-bottom;/*or text-bottom or text-top*/ 

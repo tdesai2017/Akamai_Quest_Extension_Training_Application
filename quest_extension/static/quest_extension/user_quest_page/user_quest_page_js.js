@@ -22,7 +22,7 @@ function validate_mc_answer(question_id, q_to_a){
     var answer_to_this_question = q_to_a_json[question_id]
     
     
-    var user_input= document.querySelectorAll('.input_' + question_id)
+    var user_input= document.querySelectorAll('input_' + question_id)
     checked_list = []
     for (var i=0;i<user_input.length;i++){
         if (user_input[i].checked) {

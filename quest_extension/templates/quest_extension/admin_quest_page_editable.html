@@ -33,8 +33,12 @@
 
 
 {% block fr_mc_undo_delete %}
-    <div class= 'admin_buttons'>
-        <h3>Choose what kind of question you want to make!</h3>
+<br>
+<br>
+    <button class = 'btn btn-warning' id = 'new_question_button' onclick = 'show_new_question();'>Create New Question</button>
+
+    <div class= 'admin_buttons' id = 'new_question_form'>
+        <h3 >Choose what kind of question you want to make!</h3>
         <button class = 'btn btn-warning' form = 'free_response' type = submit>Free Response</button>
         <button class = 'btn btn-warning'  form = 'multiple_choice' type = submit>Multiple Choice</button>
         <button class = 'btn btn-warning'  form = 'api' type = submit> API </button>

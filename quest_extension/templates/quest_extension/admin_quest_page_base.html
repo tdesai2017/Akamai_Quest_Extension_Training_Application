@@ -200,10 +200,12 @@
             <div id = 'video_form'>
                 <form method='POST' action= '/quest/save_video/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
                     {% csrf_token %}
-                    {{ video_form }}
+                    <div style = 'width: 30%'>
+                    {{ video_form|crispy }}
+                    </div>
                     <br>
                     <br>
-                    <button type = submit>Attach Video</button>
+                    <button class = 'btn btn-success' type = submit>Attach Video</button>
                 </form>
             </div>
 
@@ -220,7 +222,7 @@
                 {% if question.question_type ==  'FR' %}
                         Answer: <input class = 'form-control' style = 'width: 30%' id = 'input_{{question.id}}' name = 'answer_{{question.id}}'>
                         <br>
-                         <button class = 'btn btn-default' type= 'submit' onclick = 'return validate_fr_answer("{{question.id}}", "{{question_to_answers|escapejs}}" )' name='FR_response_id' value = '{{ question.id }}'>Check Answer!</button>
+                         <button class = 'btn btn-default' style = 'line-height: 13px' type= 'submit' onclick = 'return validate_fr_answer("{{question.id}}", "{{question_to_answers|escapejs}}" )' name='FR_response_id' value = '{{ question.id }}'>Check Answer!</button>
                     <br>
                    
                 {% endif %}
@@ -230,7 +232,7 @@
                         <input type="checkbox" name="mc_input" value="{{ a.answer_text }}"> {{ a.answer_text }}<br>
                     {% endfor %}
                     <br>
-                    <button class = 'btn btn-default' type= 'submit'>Check Answer!</button>
+                    <button class = 'btn btn-default' style = 'line-height: 13px' type= 'submit'>Check Answer!</button>
                     
                 {% endif %}
 

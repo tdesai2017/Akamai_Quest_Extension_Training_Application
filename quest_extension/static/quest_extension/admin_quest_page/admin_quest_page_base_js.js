@@ -13,3 +13,9 @@ function show(){
     document.getElementById("video_form").style.display = "inline";
     document.getElementById("add_new_video").style.display = "none"
     } 
+
+
+function show_new_question(){
+  document.getElementById("new_question_form").style.display = "inline";
+  document.getElementById("new_question_button").style.display = "none";
+  } 

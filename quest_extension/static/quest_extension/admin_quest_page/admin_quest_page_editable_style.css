@@ -3,7 +3,7 @@
 
 
 .admin_buttons button{ 
-    color: blue;
+    line-height:10px;
 }
 
 #video_form {

@@ -125,15 +125,15 @@
 
         {% for question, answers, correct_answers in format_2 %}
             <div class='question' style = 'padding-bottom: 5px;'>
-                <strong >{{ question.question_text }}</strong>
+                <strong style = 'color: #42bcf4' >{{ question.question_text }}</strong>
             </div>
                 {% if question.question_type ==  'FR' %}
 
-
                     {% if question.id not in have_correct_answer %}
                        
-                            Answer: <input form = 'validate_user_input_form' type = 'text' id = 'input_{{question.id}}' name = 'answer_{{question.id}}'>
-                             <button type= 'submit' onclick = 'return validate_fr_answer("{{question.id}}", "{{question_to_answers|escapejs}}" )' name='FR_response_id' value = '{{ question.id }}'>Check Answer!</button>
+                            Answer: <input class = 'form-control' style = 'width: 30%' form = 'validate_user_input_form'>
+                            <br>
+                             <button class = 'btn btn-default' type= 'submit' onclick = 'return validate_fr_answer("{{question.id}}", "{{question_to_answers|escapejs}}" )' name='FR_response_id' value = '{{ question.id }}'>Check Answer!</button>
                         <br>
 
                         <p id = 'wrong_{{question.id}}' style = "display: none; color: red"> Sorry that's wrong, please try again! </p>
@@ -176,7 +176,7 @@
                         {% endfor %}
 
                         <br>
-                        <button type= 'submit' onclick ="return validate_mc_answer('{{question.id}}','{{question_to_answers|escapejs}}' )" name= 'MC_response_id' value= '{{ question.id }}'>Check Answer!</button>
+                        <button class = 'btn btn-default' type= 'submit' onclick ="return validate_mc_answer('{{question.id}}','{{question_to_answers|escapejs}}' )" name= 'MC_response_id' value= '{{ question.id }}'>Check Answer!</button>
                         <br>
                         <p id = 'wrong_{{question.id}}' style = "display: none; color: red"> Sorry that's wrong, please try again! </p>
                         <p id = 'correct_{{question.id}}' style = "display: none; color: green"> You are correct! </p>

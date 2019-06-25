@@ -1,4 +1,5 @@
 {% load static %}
+{% load crispy_forms_tags %}
 <!DOCTYPE html>
 
     <head>
@@ -213,13 +214,13 @@
         <br>
 
         {% for question, answers in format.items %}
-            <div class='question'>
-                <p>{{ question.question_text }}</p>
-
+        <div class='question' style = 'padding-bottom: 5px;'>
+                <strong style = 'color: #42bcf4' >{{ question.question_text }}</strong>
             </div>
                 {% if question.question_type ==  'FR' %}
-                    {{ fr_input_form }}
-                    <button type= 'submit'>Check Answer!</button>
+                        Answer: <input class = 'form-control' style = 'width: 30%' id = 'input_{{question.id}}' name = 'answer_{{question.id}}'>
+                        <br>
+                         <button class = 'btn btn-default' type= 'submit' onclick = 'return validate_fr_answer("{{question.id}}", "{{question_to_answers|escapejs}}" )' name='FR_response_id' value = '{{ question.id }}'>Check Answer!</button>
                     <br>
                    
                 {% endif %}
@@ -229,7 +230,7 @@
                         <input type="checkbox" name="mc_input" value="{{ a.answer_text }}"> {{ a.answer_text }}<br>
                     {% endfor %}
                     <br>
-                    <button type= 'submit'>Check Answer!</button>
+                    <button class = 'btn btn-default' type= 'submit'>Check Answer!</button>
                     
                 {% endif %}
 

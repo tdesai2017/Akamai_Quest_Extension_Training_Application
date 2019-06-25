@@ -120,7 +120,7 @@
 
     <form style = 'float:right' method = 'GET' action = '/quest/user_project_settings/{{ user.user_ldap }}/{{ current_project.id }}'>
         
-        <button class = 'btn' style = 'margin:10px' type = 'submit' > Project Settings</button>
+        <button class = 'btn btn-default' style = 'margin:10px' type = 'submit' > Project Settings</button>
 
     </form>
 
@@ -172,7 +172,8 @@
 
         <!-- This is what is shown if there is no picture associated with a quest -->
         <div id = 'button_submit_{{quest.id}}'>
-            <button >
+            <button class = 'btn btn-default' style = 'margin-bottom:20px'>
+                    
                 {{quest.quest_name}} ({{quest.quest_path_number}})
             </button>
             <!-- Add an icon if you have completed a quest -->
@@ -212,11 +213,11 @@
         console.log(height_of_side_bar)
 
         if (height_of_main > height_of_side_bar) {
-            $('.col-sm-4.sidenav').height(height_of_main)
+            $('.col-sm-4.sidenav').height((height_of_main) + 60)
         }
 
         else {
-            $('.col-sm-8').height(height_of_side_bar)
+            $('.col-sm-8').height((height_of_side_bar)+ 60)
             
             $('.col-sm-8').css('margin-bottom', '0px');
 

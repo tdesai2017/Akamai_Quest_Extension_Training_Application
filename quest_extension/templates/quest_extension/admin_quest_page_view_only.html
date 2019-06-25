@@ -9,11 +9,11 @@
 {% block admin_quest_settings %}
 <form method='GET' action ='/quest/admin_quest_settings_view_only/{{current_admin.admin_ldap}}/{{current_quest.id}}'> 
     {% csrf_token %}
-    <button type='submit'> Quest Settings (View Only) </button>
+    <button class = 'btn' style = 'margin:10px' type='submit'> Quest Settings (View Only) </button>
 </form>
 {% endblock %}
 
-{% block home %}
+{% block back %}
     <form id='home' action = '/quest/admin_home_view_only/{{current_admin.admin_ldap}}/{{current_project_id}}' method='GET'></form>
-    <button form = 'home' type = submit>Home</button>
+    <button class = 'btn btn-link' style = 'padding:0px' form = 'home' type = submit>Back</button>
 {% endblock %}

@@ -9,7 +9,7 @@
     
 
     {% block path_number_code %}
-    <button id = 'update_path_number_button' onclick="update('path_number')"> Update Quest Path Number </button>
+    <button class = 'btn' style = 'background-color: #42bcf4; color:white;margin-bottom:15px' id = 'update_path_number_button' onclick="update('path_number')"> Update Quest Path Number </button>
     <form id = 'update_path_number_form' method='POST' action= '/quest/update_quest_path_number/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
         {% csrf_token %}
         <input type='text' name = 'quest_path_number' value = '{{current_quest.quest_path_number}}'>
@@ -18,7 +18,7 @@
     {% endblock %}
     
     {% block points_earned_code %}
-    <button id = 'update_points_earned_button' onclick="update('points_earned')"> Update Points Earned On Completion</button>
+    <button id = 'update_points_earned_button' class='btn' style = 'background-color: #42bcf4; color:white;margin-bottom:15px' onclick="update('points_earned')"> Update Points Earned On Completion</button>
     <form id = 'update_points_earned_form' method='POST' action= '/quest/update_quest_points_earned/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
         {% csrf_token %}
         <input type='text' name = 'quest_points_earned' value = '{{current_quest.quest_points_earned}}'>
@@ -28,21 +28,18 @@
     
 
     {% block delete_quest_code %}
-    <br>
-    <br>
-    <br>
+   
     <form method = 'POST' action = '/quest/delete_quest/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
         {% csrf_token %}
         <button id = 'delete_quest_button' type= 'submit' onclick="return confirm('WARNING: If you delete this quest, all data will be lost regarding the quest! ')"> Delete Quest </button>
     </form>
-    <br>
-    <br>
+    
     {% endblock %}
     
    
     {% block back_button %}
     <form method = 'GET' action= '/quest/admin_quest_page_editable/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
-        <button type='submit'> Back </button>
+        <button class = 'btn btn-link' style = 'padding:0px' type='submit'> Back </button>
     </form>
     {% endblock %}
 

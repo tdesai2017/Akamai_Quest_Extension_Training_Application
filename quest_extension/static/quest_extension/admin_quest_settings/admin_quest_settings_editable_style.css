@@ -5,19 +5,17 @@
 
 #delete_quest_button {
     color: white;
-    background-color: red; 
+    background-color:rgb(204,51,0); 
     padding: 15px 32px;
 }
 
-/* Message classes */
-.success {
-    color: lightgreen;
-}
 
-.warning {
-    color: orange;
-}
+body {background-color:#eee;}
+.container-fluid {padding:50px;}
+.container{background-color:white;padding:50px;   }
+#title{font-family: 'Lobster', cursive;;}
 
-.error {
-    color: red;
-}
+.col-centered{
+  float: none;
+  margin: 0 auto;
+  }

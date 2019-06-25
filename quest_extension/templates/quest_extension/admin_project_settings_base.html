@@ -99,17 +99,12 @@
         {% block remove_all_users %}
         {% endblock %}
         
-        
-        
-
-        
-
-       
+      
 
 
           <form method = 'POST' action = '/quest/delete_project/{{current_admin.admin_ldap}}/{{current_project.id}}'>
             {% csrf_token %}
-            <button  id = 'delete_project_button' type= 'submit' onclick="return confirm('WARNING: If you delete this project, all data will be lost regarding the project, and all admins and users will lose access!!! ')"> Delete Project </button>
+            <button id = 'delete_project_button' type= 'submit' onclick="return confirm('WARNING: If you delete this project, all data will be lost regarding the project, and all admins and users will lose access!!! ')"> Delete Project </button>
         </form>
         
         <br>

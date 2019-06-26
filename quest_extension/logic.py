@@ -47,32 +47,6 @@ def save_fr_question(request, ldap, question_form, answer_form, quest_id, timest
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
 
 
-
-
-# def save_edit_fr_question(request, ldap, question_form, answer_form, quest_id, timestamp=timezone.now()):
-
-#     print ('fr_timestamp = ',timestamp)
-#     print('fr_timenow = ', timezone.now())
-#     quest = Quest.objects.get(id=quest_id)
-#     q_form = question_form.save(commit=False)
-#     q_form.question_type = 'FR'
-    
-#     q_form.quest = quest
-#     q_form.save()
-#     question_id = q_form.id
-
-
-#     Question.objects.filter(id = question_id).update(time_modified = timezone.now())
-
-#     current_question = Question.objects.get(id = question_id)
-
-#     a_form = answer_form.save(commit=False)
-#     a_form.answer_text = a_form.answer_text.strip()
-#     a_form.question = Question.objects.get(id=question_id)
-#     a_form.save()
-#     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
-
-
 #Saves a multiple choice question to the backend
 def save_mc_question(request, ldap, question_form, answer_form, wrong_answer_form, quest_id, timestamp=None):
 
@@ -124,7 +98,7 @@ def save_api_question(request, ldap, question_form, quest_id, timestamp=None):
     if not timestamp:
         timestamp=timezone.now()
 
-        
+
     api_url = request.POST['api_url']
     current_quest = Quest.objects.get(id = quest_id)
     

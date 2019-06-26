@@ -218,7 +218,7 @@
 
         {% for question, answers in format.items %}
         <div class='question' style = 'padding-bottom: 5px;'>
-                <strong style = 'color: #42bcf4; font-size:130%'>{{ question.question_text }}</strong>
+                <strong style = 'color: #42bcf4; font-size:130%' >{{ question.question_text }}</strong>
             </div>
                 {% if question.question_type ==  'FR' %}
                         <input class = 'form-control' style = 'width: 30%' id = 'input_{{question.id}}' name = 'answer_{{question.id}}' placeholder = 'answer...'>
@@ -227,14 +227,16 @@
                         {% for question_id, answers in correct_answer_list %}
 
                             {% if question_id == question.id %}
+                            <small>
 
                                 {% for answer in answers %}
 
-                                <span><small>(Answer: {{answer}})</small></span>
+                                <span>(Answer: {{answer}})</span>
 
                                 {% endfor %}
 
                             {% endif %}
+                            </small>
 
                         {% endfor %}
                         <br>
@@ -253,14 +255,14 @@
                     {% for question_id, answers in correct_answer_list %}
 
                         {% if question_id == question.id %}
-                        <span><small>(Answer: 
+                        <small><span>(Answer:</span> 
 
                         {% for answer in answers %}
 
-                            <span><small>{{answer}}</small></span>
+                            <span>{{answer}}</span>
 
                             {% endfor %}
-                        <span><small>)</small></span>
+                        <span>)</span></small>
 
                         {% endif %}
 

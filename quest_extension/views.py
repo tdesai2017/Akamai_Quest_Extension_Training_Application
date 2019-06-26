@@ -1463,10 +1463,12 @@ def user_change_password_request(request):
             send_mail(
             'Password Reset',
             message_body,
-            'qextension@gmail.com', 
+            'tushar-sona@akamai.com', 
             [current_user.user_email],
             fail_silently=False,
             )
+            messages.success(request, 'You should receive an email with your pin! Definitely check your spam folder if you do not see it at first!')
+
 
             
             # FROM = 'quest-extension@akamai.com'
@@ -1492,7 +1494,6 @@ def user_change_password_request(request):
             # server = smtplib.SMTP('localhost')
             # server.sendmail(FROM, TO, message)
             # server.quit()
-            # messages.success(request, 'You should receive an email with your pin! Definitely check your spam folder if you do not see it at first!')
 
 
             return HttpResponseRedirect('/quest/user_forgot_password/' + ldap)
@@ -1700,10 +1701,12 @@ def admin_change_password_request(request):
             send_mail(
             'Password Reset',
             message_body,
-            'qextension@gmail.com', 
+            'tushar-sona@akamai.com', 
             [current_admin.admin_email],
             fail_silently=False,
             )
+            messages.success(request, 'You should receive an email with your pin! Definitely check your spam folder if you do not see it at first!')
+
             return HttpResponseRedirect('/quest/admin_forgot_password/' + ldap)
     
         return HttpResponseRedirect('/quest/admin_login')

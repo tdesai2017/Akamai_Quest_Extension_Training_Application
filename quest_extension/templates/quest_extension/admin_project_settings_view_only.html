@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block teams %}
-<strong> Teams (View Only) - {{count_of_teams}} total </strong>
+<strong> Teams: </strong> {{count_of_teams}} total 
   <ul>
 {% for team in list_of_teams %}
   <li> {{ team.team_name }}</li>
@@ -16,9 +16,10 @@
 
 
 {% block remove_all_users %}
+<p><strong>Remove All Users: </strong></p>
 <form method = 'POST' action = '/quest/remove_all_users/{{current_admin.admin_ldap}}/{{current_project.id}}'>
   {% csrf_token %}
-  <button  id = 'remove_all_users_button' type= 'submit' onclick="return confirm('WARNING: If you remove all users, all data regarding their progress will be lost')"> Remove All Users </button>
+  <button  id = 'remove_all_users_button' style = 'margin-left: 40px' type= 'submit' onclick="return confirm('WARNING: If you remove all users, all data regarding their progress will be lost')"> Remove All Users </button>
 </form>
 <br>
 <br>

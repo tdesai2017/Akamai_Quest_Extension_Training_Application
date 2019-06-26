@@ -8,7 +8,7 @@
 
 
 {% block teams %}
-<strong> Teams - {{count_of_teams}} total </strong>
+<strong> Teams: </strong> {{count_of_teams}} total 
   <ul>
 {% for team in list_of_teams %}
   <li> {{ team.team_name }}</li>
@@ -17,7 +17,7 @@
 
 <!-- I'm using "update" even in the button and form names here just so that I
 can use the js method from above -->
-<button class='btn' style = 'background-color: #42bcf4; color:white;' id = 'update_add_team_button' onclick="update('add_team')"> Add another team </button>
+<button class='btn' style = 'background-color: #42bcf4; color:white; margin-left: 40px' id = 'update_add_team_button' onclick="update('add_team')"> Add another team </button>
     <form id = 'update_add_team_form' method='POST' action= '/quest/add_team/{{current_admin.admin_ldap}}/{{current_project.id}}'>
         {% csrf_token %}
         <label> Team to add: </label>
@@ -26,7 +26,7 @@ can use the js method from above -->
     </form>
 <br>
 <br>
-    <button class='btn' style = 'background-color: #42bcf4; color:white;'  id = 'update_delete_team_button' onclick="update('delete_team')"> Delete a Team </button>
+    <button class='btn' style = 'background-color: #42bcf4; color:white; margin-left: 40px'  id = 'update_delete_team_button' onclick="update('delete_team')"> Delete a Team </button>
     <form id = 'update_delete_team_form' method='POST' action= '/quest/delete_team/{{current_admin.admin_ldap}}/{{current_project.id}}'>
         {% csrf_token %}
         <lable> Team to delete: </lable>

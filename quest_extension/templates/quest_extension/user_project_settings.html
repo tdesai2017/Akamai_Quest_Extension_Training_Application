@@ -42,10 +42,10 @@
 
     <br>
 
-<p><strong>Archive Project:</strong></p>
+    <p><strong>Archive Project:</strong></p>
     <form method = 'POST' action = '/quest/user_archive_project/{{current_user.user_ldap}}/{{current_project.id}}'>
         {% csrf_token %}
-        <button class = 'btn btn-warning' id = 'archive_project_button' type= 'submit' style= 'color:white' onclick="return confirm('You will still have full access' 
+        <button class = 'btn btn-warning' id = 'archive_project_button' type= 'submit' style= 'color:white; margin-left:40px;' onclick="return confirm('You will still have full access' 
             + ' to this project once archived, it will simply no longer be displayed with your unarchived projects.')"> Archive Project </button>
         </form>
 
@@ -54,7 +54,7 @@
      <p><strong>Remove Project:</strong></p>
     <form method='POST' action = '/quest/remove_user_project/{{ current_user.user_ldap }}/{{current_project.id}}'>
         {% csrf_token %}
-        <button class = 'btn btn-danger' id = 'remove_project_button' onclick="return confirm('Are you sure you want to remove this project (All data submitted and all questions answered for this project will be deleted)?')" type = 'submit' > Remove Project </button>
+        <button class = 'btn btn-danger' id = 'remove_project_button' style = 'margin-left:40px;' onclick="return confirm('Are you sure you want to remove this project (All data submitted and all questions answered for this project will be deleted)?')" type = 'submit' > Remove Project </button>
     </form>
 
     <br>

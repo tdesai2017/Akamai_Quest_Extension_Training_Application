@@ -274,26 +274,27 @@ def validate_api_question_response(request, ldap, question):
 
     payload = {'ldap': ldap}
 
+    try:
+        php_result = str(requests.get(question_url, params = payload).content)
 
-    php_result = str(requests.get(question_url, params = payload).content)
+        if 'true' in php_result:
+            correctly_answered_question = CorrectlyAnsweredQuestion()
+            #Adds a new correctly answer question
+            correctly_answered_question.question = current_question
+            correctly_answered_question.userproject = current_user_project
+            correctly_answered_question.save()        
+            go_to_next_quest(current_quest, current_user, current_project)
+            messages.success(request, 'That\'s correct!!' , extra_tags = str(current_question.id))
+        elif 'false' in php_result:
+            messages.error(request, 'Sorry, you have not completed this task yet :(', extra_tags = str(current_question.id))
+        else:
+            messages.error(request, 'There is a problem with this question since it does not return a ' +
+            'true or false response - please let the admin know!', extra_tags = str(current_question.id))
 
-    if 'true' in php_result:
-        correctly_answered_question = CorrectlyAnsweredQuestion()
-        #Adds a new correctly answer question
-        correctly_answered_question.question = current_question
-        correctly_answered_question.userproject = current_user_project
-        correctly_answered_question.save()        
-        go_to_next_quest(current_quest, current_user, current_project)
-        messages.success(request, 'That\'s correct!!' , extra_tags = str(current_question.id))
-    elif 'false' in php_result:
-        messages.error(request, 'Sorry, you have not completed this task yet :(', extra_tags = str(current_question.id))
-    else:
-        messages.error(request, 'There is a problem with this question since it does not return a ' +
-        'true or false response - please let the admin know!', extra_tags = str(current_question.id))
-
-
-
-
+    except:
+        messages.error(request, 'There is a problem with this question since we cannot connect to the php file, ' 
+        + 'please let an admin know!', extra_tags = str(current_question.id))
+        
 
 #Validates whether a mc or fr question is correctly answered
 def validate_mc_or_fr_question_response(request, ldap, question, user_answer):
@@ -324,9 +325,9 @@ def validate_mc_or_fr_question_response(request, ldap, question, user_answer):
         correctly_answered_question.userproject = current_user_project
         correctly_answered_question.save()
         go_to_next_quest(current_quest, current_user, current_project)
-        messages.success(request, 'That\'s correct!!' , extra_tags = str(current_question.id))
+        messages.success(request, 'That is correct!' , extra_tags = str(current_question.id))
     else:
-        messages.error(request, 'Sorry, that\'s not the right answer :(', extra_tags = str(current_question.id))
+        messages.error(request, 'Sorry, that is not the correct answer.', extra_tags = str(current_question.id))
 
 # Creates the format needed to display the information for the admin quest pages (View and editable)
 def create_admin_quest_page_format(list_of_questions):
@@ -602,6 +603,17 @@ def get_leaderboard_format(current_project):
             format.append( (None, user_first_name + ' ' + user_last_name, points) )
 
     return (format)
+
+
+def get_correct_answer_list(list_of_questions):
+
+    correct_answer_list = []
+    for question in list_of_questions:
+        correct_answers = CorrectAnswer.objects.filter(question = question).values_list('answer_text', flat = True)
+        correct_answer_list.append((question.id, correct_answers))
+
+    return correct_answer_list
+
     
 
 

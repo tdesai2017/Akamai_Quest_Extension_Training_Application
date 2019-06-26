@@ -215,13 +215,29 @@
 
         <br>
         <br>
-
+        
         {% for question, answers in format.items %}
         <div class='question' style = 'padding-bottom: 5px;'>
                 <strong style = 'color: #42bcf4' >{{ question.question_text }}</strong>
             </div>
                 {% if question.question_type ==  'FR' %}
                         <input class = 'form-control' style = 'width: 30%' id = 'input_{{question.id}}' name = 'answer_{{question.id}}' placeholder = 'answer...'>
+
+                        <!-- Prints the answers for the admin to see only -->
+                        {% for question_id, answers in correct_answer_list %}
+
+                            {% if question_id == question.id %}
+
+                                {% for answer in answers %}
+
+                                <span><small>(Answer: {{answer}})</small></span>
+
+                                {% endfor %}
+
+                            {% endif %}
+
+                        {% endfor %}
+                        <br>
                         <br>
                          <button class = 'btn btn-default' style = 'line-height: 13px' type= 'submit' onclick = 'return validate_fr_answer("{{question.id}}", "{{question_to_answers|escapejs}}" )' name='FR_response_id' value = '{{ question.id }}'>Check Answer!</button>
                     <br>
@@ -232,6 +248,24 @@
                     {% for a in answers %}
                         <input type="checkbox" name="mc_input" value="{{ a.answer_text }}"> {{ a.answer_text }}<br>
                     {% endfor %}
+
+                    <!-- Prints the answers for the admin -->
+                    {% for question_id, answers in correct_answer_list %}
+
+                        {% if question_id == question.id %}
+                        <span><small>(Answer: 
+
+                        {% for answer in answers %}
+
+                            <span><small>{{answer}}</small></span>
+
+                            {% endfor %}
+                        <span><small>)</small></span>
+
+                        {% endif %}
+
+                    {% endfor %}
+                    <br>
                     <br>
                     <button class = 'btn btn-default' style = 'line-height: 13px' type= 'submit'>Check Answer!</button>
                     <br>

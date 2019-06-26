@@ -142,6 +142,7 @@
                         
                     {%for message in messages %}
                             {%if question.id|slugify in message.tags %}
+                            <br>
                             <p class="{{ message.tags }}" style = 'display:inline-block'> {{message}} </p>   
                         {%endif%}
                     {%endfor%}
@@ -175,14 +176,15 @@
                             <input form = 'validate_user_input_form' type="checkbox" class= "input_{{question.id}}" name= "answer_{{question.id}}" value="{{ a.answer_text }}">{{ a.answer_text }}<br>
                         {% endfor %}
 
+
                         <br>
                         <button class = 'btn btn-default' style = 'line-height: 13px' type= 'submit' onclick ="return validate_mc_answer('{{question.id}}','{{question_to_answers|escapejs}}' )" name= 'MC_response_id' value= '{{ question.id }}'>Check Answer!</button>
                         <br>
                         <p id = 'wrong_{{question.id}}' style = "display: none; color: red"> Sorry that's wrong, please try again! </p>
                         <p id = 'correct_{{question.id}}' style = "display: none; color: green"> You are correct! </p>
-                        
                         {%for message in messages %}
                             {%if question.id|slugify in message.tags %}
+                            <br>
                             <p class="{{ message.tags }}" style = 'display:inline-block'> {{message}} </p>   
                         {%endif%}
                     {%endfor%}
@@ -215,6 +217,7 @@
 
                     {%for message in messages %}
                         {%if question.id|slugify in message.tags %}
+                        <br>
                             <p class="{{ message.tags }}" style = 'display:inline-block'> {{message}} </p>   
                         {%endif%}
                     {%endfor%}
@@ -256,8 +259,7 @@
         var height_of_main = $('.col-sm-8').outerHeight(true)
         var height_of_side_bar = $('.col-sm-4.sidenav').outerHeight(true)
 
-        console.log(height_of_main)
-        console.log(height_of_side_bar)
+        
 
         if (height_of_main > height_of_side_bar) {
             $('.col-sm-4.sidenav').height(height_of_main)
@@ -270,9 +272,7 @@
 
 
             }
-        console.log($('.col-sm-8').outerHeight(true))
-        console.log([$('.col-sm-4.sidenav').height(), $('.col-sm-8').height()] )
-
+    
 
 
             </script>

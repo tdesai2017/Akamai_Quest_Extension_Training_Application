@@ -340,19 +340,23 @@ def get_admin_quest_page_editable(request, ldap, quest_id):
     all_videos = Video.objects.filter(quest = current_quest)
     recently_awarded_points = get_recently_awarded_points_format(current_project)
     leaderboard = get_leaderboard_format(current_project)  
+    correct_answer_list = get_correct_answer_list(list_of_questions)
+
 
     format = create_admin_quest_page_format(list_of_questions)
 
-    context = {'current_quest': current_quest,
-     'format': format,
-     'fr_input_form': fr_input_form,
-     'current_project_id': current_project_id,
-     'video_form': video_form,
-     'all_videos': all_videos, 
-     'current_admin': current_admin,
-     'recently_awarded_points': recently_awarded_points,
-     'leaderboard': leaderboard,   
-     }
+    context = {
+    'correct_answer_list': correct_answer_list,
+    'current_quest': current_quest,
+    'format': format,
+    'fr_input_form': fr_input_form,
+    'current_project_id': current_project_id,
+    'video_form': video_form,
+    'all_videos': all_videos, 
+    'current_admin': current_admin,
+    'recently_awarded_points': recently_awarded_points,
+    'leaderboard': leaderboard,   
+    }
     return render(request, 'quest_extension/admin_quest_page_editable.html', context)
 
 
@@ -635,12 +639,13 @@ def get_admin_quest_page_view_only(request, ldap, quest_id):
     video_form = VideoForm()
     recently_awarded_points = get_recently_awarded_points_format(current_project)
     leaderboard = get_leaderboard_format(current_project)  
-
-
+    correct_answer_list = get_correct_answer_list(list_of_questions)
     format = create_admin_quest_page_format(list_of_questions)
 
 
-    context = {'current_quest': current_quest,
+    context = {
+    'correct_answer_list': correct_answer_list, 
+    'current_quest': current_quest,
     'format': format,
     'fr_input_form': fr_input_form,
     'current_project_id': current_project_id,

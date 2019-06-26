@@ -88,7 +88,7 @@
 				<div class="col-md-5 col-centered">
 
     <p style = 'margin-top: 30px'><strong>LDAP:</strong> {{current_admin.admin_ldap}}</p>
-    <button id = 'update_ldap_button' class='btn' style = 'background-color: #42bcf4; color:white' onclick="update('ldap')"> Update LDAP</button>
+    <button id = 'update_ldap_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-left:40px; ' onclick="update('ldap')"> Update LDAP</button>
     <form id = 'update_ldap_form' method='POST' action= '/quest/update_admin_ldap/{{current_admin.admin_ldap}}'>
         {% csrf_token %}
         <input class = 'form-control' type='text' name = 'admin_ldap' value = '{{current_admin.admin_ldap}}'>
@@ -96,7 +96,7 @@
     </form>
 
     <p style = 'margin-top: 30px'> <strong>First Name:</strong>  {{current_admin.admin_first_name }} </p>
-    <button id = 'update_first_name_button' class='btn' style = 'background-color: #42bcf4; color:white' onclick="update('first_name')"> Update First Name</button>
+    <button id = 'update_first_name_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-left:40px; ' onclick="update('first_name')"> Update First Name</button>
     <form id = 'update_first_name_form' method='POST' action= '/quest/update_admin_first_name/{{current_admin.admin_ldap}}'>
         {% csrf_token %}
         <input class = 'form-control' type='text' name = 'admin_first_name' value = '{{current_admin.admin_first_name}}'>
@@ -104,7 +104,7 @@
     </form>
 
     <p style = 'margin-top: 30px'> <strong>Last Name:</strong> {{current_admin.admin_last_name}} </p>
-    <button id = 'update_last_name_button' class='btn' style = 'background-color: #42bcf4; color:white' onclick="update('last_name')"> Update Last Name</button>
+    <button id = 'update_last_name_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-left:40px;' onclick="update('last_name')"> Update Last Name</button>
     <form id = 'update_last_name_form' method='POST' action= '/quest/update_admin_last_name/{{current_admin.admin_ldap}}'>
         {% csrf_token %}
         <input class = 'form-control' type='text' name = 'admin_last_name' value = '{{current_admin.admin_last_name}}'>
@@ -112,7 +112,7 @@
     </form>
 
     <p style = 'margin-top: 30px'> <strong>Email Address:</strong> </h3> {{current_admin.admin_email}} </p>
-    <button id = 'update_email_button' class='btn' style = 'background-color: #42bcf4; color:white' onclick="update('email')"> Update Email</button>
+    <button id = 'update_email_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-left:40px;' onclick="update('email')"> Update Email</button>
     <form onsubmit = 'return validate_email();'id = 'update_email_form' method='POST' action= '/quest/update_admin_email/{{current_admin.admin_ldap}}'>
         {% csrf_token %}
         <input class = 'form-control' id = 'account_email' type='text' name = 'admin_email' value = '{{current_admin.admin_email}}'>
@@ -124,7 +124,7 @@
     <br>
 
     <p><strong>Update Password:</strong></p>
-    <button id = 'update_password_button' class='btn' style = 'background-color: #42bcf4; color:white' onclick="update('password')"> Update Password</button>
+    <button id = 'update_password_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-left:40px;' onclick="update('password')"> Update Password</button>
 
     <form onsubmit = 'return validate_password();'id = 'update_password_form' method='POST' action= '/quest/update_admin_password/{{current_admin.admin_ldap}}'>
         {% csrf_token %}

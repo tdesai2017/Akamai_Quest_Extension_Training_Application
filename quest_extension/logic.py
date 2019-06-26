@@ -8,18 +8,25 @@ from django.utils.http import urlencode
 from random import shuffle
 from django.core.validators import validate_email 
 from django.contrib import messages
-from datetime import datetime
 import copy
 from django.db.models import Sum
 import hashlib
 import requests
 from collections import OrderedDict
+from django.utils import timezone
 
 
 
 
 #Saves a free response question to the backend
-def save_fr_question(request, ldap, question_form, answer_form, quest_id, timestamp=datetime.now()):
+def save_fr_question(request, ldap, question_form, answer_form, quest_id, timestamp=None):
+
+# Timestamp will not be none if you are editing a question
+    if not timestamp:
+        timestamp=timezone.now()
+
+    print ('fr_timestamp = ',timestamp)
+    print('fr_timenow = ', timezone.now())
     quest = Quest.objects.get(id=quest_id)
     q_form = question_form.save(commit=False)
     q_form.question_type = 'FR'
@@ -27,7 +34,10 @@ def save_fr_question(request, ldap, question_form, answer_form, quest_id, timest
     q_form.quest = quest
     q_form.save()
     question_id = q_form.id
+
+
     Question.objects.filter(id = question_id).update(time_modified = timestamp)
+
     current_question = Question.objects.get(id = question_id)
 
     a_form = answer_form.save(commit=False)
@@ -37,9 +47,41 @@ def save_fr_question(request, ldap, question_form, answer_form, quest_id, timest
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
 
 
-#Saves a multiple choice question to the backend
-def save_mc_question(request, ldap, question_form, answer_form, wrong_answer_form, quest_id, timestamp=datetime.now()):
 
+
+# def save_edit_fr_question(request, ldap, question_form, answer_form, quest_id, timestamp=timezone.now()):
+
+#     print ('fr_timestamp = ',timestamp)
+#     print('fr_timenow = ', timezone.now())
+#     quest = Quest.objects.get(id=quest_id)
+#     q_form = question_form.save(commit=False)
+#     q_form.question_type = 'FR'
+    
+#     q_form.quest = quest
+#     q_form.save()
+#     question_id = q_form.id
+
+
+#     Question.objects.filter(id = question_id).update(time_modified = timezone.now())
+
+#     current_question = Question.objects.get(id = question_id)
+
+#     a_form = answer_form.save(commit=False)
+#     a_form.answer_text = a_form.answer_text.strip()
+#     a_form.question = Question.objects.get(id=question_id)
+#     a_form.save()
+#     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
+
+
+#Saves a multiple choice question to the backend
+def save_mc_question(request, ldap, question_form, answer_form, wrong_answer_form, quest_id, timestamp=None):
+
+    # Timestamp will not be none if you are editing a question
+    if not timestamp:
+        timestamp=timezone.now()
+
+    print ('mc_timestamp = ',timestamp)
+    print('mc_timenow = ', timezone.now())
     quest_id = str(quest_id)
     quest = Quest.objects.get(id=quest_id)
     q_form = question_form.save(commit=False)
@@ -75,7 +117,14 @@ def save_mc_question(request, ldap, question_form, answer_form, wrong_answer_for
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + quest_id)
 
 # Saves an API Question
-def save_api_question(request, ldap, question_form, quest_id, timestamp=datetime.now()):
+def save_api_question(request, ldap, question_form, quest_id, timestamp=None):
+
+
+    # Timestamp will not be none if you are editing a question
+    if not timestamp:
+        timestamp=timezone.now()
+
+        
     api_url = request.POST['api_url']
     current_quest = Quest.objects.get(id = quest_id)
     
@@ -139,7 +188,7 @@ def go_to_next_quest(current_quest, current_user, current_project):
         completed_quest = CompletedQuest()
         completed_quest.quest = current_quest
         completed_quest.userproject = users_user_project_object
-        completed_quest.time_completed = datetime.now()
+        completed_quest.time_completed = timezone.now()
         completed_quest.save()
 
         #If next quest exists

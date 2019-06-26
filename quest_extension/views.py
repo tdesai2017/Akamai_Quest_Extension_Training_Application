@@ -8,7 +8,6 @@ from django.utils.http import urlencode
 from random import shuffle
 from django.core.validators import validate_email 
 from django.contrib import messages
-from datetime import datetime
 import copy
 from quest_extension.logic import *
 from django.core.mail import send_mail
@@ -38,6 +37,7 @@ def get_fr_question_form(request, ldap, quest_id):
     return render(request, 'quest_extension/admin_create_fr_question.html', context)
 
 def create_fr_question(request, ldap, quest_id):
+    print ('I IS HEARJFKLSDJFKLASJDFKLASJD')
     
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
@@ -48,6 +48,7 @@ def create_fr_question(request, ldap, quest_id):
     if request.method  == 'POST':
         question_form = QuestionForm(request.POST)
         answer_form = CorrectAnswerForm(request.POST)
+
         if question_form.is_valid() and answer_form.is_valid():
             messages.success(request, 'New question successfully created!')
             return save_fr_question(request, ldap, question_form, answer_form, quest_id)
@@ -342,6 +343,7 @@ def get_admin_quest_page_editable(request, ldap, quest_id):
     leaderboard = get_leaderboard_format(current_project)  
     correct_answer_list = get_correct_answer_list(list_of_questions)
 
+    # print([(x.question_type, x.time_modified) for x in list_of_questions])
 
     format = create_admin_quest_page_format(list_of_questions)
 
@@ -1166,8 +1168,6 @@ def admin_unarchive_project(request, ldap):
 
 ######################################
 def get_user_project_page(request, ldap):
-
-    print (validate_user_access(request, ldap))
 
 
     if not validate_user_access(request, ldap):

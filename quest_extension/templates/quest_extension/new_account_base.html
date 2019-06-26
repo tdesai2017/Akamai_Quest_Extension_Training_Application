@@ -5,7 +5,6 @@
 <head>
     <Title> Sign-up </Title>
 
-	<script src= "{% static 'quest_extension/login/login_base_js.js' %}"> </script>
 	{% block stylesheet_js %}
 	{% endblock %}
 	
@@ -16,21 +15,61 @@
 	<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 	<link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
 
-    <!-- <script>
-        function reveal(id) {
-            var x = document.getElementById(id);
-            if (x.type === "password") {
-            x.type = "text";
-            } else {
-            x.type = "password";
-            }
-            console.log(document.getElementById(id).type);
-            console.log(document.getElementById(id));
-        }
-        </script> -->
 </head>
 
 <body>
+
+        {% for message in messages %}
+    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+        <span>{{message}}</span>
+    </div>
+    {% endfor %}
+
+<div id = 'low' class="alert alert-danger alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <span>Please include a lowercase letter</span>
+</div>
+
+<div id = 'up' class="alert alert-danger alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <span>Please include an uppercase letter</span>
+</div>
+
+<div id = 'num' class="alert alert-danger alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <span>Please include a number</span>
+</div>
+
+<div id = 'char' class="alert alert-danger alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <span>Please make sure that your password is at least 8 characters long</span>
+</div>
+
+<div id = 'same' class="alert alert-danger alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <span>Please make sure that your passwords match</span>
+</div>
+
+<div id = 'email' class="alert alert-danger alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
+    <span>Please make sure that your email is valid</span>
+</div>
+
 
     
     {% block login %}

@@ -17,7 +17,7 @@ function validate_password() {
     }
 
     else {
-        document.getElementById('same').style.display = 'inline'; 
+        document.getElementById('same').style.display = 'block'; 
     }
 
     if (/[a-z]/.test(password)) { 
@@ -25,7 +25,7 @@ function validate_password() {
     }
 
     else {
-        document.getElementById('low').style.display = 'inline'; 
+        document.getElementById('low').style.display = 'block'; 
     }
     
     if (/[A-Z]/.test(password)) {
@@ -33,21 +33,21 @@ function validate_password() {
         } 
 
     else {
-        document.getElementById('up').style.display = 'inline';
+        document.getElementById('up').style.display = 'block';
     }
     
     if (/\d/.test(password)) {
         count += 1;
     }   
     else {
-        document.getElementById('num').style.display = 'inline';
+        document.getElementById('num').style.display = 'block';
     }
 
     if (password.length >= 8) { 
         count += 1
     }
     else {
-        document.getElementById('char').style.display = 'inline';
+        document.getElementById('char').style.display = 'block';
     }
 
     return (count == 5)

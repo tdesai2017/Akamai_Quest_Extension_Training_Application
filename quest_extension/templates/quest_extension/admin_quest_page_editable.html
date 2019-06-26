@@ -34,16 +34,16 @@
 
 {% block fr_mc_undo_delete %}
 <br>
-    <button class = 'btn btn-warning' id = 'new_question_button' onclick = 'show_new_question();'>Create New Question/Undo Delete</button>
+    <button class = 'btn btn-warning btn-sm' id = 'new_question_button' onclick = 'show_new_question();'>Create New Question/Undo Delete</button>
     <br>
     <div class= 'admin_buttons' id = 'new_question_form'>
         <h3 >Choose what kind of question you want to make!</h3>
-        <button class = 'btn btn-warning' form = 'free_response' type = submit>Free Response</button>
-        <button class = 'btn btn-warning'  form = 'multiple_choice' type = submit>Multiple Choice</button>
-        <button class = 'btn btn-warning'  form = 'api' type = submit> API </button>
+        <button class = 'btn btn-warning btn-sm' form = 'free_response' type = submit>Free Response</button>
+        <button class = 'btn btn-warning btn-sm'  form = 'multiple_choice' type = submit>Multiple Choice</button>
+        <button class = 'btn btn-warning btn-sm'  form = 'api' type = submit> API </button>
         <br>
         <br>
-        <button class = 'btn btn-warning' form = 'undo_delete' type = submit name='undo' value='current_quest.id'> Undo Delete</button>
+        <button class = 'btn btn-warning btn-sm' form = 'undo_delete' type = submit name='undo' value='current_quest.id'> Undo Delete</button>
     </div>
 {% endblock %}
 
@@ -54,28 +54,28 @@
         {% if question.question_type == 'FR' %}
         <form method= 'GET', action= '/quest/admin_edit_fr_question/{{current_admin.admin_ldap}}/{{ question.id }}'>
                 {% csrf_token %}
-                <button class = 'btn btn-warning' type='submit' name = 'edit' value = '{{question.id}}'>Edit</button>
+                <button class = 'btn btn-warning btn-sm' type='submit' name = 'edit' value = '{{question.id}}'>Edit</button>
         </form>
         {% endif %}
 
         {% if question.question_type == 'MC' %}
         <form method= 'GET', action= '/quest/admin_edit_mc_question/{{current_admin.admin_ldap}}/{{ question.id }}'>
                 {% csrf_token %}
-                <button class = 'btn btn-warning' type='submit' name = 'edit' value = '{{question.id}}'>Edit</button>
+                <button class = 'btn btn-warning btn-sm' type='submit' name = 'edit' value = '{{question.id}}'>Edit</button>
         </form>
         {% endif %}
 
         {% if question.question_type == 'API' %}
         <form method= 'GET', action= '/quest/admin_edit_api_question/{{current_admin.admin_ldap}}/{{ question.id }}'>
                 {% csrf_token %}
-                <button class = 'btn btn-warning' type='submit' name = 'edit' value = '{{question.id}}'>Edit</button>
+                <button class = 'btn btn-warning btn-sm' type='submit' name = 'edit' value = '{{question.id}}'>Edit</button>
         </form>
         {% endif %}
 
 
-        <form style = 'margin-top: 5px;'' method= 'POST' action= '/quest/delete_question/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
+        <form style = 'margin-top: 5px;' method= 'POST' action= '/quest/delete_question/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
                 {% csrf_token %}
-                <button class = 'btn btn-warning' type='submit' name = 'deleted' value = '{{question.id}}'>Delete Question</button>
+                <button class = 'btn btn-warning btn-sm' type='submit' name = 'deleted' value = '{{question.id}}'>Delete Question</button>
         </form>
     </div>
 {% endblock %}

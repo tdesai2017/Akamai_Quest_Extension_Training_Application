@@ -129,7 +129,7 @@
         <h1>{{ current_project.project_name}}</h1>
 
         <div id = 'edit_name_button'>
-            <button class='btn' style = 'background-color: #42bcf4; color:white' onclick="show_update_name();" id = 'edit_name_button'> Edit Name </button>
+            <button class='btn btn-sm' style = 'background-color: #42bcf4; color:white' onclick="show_update_name();" id = 'edit_name_button'> Edit Name </button>
         </div>
 
         <div id = 'edit_name_container'>
@@ -137,7 +137,7 @@
                 {% csrf_token %}
                 <strong>Project Name: </strong>
                 <input class = 'form-control' type ='text' name = 'project_name' style = 'width:50%' value = '{{current_project.project_name}}'>
-                <button class='btn btn-success' type = 'submit' style = 'margin-top: 15px'> Confirm Update </button>
+                <button class='btn btn-success btn-sm' type = 'submit' style = 'margin-top: 15px'> Confirm Update </button>
             </form>
         </div>
 
@@ -161,12 +161,12 @@
                             </textarea>
                         </div>
                     <br>
-                        <input class = 'btn btn-success' type=submit name="submit" value="Confirm Update" onclick="nicEditors.findEditor('area1').saveContent();" style = 'margin-top: 15px'>
+                        <input class = 'btn btn-success btn-sm' type=submit name="submit" value="Confirm Update" onclick="nicEditors.findEditor('area1').saveContent();" style = 'margin-top: 15px'>
                 </form>
         </div>
         <div id = 'edit_description_button'>
             <br>
-            <button class='btn' style = 'background-color: #42bcf4; color:white' onclick="show();" >Edit Description</button>
+            <button class='btn btn-sm' style = 'background-color: #42bcf4; color:white' onclick="show();" >Edit Description</button>
         </div>
 
   
@@ -199,11 +199,11 @@
                     <br>
                     <strong>Quest Path Number:</strong> <input class = 'form-control' type = 'number' name = 'quest_path_number' style = 'width:50%' required>
 
-                    <button class='btn btn-success' type = 'submit' style = 'margin-top: 15px'> Confirm Update </button>
+                    <button class='btn btn-success btn-sm' type = 'submit' style = 'margin-top: 15px'> Confirm Update </button>
                 </form>
     
         </div>
-            <button class='btn btn-warning' id = 'edit_picture_button' onclick="show_update_picture();"> Update Quest Picture</button>
+            <button class='btn btn-warning btn-sm' id = 'edit_picture_button' onclick="show_update_picture();"> Update Quest Picture</button>
        
             
       <hr>

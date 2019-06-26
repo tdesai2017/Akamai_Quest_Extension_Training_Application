@@ -8,10 +8,6 @@
   display: none;
 }
 
-.admin_buttons button{ 
-    line-height:10px;
-}
-
 #video_form {
     display: none;
     

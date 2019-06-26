@@ -121,7 +121,7 @@
             <h1> {{ current_quest.quest_name }} </h1>
 
             <div id = 'edit_name_button'>
-                    <button class='btn' style = 'background-color: #42bcf4; color:white' onclick="show_update_name();" id = 'edit_name_button'> Edit Name </button>
+                    <button class='btn btn-sm ' style = 'background-color: #42bcf4; color:white' onclick="show_update_name();" id = 'edit_name_button'> Edit Name </button>
                 </div>
                 <div id = 'edit_name_container'>
                     <form method = 'POST' action = '/quest/admin_update_quest_name/{{current_admin.admin_ldap}}/{{current_quest.id}}'> 
@@ -129,7 +129,7 @@
                         <strong>Quest Name:</strong>
                         <input class = 'form-control' style = 'width:30%' type ='text' name = 'quest_name' value = {{current_quest.quest_name}}>
                         <br>
-                        <button class = 'btn btn-success' type = 'submit'> Confirm Update</button>
+                        <button class = 'btn btn-success btn-sm' type = 'submit'> Confirm Update</button>
                     </form>
                 </div>
 
@@ -156,13 +156,13 @@
                         </div>
                     <br>
                     <br>
-                        <input class = 'btn btn-success' type=submit name="submit" value= "Confirm Update" onclick="nicEditors.findEditor('area1').saveContent();">
+                        <input class = 'btn btn-success btn-sm' type=submit name="submit" value= "Confirm Update" onclick="nicEditors.findEditor('area1').saveContent();">
                 </form>
                 <br>
         </div>
         <div id = 'edit_description_button'>
             <br>
-            <button class='btn' style = 'background-color: #42bcf4; color:white' onclick="show_edit_description();">Edit Description</button>
+            <button class='btn btn-sm' style = 'background-color: #42bcf4; color:white' onclick="show_edit_description();">Edit Description</button>
         </div>
         
 
@@ -181,7 +181,7 @@
 
     <form method='POST' action = '/quest/delete_video/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
         {% csrf_token %}
-        <button class='btn' style = 'background-color: rgb(204,51,0); color:white' 
+        <button class='btn btn-sm' style = 'background-color: rgb(204,51,0); color:white' 
             type='submit' 
             name = delete 
             value = {{video.id}} 
@@ -196,7 +196,7 @@
 
         
         <div id = 'add_new_video'>
-                <button class='btn' style = 'background-color: #42bcf4; color:white'  onclick="show();">Include Video</button>
+                <button class='btn btn-sm' style = 'background-color: #42bcf4; color:white'  onclick="show();">Include Video</button>
             </div>
         
         
@@ -206,7 +206,7 @@
                     <div style = 'width: 30%'>
                     {{ video_form|crispy }}
                     </div>
-                    <button class = 'btn btn-success' type = submit>Attach Video</button>
+                    <button class = 'btn btn-success btn-sm' type = submit>Attach Video</button>
                 </form>
             </div>
 
@@ -215,10 +215,10 @@
 
         <br>
         <br>
-        
+
         {% for question, answers in format.items %}
         <div class='question' style = 'padding-bottom: 5px;'>
-                <strong style = 'color: #42bcf4' >{{ question.question_text }}</strong>
+                <strong style = 'color: #42bcf4; font-size:130%'>{{ question.question_text }}</strong>
             </div>
                 {% if question.question_type ==  'FR' %}
                         <input class = 'form-control' style = 'width: 30%' id = 'input_{{question.id}}' name = 'answer_{{question.id}}' placeholder = 'answer...'>

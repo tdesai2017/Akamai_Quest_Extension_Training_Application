@@ -56,7 +56,7 @@
         <div style = 'margin-left: 10%;'>
         <p><u><strong> Above/Below/At </strong></u></p>
 
-                <button id = 'search_above_button' class='btn' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('above')"> <strong>Above</strong> quest number ___</button>
+                <button id = 'search_above_button' class='btn ' style = 'background-color: #42bcf4; color:white; margin-bottom: 15px' onclick="search('above')"> <strong>Above</strong> quest number ___</button>
                 <form id = 'search_above_form' method = 'POST' action = '/quest/search_above/{{current_admin.admin_ldap}}/{{current_project.id}}'>
                     <p>Search users above (inclusive) quest number ___: </p>
                     {% csrf_token %}

@@ -158,6 +158,10 @@
         <form method='GET' onsubmit='return canMoveForward( "{{quest.quest_path_number }}" );'  action='/quest/user_quest_page/{{user.user_ldap}}/{{quest.id}}'>
         
         <button id = 'image_submit_{{quest.id}}' type='submit'>
+
+
+            <div style="display: flex; justify-content: center;">
+
             <div id = 'image_cropper'>
                 <img id = 'cropped_image' src="{{quest.quest_picture_url}}" onerror = "show_plain_button_instead('{{quest.id}}')" />
                 
@@ -166,7 +170,13 @@
                 {% endif %}
 
             </div> 
-            {{quest.quest_name}} ({{quest.quest_path_number}})
+        </div>
+
+
+
+
+
+            <small><strong>{{quest.quest_name}} ({{quest.quest_path_number}})</strong></small>
         </button>
 
 

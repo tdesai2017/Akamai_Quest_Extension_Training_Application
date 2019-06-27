@@ -127,7 +127,7 @@
                     <form method = 'POST' action = '/quest/admin_update_quest_name/{{current_admin.admin_ldap}}/{{current_quest.id}}'> 
                         {% csrf_token %}
                         <strong>Quest Name:</strong>
-                        <input class = 'form-control' style = 'width:30%' type ='text' name = 'quest_name' value = {{current_quest.quest_name}}>
+                        <input class = 'form-control' style = 'width:30%' type ='text' name = 'quest_name' value = '{{current_quest.quest_name}}'>
                         <br>
                         <button class = 'btn btn-success btn-sm' type = 'submit'> Confirm Update</button>
                     </form>

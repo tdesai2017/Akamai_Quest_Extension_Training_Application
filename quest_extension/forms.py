@@ -47,10 +47,13 @@ class CorrectAnswerForm(forms.ModelForm):
         fields = ['answer_text']
 
 class ProjectForm(forms.ModelForm):
+    project_name = forms.CharField(label = 'Project Name:')
+    project_random_phrase = forms.CharField(label = 'Random Phrase:')
+    project_admin_pin = forms.CharField(label = 'Admin Pin:')
+
     class Meta:
         model = models.Project
         fields = ['project_name', 'project_random_phrase', 'project_admin_pin']
-        # fields = ['project_name', 'project_description', 'project_random_phrase']
         
 
 

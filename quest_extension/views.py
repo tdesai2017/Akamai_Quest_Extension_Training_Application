@@ -37,7 +37,6 @@ def get_fr_question_form(request, ldap, quest_id):
     return render(request, 'quest_extension/admin_create_fr_question.html', context)
 
 def create_fr_question(request, ldap, quest_id):
-    print ('I IS HEARJFKLSDJFKLASJDFKLASJD')
     
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
@@ -342,8 +341,6 @@ def get_admin_quest_page_editable(request, ldap, quest_id):
     recently_awarded_points = get_recently_awarded_points_format(current_project)
     leaderboard = get_leaderboard_format(current_project)  
     correct_answer_list = get_correct_answer_list(list_of_questions)
-
-    # print([(x.question_type, x.time_modified) for x in list_of_questions])
 
     format = create_admin_quest_page_format(list_of_questions)
 
@@ -2232,12 +2229,15 @@ def search_by_user_name(request, ldap, project_id):
         user_first_name = post_request['first']
         user_last_name = post_request['last']
 
-        user_project_info = search_by_name_helper(request, user_first_name, user_last_name, current_project).order_by('current_quest__quest_path_number')
+        user_project_info = search_by_name_helper(request, user_first_name, user_last_name, current_project)
 
         if user_project_info == None:
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
         else:
             messages.success(request, 'User information found!')
+
+        user_project_info = search_by_name_helper(request, user_first_name, user_last_name, current_project).order_by('current_quest__quest_path_number')
+
 
     else:
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)

@@ -49,7 +49,7 @@ class Question(models.Model):
 
 class IncorrectAnswer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    answer_text = models.CharField(max_length=1000)
+    answer_text = models.CharField(max_length=10000)
     time_modified = models.DateTimeField(auto_now=True)
  
 
@@ -67,7 +67,7 @@ class User(models.Model):
    
 class CorrectAnswer(models.Model):
    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-   answer_text = models.CharField(max_length=1000)
+   answer_text = models.CharField(max_length=10000)
    time_modified = models.DateTimeField(auto_now=True)
 
 

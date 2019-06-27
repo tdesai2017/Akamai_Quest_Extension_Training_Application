@@ -22,11 +22,9 @@
 
     <script>
     function show_plain_button_instead(quest_id){
-
         $('#image_submit_' + quest_id).remove()
         $('#button_submit_'+ quest_id).show()
     }
-
     
     </script>
 
@@ -242,21 +240,15 @@
         var height_of_side_bar = $('.col-sm-4.sidenav').outerHeight(true)
         console.log(height_of_main)
         console.log(height_of_side_bar)
-
        
-
         if (height_of_main > height_of_side_bar) {
             $('.col-sm-4.sidenav').height((height_of_main) + 60)
         }
-
         else {
             $('.col-sm-8').height((height_of_side_bar) + 60)
             
             $('.col-sm-8').css('margin-bottom', '0px');
-
-
             }
-
             console.log($('.col-sm-8').outerHeight(true))
             console.log($('.col-sm-4.sidenav').outerHeight(true))
             </script>

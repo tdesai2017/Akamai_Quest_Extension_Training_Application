@@ -173,7 +173,7 @@
                      {% if question.id not in have_correct_answer %}
 
                         {% for a in answers %}
-                            <input form = 'validate_user_input_form' type="checkbox" class= "input_{{question.id}}" name= "answer_{{question.id}}" value="{{ a.answer_text }}">{{ a.answer_text }}<br>
+                            <input form = 'validate_user_input_form' type="checkbox" class= "input_{{question.id}}" name= "answer_{{question.id}}" value="{{ a.answer_text }}" style = 'margin:5px'> {{ a.answer_text }}<br>
                         {% endfor %}
 
 

@@ -248,7 +248,7 @@
 
                 {% if question.question_type == 'MC' %}
                     {% for a in answers %}
-                        <input type="checkbox" name="mc_input" value="{{ a.answer_text }}"> {{ a.answer_text }}<br>
+                        <input type="checkbox" name="mc_input" value="{{ a.answer_text }}" style = 'margin:5px'> {{ a.answer_text }}<br>
                     {% endfor %}
 
                     <!-- Prints the answers for the admin -->

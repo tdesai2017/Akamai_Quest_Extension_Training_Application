@@ -28,6 +28,18 @@
     
     </script>
 
+    <script>
+
+    function make_sure_not_number(id){
+        var new_url = document.getElementById(id).value;
+        if (!isNaN(new_url)) {
+            document.getElementById('number_url_input').style.display = 'block';
+            return false;
+        }
+    }
+
+    </script>
+
 </head>
 
 
@@ -113,6 +125,16 @@
             </div>
           {% endfor %}
 
+          <div id = 'number_url_input' class="alert alert-danger alert-dismissible" role="alert" style = 'display:none !important'>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <span>Please make sure that your url is not a number. If you are unsure what you want your url to be as of now, please use a filler string
+                    filled with characters!
+                </span>
+            </div>
+        
+
     <div style = 'float:right'>
         <form  method = 'GET' action = '/quest/admin_project_info_page/{{current_admin.admin_ldap}}/{{current_project.id}}'>
             
@@ -190,10 +212,10 @@
 
 
     <div id = 'edit_picture_container'>
-            <form method='POST' id = 'test_form' action = "/quest/admin_update_quest_picture/{{current_admin.admin_ldap}}/{{current_project.id}}">
+            <form method='POST' id = 'test_form' action = "/quest/admin_update_quest_picture/{{current_admin.admin_ldap}}/{{current_project.id}}" onsubmit = "return make_sure_not_number('new_url')">
                     {% csrf_token %}
                     <br>
-                    <strong>New URL:</strong> <input class = 'form-control' type = 'text' name = 'new_picture_url' required>
+                    <strong>New URL:</strong> <input id = 'new_url' class = 'form-control' type = 'text' name = 'new_picture_url' required>
                     <br>
                     <strong>Quest Path Number:</strong> <input class = 'form-control' type = 'number' name = 'quest_path_number' style = 'width:50%' required>
 

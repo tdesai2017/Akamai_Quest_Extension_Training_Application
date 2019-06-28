@@ -23,7 +23,7 @@
 {% block quest_create_form %}
 <div id = "new_quest" >
     <br>
-    <form method='POST' id = 'new_quest_form' action = "/quest/save_new_quest/{{current_admin.admin_ldap}}/{{current_project.id}}">
+    <form method='POST' id = 'new_quest_form' action = "/quest/save_new_quest/{{current_admin.admin_ldap}}/{{current_project.id}}" onsubmit = "return make_sure_not_number('id_quest_picture_url');">
             {% csrf_token %}
             {{ quest_form|crispy }}
             <br>

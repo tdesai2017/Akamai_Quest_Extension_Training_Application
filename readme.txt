@@ -21,4 +21,4 @@ User
 
 
 
-Full "Application Manual" is located at "https://docs.google.com/document/d/188hHKYoJUuCwc2mI5LRXOX_B0SiYnuRZWm2HuOfMo6w/edit?usp=sharing"
+Full "Application Manual, Future Improvments, How to use" is located at "https://docs.google.com/document/d/188hHKYoJUuCwc2mI5LRXOX_B0SiYnuRZWm2HuOfMo6w/edit?usp=sharing"

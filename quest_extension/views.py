@@ -2502,9 +2502,10 @@ def search_team_by_user_name(request, ldap, project_id):
             return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
         team_requested_for = Team.objects.get(team_name = team_name, project = current_project)
-        user_project_info = search_by_name_helper(request, user_first_name, user_last_name, current_project).order_by('current_quest__quest_path_number')
+        user_project_info = search_by_name_helper(request, user_first_name, user_last_name, current_project)
 
         if (user_project_info != None) and user_project_info.filter(team = team_requested_for): 
+            user_project_info = search_by_name_helper(request, user_first_name, user_last_name, current_project).order_by('current_quest__quest_path_number')
             user_project_info = user_project_info.filter(team = team_requested_for)
             messages.success(request, 'User information found!')
         else:

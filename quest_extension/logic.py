@@ -90,7 +90,7 @@ def save_mc_question(request, ldap, question_form, answer_form, wrong_answer_for
     
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + quest_id)
 
-# Saves an API Question
+# Saves an API Question to the backend
 def save_api_question(request, ldap, question_form, quest_id, timestamp=None):
 
 
@@ -130,12 +130,11 @@ def is_api_url_valid(request, api_url, ldap, quest_id):
 
 
 
-#Verifies that you are only trying to access the content for the ldap that you are logged in for
+#Verifies that you are only trying to access the content for the user ldap that you are logged in for
 def validate_user_access(request, ldap):
     return 'current_user_ldap' in request.session and request.session['current_user_ldap'] == ldap 
 
-#By having a separate one for admin access instead of using an "or" and one method is that now you MUST
-#have an admin session running to be able to go into Admin Pages
+#Verifies that you are only trying to access the content for the admin ldap that you are logged in for
 def validate_admin_access(request, ldap):
     
     return 'current_admin_ldap' in request.session and request.session['current_admin_ldap'] == ldap
@@ -175,7 +174,7 @@ def go_to_next_quest(current_quest, current_user, current_project):
             users_user_project_object.save()
 
 
-
+# Checks whether an admin has the permissinos to access a certain quest or project
 def can_admin_access_quest_or_project(ldap, quest_id= None, project_id = None):
 
 
@@ -251,11 +250,12 @@ def get_team_points_format(current_project):
         
     return all_teams_and_points
 
-#if an admin is inside of a project and changing aspects of it, we want to stop this as 
-#soon as someone joins the proejct
+#Checks whether a project is still editable -> this is called whenever an admin is in the 'editable' view, and if someone joins the project this code will return 
+#false and force the admin to reenter in admin 'view only mode' to ensure integrity within the project
 def is_still_editable(current_project):
     return len(UserProject.objects.filter(project = current_project)) == 0
 
+#Ensures that an admin is redirected to the correct home page (as in either the editable or view only version) after a POST request
 def redirect_to_correct_home_page(view_or_editable, ldap, project_id):
     if view_or_editable == 'editable':
         return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
@@ -263,26 +263,23 @@ def redirect_to_correct_home_page(view_or_editable, ldap, project_id):
     else:
         return HttpResponseRedirect('/quest/admin_home_view_only/' + ldap + '/' + str(project_id)) 
 
+#Ensures that an admin is redirected to the correct quest page (as in either the editable or view only version) after a POST request
 def redirect_to_correct_quest_page(view_or_editable, ldap, quest_id):
     if view_or_editable == 'editable':  
         return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
     else:
         return HttpResponseRedirect('/quest/admin_quest_page_view_only/' + ldap + '/' + str(quest_id))
 
+#Ensures that an admin is redirected to the correct project settings page (as in either the editable or view only version) after a POST request
 def redirect_to_correct_project_settings_page(view_or_editable, ldap, project_id):
     if view_or_editable == 'view':
         return HttpResponseRedirect('/quest/admin_project_settings_view_only/' + ldap + '/' + project_id)
     else:
         return HttpResponseRedirect('/quest/admin_project_settings_editable/' + ldap + '/' + project_id)
 
-
+#Makes a secure hash to encrype the password
 def make_hash(password):
     return hashlib.sha256(str.encode(password)).hexdigest()
-
-def check_hash(password, hash):
-    if make_hash(password) == hash:
-        return True
-    return False
 
 
 #Validates whether an api question is correctly answered
@@ -373,7 +370,9 @@ def create_admin_quest_page_format(list_of_questions):
         format[question] = all_answers 
     return format
     
-# All Admin Info Query Code - each return either a list of UserProjects that reflect the query, or a None object if none exist
+# *All Admin Info Page Query Code - each return either a list of UserProjects that reflect the query, or a None object if none exist*
+
+#Searches for users with a certain ldap
 def search_by_ldap_helper(request, user_requested_for, current_project):
 
     if User.objects.filter(user_ldap = user_requested_for):
@@ -391,7 +390,7 @@ def search_by_ldap_helper(request, user_requested_for, current_project):
 
     return user_project_info
 
-
+#Searches for users with a certain name
 def search_by_name_helper(request, user_first_name, user_last_name, current_project):
 
     if User.objects.filter(user_first_name = user_first_name, user_last_name = user_last_name):
@@ -411,7 +410,7 @@ def search_by_name_helper(request, user_first_name, user_last_name, current_proj
     return user_project_info
 
 
-
+#Searches for users above a certain quest path number
 def search_above_helper(request, above, current_project, highest_quest_path_number):
      
     if Quest.objects.filter(project = current_project, quest_path_number__gt = int(above) - 1):
@@ -425,7 +424,7 @@ def search_above_helper(request, above, current_project, highest_quest_path_numb
 
     return user_project_info
 
-
+#Searches for users below a certain quest path number
 def search_below_helper(request, below, current_project, lowest_quest_path_number):
 
     if Quest.objects.filter(project = current_project, quest_path_number__lt = int(below) + 1):
@@ -439,7 +438,7 @@ def search_below_helper(request, below, current_project, lowest_quest_path_numbe
     return user_project_info
 
 
-
+#Searches for users at a certain quest path number
 def search_at_helper(request, at, current_project):
     if Quest.objects.filter(project = current_project, quest_path_number = at):
         valid_quests = Quest.objects.filter(project = current_project, quest_path_number = at)
@@ -451,22 +450,24 @@ def search_at_helper(request, at, current_project):
 
     return user_project_info
 
-
+#Searches for all users
 def search_all_helper(request, current_project):
     user_project_info = UserProject.objects.filter(project = current_project)
     return user_project_info  
 
+#Searches for users with who have completed the current project
 def search_completed_helper(request, current_project):
     user_project_info = UserProject.objects.filter(project = current_project, completed_project = True)
     return user_project_info
 
+#Searches for all users who have not completed the current project
 def search_not_completed_helper(request, current_project):
     user_project_info = UserProject.objects.filter(project = current_project, completed_project = False)
     return user_project_info
 
 
 
-
+#Checks whether there is a team with a certain name in the current project
 def team_is_in_project(request, current_project, team_name):
 
     if Team.objects.filter(team_name = team_name, project = current_project):
@@ -475,8 +476,8 @@ def team_is_in_project(request, current_project, team_name):
         messages.warning(request, 'There is no team with this name in this project')
         return False
 
-
-def get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable): 
+#Returns the 'context' for all project info querying functinos from the views (ex. searching for users based on ldap, name, etc.) 
+def get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable): 
 
     num_points_in_project = 0
     num_quests_in_project = 0
@@ -505,7 +506,7 @@ def get_project_settings_context(current_project, user_project_info, query, curr
 
     return context
 
-
+#Checks whether a user still has access to a page or whether an admin revoked it
 def user_still_has_access(request, ldap, project_id):
     current_user = User.objects.get(user_ldap = ldap)
     
@@ -537,7 +538,6 @@ def admin_project_or_quest_still_exists(request, ldap, quest_id):
 
  
 
-# Work in progress
 #Validates whether an admin can access a certain page
 def admin_validation(request, ldap, project_id = None, quest_id = None, question_id = None): 
 
@@ -584,8 +584,7 @@ def admin_validation(request, ldap, project_id = None, quest_id = None, question
 
     return None
  
-#Finds the top 5 most recently awarded points for this project
-
+#Returns the format for the top 5 most recently awarded points for this project
 def get_recently_awarded_points_format(current_project):
     format = []
 
@@ -607,7 +606,7 @@ def get_recently_awarded_points_format(current_project):
 
     return format
 
-
+# Returns the leaderboard format that is displayed in the sidebar of the admin/user_home and admin/user_quest_page pages
 def get_leaderboard_format(current_project):
     format = []
     top_user_projects = UserProject.objects.filter(project = current_project).order_by('-points')[:5]
@@ -627,7 +626,8 @@ def get_leaderboard_format(current_project):
 
     return (format)
 
-
+# Returns a list of all the correct answers for all the questions in a certain quest -> this is used to display the small (Answer:...) underneath
+#questions when in the admin view and in the quest page
 def get_correct_answer_list(list_of_questions):
 
     correct_answer_list = []

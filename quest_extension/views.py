@@ -20,11 +20,12 @@ import smtplib
 
 #Views
 
-#For the creation of a FR question (not editing)
+#Returns html template used for the creation of a free response question (not editing a free resposne question!!)
+#Request being dealt with: GET
 def get_fr_question_form(request, ldap, quest_id):
     
 
-    #Validates if an admin can access this 
+    #Validates if an admin can access this page
     a = admin_validation(request, ldap, quest_id = quest_id) 
     if a != None:
         messages.warning(request, a[1])
@@ -36,6 +37,9 @@ def get_fr_question_form(request, ldap, quest_id):
     context = {'q_form' : question_form, 'ans_form' : answer_form, 'quest_id': quest_id, 'current_admin': current_admin}
     return render(request, 'quest_extension/admin_create_fr_question.html', context)
 
+
+#Saves a new free response question to the back end
+#Request being dealt with: POST
 def create_fr_question(request, ldap, quest_id):
     
     #Validates if an admin can access this 
@@ -57,7 +61,8 @@ def create_fr_question(request, ldap, quest_id):
     
 ######################################
 
-#For the creation of a free response form (not editing)
+#Returns html template used for the creation of a multiple choice question (not editing a multiple choice question!!)
+#Request being dealt with: GET
 def get_mc_question_form(request, ldap, quest_id):
 
     #Validates if an admin can access this 
@@ -75,6 +80,8 @@ def get_mc_question_form(request, ldap, quest_id):
     return render(request, 'quest_extension/admin_create_mc_question.html', context)
 
 
+# Saves the inputted multiple choice question to the backend
+#Request being dealt with: POST
 def create_mc_question(request, ldap, quest_id):
 
     #Validates if an admin can access this 
@@ -96,7 +103,8 @@ def create_mc_question(request, ldap, quest_id):
 
 ######################################
 
-
+#Returns html template used for the creation of an API question (not editing an API question!!)
+#Request being dealt with: GET
 def get_api_question(request, ldap, quest_id):
 
 
@@ -112,11 +120,14 @@ def get_api_question(request, ldap, quest_id):
     context = {'quest_id': quest_id, 'current_admin': current_admin, 'question_form': question_form}
     return render(request, 'quest_extension/admin_create_api_question.html', context)  
 
+
+#Saves API question to the backend
+#Request being dealt with: POST
 def create_api_question (request, ldap, quest_id):
     current_quest = Quest.objects.get(id = quest_id)
     current_project = current_quest.project
     current_quest = Quest.objects.get(id=quest_id)
-    #Test URL always returns true: http://localhost:4000/take_request_give_response.php
+    # http://kbint.akamai.com:4000/take_request_give_response.php
 
     #Validates if an admin can access this 
     a = admin_validation(request, ldap, quest_id = quest_id) 
@@ -138,6 +149,10 @@ def create_api_question (request, ldap, quest_id):
 
 ######################################
 
+#Returns html template for the admin home page when the page is still editable
+#*Due to creating this function very early on, the 'admin_home' unintuitively actually refers to the page that pops up once an
+#admin clicks on a project. The resulting page with the project name at the top is the 'admin home page'
+#Request being dealt with: GET
 def get_admin_home_editable(request, ldap, project_id): 
 
 
@@ -149,9 +164,9 @@ def get_admin_home_editable(request, ldap, project_id):
 
     current_project = Project.objects.get(id = project_id)    
 
-    #I start a session here so that when we go "back" from pages that are common to both
-    #editable and view only pages, we will know if we were in an editable or view_only
-    #page
+    #The reason for this session is since there are both editable and viewable modes, we can use the session to verify 
+    #which mode we are in! For example, if I go to the Project Info page in a project, and then try to go back, this variable
+    #is how I ensure whether I go back to admin_home_editable or admin_home_view_only
     request.session['view_or_editable'] = 'editable'
         
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -173,6 +188,9 @@ def get_admin_home_editable(request, ldap, project_id):
     }
     return render(request, 'quest_extension/admin_home_editable.html', context)
 
+
+#Saves a new quest to the backend
+#Request being dealt with: POST
 def save_new_quest(request, ldap, project_id): 
 
     #Validates if an admin can access this 
@@ -199,6 +217,10 @@ def save_new_quest(request, ldap, project_id):
 
                 # If a user has no current quest for a certain project since the admin never created a quest with path 1 until
                 # now, the user's current quest will be updated here to the inputted quest with id = 1
+
+                #****This functionality should never be used and is only a failsafe if people start to join a project that does not have a quest
+                #with the path number of 1. Admins should always make sure that people only join training projects that have a full list of quests with path
+                #numbers starting at 1 and consecutively going to the greatest path number
                 all_users_without_current_quests = UserProject.objects.filter(project = current_project, current_quest= None)
                 if int(post_request['quest_path_number']) == 1 and len(all_users_without_current_quests) > 0:
                     for userproject in all_users_without_current_quests:
@@ -212,7 +234,8 @@ def save_new_quest(request, ldap, project_id):
 
 
 
-
+#Saves a new project description to the backend
+#Request being dealt with: POST
 def admin_update_project_description(request, ldap, project_id):
 
     #Validates if an admin can access this 
@@ -234,7 +257,8 @@ def admin_update_project_description(request, ldap, project_id):
 
 
 
-
+#Saves a new project name to the backend
+#Request being dealt with: POST
 def admin_update_project_name (request, ldap, project_id):
 
     #Validates if an admin can access this 
@@ -256,7 +280,8 @@ def admin_update_project_name (request, ldap, project_id):
     return redirect_to_correct_home_page(request.session['view_or_editable'], ldap, project_id)
 
 
-
+#Saves a new quest picture to the back end
+#Request being dealt with: POST
 def admin_update_quest_picture (request, ldap, project_id):
 
     #Validates if an admin can access this 
@@ -287,7 +312,10 @@ def admin_update_quest_picture (request, ldap, project_id):
     
 ######################################
 
-
+#Returns html template for the admin home page when the page is still no longer editable/ when people have joined the training
+#*Due to creating this function very early on, the 'admin_home' unintuitively actually refers to the page that pops up once an
+#admin clicks on a project. The resulting page with the project name at the top is the 'admin home page'
+#Request being dealt with: GET
 def get_admin_home_view_only(request, ldap, project_id): 
 
     request.session['view_or_editable'] = 'view'
@@ -317,6 +345,8 @@ def get_admin_home_view_only(request, ldap, project_id):
 
 ######################################
 
+#Returns html template for the admin quest page when the page is still editable
+#Request being dealt with: GET
 def get_admin_quest_page_editable(request, ldap, quest_id):
 
     #Validates if an admin can access this 
@@ -358,7 +388,8 @@ def get_admin_quest_page_editable(request, ldap, quest_id):
     }
     return render(request, 'quest_extension/admin_quest_page_editable.html', context)
 
-
+#Deletes a question from the backend (keep in mind that the question is not actually deleted from the database, it's simply being marked as 'deleted' in it's deleted attribute )
+#Request being dealt with: POST
 def delete_question(request, ldap, quest_id):
 
     #Validates if an admin can access this 
@@ -376,7 +407,9 @@ def delete_question(request, ldap, quest_id):
     if request.method == 'POST':
         post_request = request.POST
         current_question = Question.objects.get(id = post_request['deleted'])
-        #We want to not let the time_modified increase, so we save it here and assign it to the question after we save it
+        #We don't want to let time_modified increase, so we save it here and assign it to the question after we save it
+        #The reason for this is because time modified represents when the quesiton was created, so this way if we 'undo the delete', 
+        #we undo it to the same timestamp it had when it was first created, thereby recreating the question in the same/correct location after an undo delete 
         current_time_modified = copy.deepcopy(current_question.time_modified)
         current_question.deleted = True
         current_question.save()
@@ -385,6 +418,9 @@ def delete_question(request, ldap, quest_id):
 
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
 
+
+#Undoes a deletion of a question (This simply removes the "delete" checkmark from the question )
+#Request being dealt with: POST
 def undo_delete_question(request, ldap, quest_id):
 
     #Validates if an admin can access this 
@@ -414,6 +450,8 @@ def undo_delete_question(request, ldap, quest_id):
     return HttpResponseRedirect('/quest/admin_quest_page_editable/' + ldap + '/' + str(quest_id))
 
 
+# Saves a video to the backend
+#Request being dealt with: POST
 def save_video(request, ldap, quest_id):
 
     #Validates if an admin can access this 
@@ -441,6 +479,9 @@ def save_video(request, ldap, quest_id):
 
     return redirect_to_correct_quest_page(request.session['view_or_editable'], ldap, quest_id)
 
+
+#Deletes a video from the backend
+#Request being dealt with: POST
 def delete_video(request, ldap, quest_id):
 
     #Validates if an admin can access this 
@@ -458,6 +499,9 @@ def delete_video(request, ldap, quest_id):
             
     return redirect_to_correct_quest_page(request.session['view_or_editable'], ldap, quest_id)
 
+
+#Updates the quest name in the backend
+#Request being dealt with: POST
 def update_quest_name(request, ldap, quest_id):
 
     #Validates if an admin can access this 
@@ -480,6 +524,8 @@ def update_quest_name(request, ldap, quest_id):
 
 
 
+#Updates the quest description in the backend
+#Request being dealt with: POST
 def update_quest_description(request, ldap, quest_id):
 
     #Validates if an admin can access this 
@@ -504,6 +550,8 @@ def update_quest_description(request, ldap, quest_id):
 
 ######################################
 
+#Returns the html template for the admin_quest_settings page
+#Request being dealt with: GET
 def get_admin_quest_settings_editable(request, ldap, quest_id):
 
     #Validates if an admin can access this 
@@ -523,6 +571,8 @@ def get_admin_quest_settings_editable(request, ldap, quest_id):
 
     return render (request, 'quest_extension/admin_quest_settings_editable.html', context)
 
+#Updates the points that is earned by a user completing the quest
+#Request being dealt with: POST
 def update_quest_points_earned(request, ldap, quest_id):
 
     #Validates if an admin can access this 
@@ -549,6 +599,8 @@ def update_quest_points_earned(request, ldap, quest_id):
 
     return HttpResponseRedirect('/quest/admin_quest_settings_editable/' + current_admin.admin_ldap + '/' + str(quest_id))
 
+#Updates the quest path number in the backend
+#Request being dealt with: POST
 def update_quest_path_number(request, ldap, quest_id):
 
     #Validates if an admin can access this 
@@ -580,7 +632,8 @@ def update_quest_path_number(request, ldap, quest_id):
 
     return HttpResponseRedirect('/quest/admin_quest_settings_editable/' + current_admin.admin_ldap + '/' + str(quest_id))
 
-
+#Deletes a quest from the backend
+#Request being dealt with: POST
 def delete_quest(request, ldap, quest_id):
 
     #Validates if an admin can access this 
@@ -604,6 +657,8 @@ def delete_quest(request, ldap, quest_id):
     return HttpResponseRedirect('/quest/admin_home_editable/' + current_admin.admin_ldap + '/' + str(project_id))
 ######################################
 
+#Returns the html template for the quest_settings_page in the view only mode
+#Request being dealt with: GET
 def get_admin_quest_settings_view_only(request, ldap, quest_id):
 
     #Validates if an admin can access this 
@@ -621,6 +676,8 @@ def get_admin_quest_settings_view_only(request, ldap, quest_id):
 
 ######################################
 
+#Returns the html template for the quest_page in the view only mode
+#Request being dealt with: GET
 def get_admin_quest_page_view_only(request, ldap, quest_id):
 
     a = admin_validation(request, ldap, quest_id = quest_id) 
@@ -657,6 +714,8 @@ def get_admin_quest_page_view_only(request, ldap, quest_id):
 
 ######################################
 
+#Returns the html template for the user_home page (remember, user_home is the page that pops up once a user clicks on 'explore' on a certain project)
+#Request being dealt with: GET
 def get_user_home(request, ldap, project_id):
     
     if not validate_user_access(request, ldap):  
@@ -688,6 +747,8 @@ def get_user_home(request, ldap, project_id):
 
 ######################################
 
+#Returns the html template for the user_quest page (this is where all of the questions are located)
+#Request being dealt with: GET
 def get_user_quest_page(request, ldap, quest_id):
 
     if not validate_user_access(request, ldap):
@@ -715,13 +776,12 @@ def get_user_quest_page(request, ldap, quest_id):
 
     list_of_questions = Question.objects.filter(quest = current_quest, deleted=False).order_by('time_modified')
     
-    #"question" also returns the primary id of the question
     have_correct_answer = CorrectlyAnsweredQuestion.objects.filter(userproject = current_user_project).values_list('question', flat = True)
 
-    #List for template display
+    #List for html template display
     format_2 = []
 
-    #List for js 
+    #List for javascript validation
     question_to_answers = {}
 
 
@@ -740,9 +800,10 @@ def get_user_quest_page(request, ldap, quest_id):
             all_answers.append(answer)
             correct_answer_2.append(answer)
 
+        # shuffles mc questions
         shuffle(all_answers)
 
-        #Combines wrong answers with correct answer
+        #Combines wrong answers with correct answers for mc questions
         format_2.append(format_2_tuple)
 
 
@@ -773,7 +834,8 @@ def get_user_quest_page(request, ldap, quest_id):
 
 
 
-# This will only validate mc and fr responses
+#Checks whether the answer provided by the user for a certain question is correct or incorrect 
+#Request being dealt with: POST
 def validate_user_input(request, ldap, quest_id):
 
     if not validate_user_access(request, ldap):
@@ -797,6 +859,7 @@ def validate_user_input(request, ldap, quest_id):
 
     if request.method == 'POST':
         post_request = request.POST
+        # Checks whether the user input is correct or incorrect for each question
         for key, value in post_request.items():
             if 'answer' in key and post_request.getlist(key)[0] != '':
                 question = Question.objects.get (id = key[key.index('_') + 1:])
@@ -811,7 +874,8 @@ def validate_user_input(request, ldap, quest_id):
 
 ######################################
 
-#For editing free response questions (not creating)
+#Returns the html template for  editing free response questions
+#Request being dealt with: GET
 def get_admin_edit_fr_question(request, ldap, question_id):
 
     a = admin_validation(request, ldap, question_id = question_id) 
@@ -841,6 +905,8 @@ def get_admin_edit_fr_question(request, ldap, question_id):
     return render(request, 'quest_extension/admin_edit_fr_question.html', context)
 
 
+#Saves the edited fr question to the backend and marks the previous version of the question as deleted in the database
+#Request being dealt with: POST
 def save_admin_edit_fr_question(request, ldap, question_id):
 
     a = admin_validation(request, ldap, question_id = question_id) 
@@ -871,10 +937,10 @@ def save_admin_edit_fr_question(request, ldap, question_id):
 
 
 
-
-
 ######################################
-#For editing mc questions (not creating)
+
+#Returns the html template for editing multiple choice questions
+#Request being dealt with: GET
 def get_admin_edit_mc_question(request, ldap, question_id):
 
     a = admin_validation(request, ldap, question_id = question_id) 
@@ -913,7 +979,9 @@ def get_admin_edit_mc_question(request, ldap, question_id):
                 'quest_id': quest_id,
                 'current_admin': current_admin}
     return render(request, 'quest_extension/admin_edit_mc_question.html', context)
-    
+
+#Saves the edited mc question the backend and marks the previous version as deleted in the database
+#Request being dealt with: POST
 def save_admin_edit_mc_question (request, ldap, question_id):
 
     a = admin_validation(request, ldap, question_id = question_id) 
@@ -942,6 +1010,9 @@ def save_admin_edit_mc_question (request, ldap, question_id):
     return HttpResponseRedirect('/quest/admin_edit_mc_question/' + ldap + '/' + str(question_id))
 ######################################
 
+
+#Returns the html template for editing api questions
+#Request being dealt with: GET
 def get_admin_edit_api_question(request, ldap, question_id):
 
     a = admin_validation(request, ldap, question_id = question_id) 
@@ -959,7 +1030,8 @@ def get_admin_edit_api_question(request, ldap, question_id):
     context = {'current_question': current_question, 'quest_id': current_quest.id, 'current_admin': current_admin, 'question_form': question_form}
     return render(request, 'quest_extension/admin_edit_api_question.html', context)
 
-
+#Saves the edited api question to the backend and deletes the marks the previous version as deleted in the database
+#Request being dealt with: POST
 def save_admin_edit_api_question(request, ldap, question_id):
 
     a = admin_validation(request, ldap, question_id = question_id) 
@@ -992,6 +1064,8 @@ def save_admin_edit_api_question(request, ldap, question_id):
 
 ######################################
 
+#Returns the HTML template for the admin project page
+#Request being dealt with: GET
 def get_admin_project_page(request, ldap):
 
     a = admin_validation(request, ldap) 
@@ -1031,6 +1105,9 @@ def get_admin_project_page(request, ldap):
     }
     return render(request, 'quest_extension/admin_project_page.html', context)
 
+
+#Saves a new project to the backend
+#Request being dealt with: POST
 def add_new_project(request, ldap):
 
     a = admin_validation(request, ldap) 
@@ -1098,6 +1175,8 @@ def add_new_project(request, ldap):
     
     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
+#Allows an admin to join and become a secondary admin to someone else's project
+#Request being dealt with: POST
 def join_project(request, ldap):
 
     a = admin_validation(request, ldap) 
@@ -1142,6 +1221,8 @@ def join_project(request, ldap):
     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
  
 
+#Unarchives a project that was previously archived by the admin
+#Request being dealt with: POST
 def admin_unarchive_project(request, ldap):
     
     a = admin_validation(request, ldap) 
@@ -1164,6 +1245,9 @@ def admin_unarchive_project(request, ldap):
 
 
 ######################################
+
+#Returns the html template for the User Project Page 
+#Request being dealt with: GET
 def get_user_project_page(request, ldap):
 
 
@@ -1195,7 +1279,8 @@ def get_user_project_page(request, ldap):
     'list_of_archived_projects': list_of_archived_projects}
     return render(request, 'quest_extension/user_project_page.html', context)
 
-
+#Logs a user out of his/her account and redirects them to the log page
+#Request being dealt with: POST
 def user_logout(request, ldap):
 
     if not validate_user_access(request, ldap):
@@ -1207,7 +1292,8 @@ def user_logout(request, ldap):
 
     return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 
-
+#Allows the user join another project by creating a UserProject identity between the two
+#Request being dealt with: POST
 def add_user_project_page(request, ldap):
 
     if not validate_user_access(request, ldap):
@@ -1264,7 +1350,8 @@ def add_user_project_page(request, ldap):
     
     return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 
-
+#Unarchives a project that was previously archived by the user
+#Request being dealt with: POST
 def user_unarchive_project(request, ldap):
     
     if not validate_user_access(request, ldap):
@@ -1285,6 +1372,9 @@ def user_unarchive_project(request, ldap):
 
 
 ######################################
+
+#Returns the html for the users project settings page
+#Request being dealt with: GET
 def get_user_project_settings(request, ldap, project_id):
 
     if not validate_user_access(request, ldap):
@@ -1303,7 +1393,8 @@ def get_user_project_settings(request, ldap, project_id):
     return render(request, 'quest_extension/user_project_settings.html', context)
 
 
-
+#Removes a UserProject instance from the backend -> This does not delete a project but just removes a user from being a part of it
+#Request being dealt with: POST
 def remove_user_project(request, ldap, project_id):
 
     if not validate_user_access(request, ldap):
@@ -1335,6 +1426,9 @@ def remove_user_project(request, ldap, project_id):
 
     return HttpResponseRedirect('/quest/user_project_page/' + ldap)
 
+
+#Unarchives a project that the user had previously archived
+#Request being dealt with: POST
 def user_archive_project(request, ldap, project_id):
 
     if not validate_user_access(request, ldap):
@@ -1358,18 +1452,20 @@ def user_archive_project(request, ldap, project_id):
 
     
 
-
-
-
 ######################################
 
 
+#Returns the html for the user sign up page
+#Request being dealt with: GET
 def get_new_user_page(request):
 
     user_form = UserForm()
     context = {'user_form': user_form}
     return render(request, 'quest_extension/new_user.html', context)
 
+
+#Adds a new user account to the backend
+#Request being dealt with: POST
 def add_new_user(request):
     if request.method == 'POST':
         post_request = request.POST
@@ -1404,6 +1500,8 @@ def add_new_user(request):
 
 ######################################
 
+#Returns the html for the user login page
+#Request being dealt with: GET
 def get_user_login(request):
     #If you every reach this page, any current user sessions should be deleted so that you cannot skip
     #into quests
@@ -1414,6 +1512,8 @@ def get_user_login(request):
     context = {'login_form': login_form}
     return render(request, 'quest_extension/user_login.html', context)
 
+#Logs a user into his or her account
+#Request being dealt with: POST
 def user_login_to_account(request):
     if request.method == 'POST':
         post_request = request.POST
@@ -1434,7 +1534,9 @@ def user_login_to_account(request):
     
     return HttpResponseRedirect('/quest/user_login')
 
-
+#Sends an email from localhosts mail server to the user's email regarding resetting password details, sets up the backend for reseting a user's password
+#and redirects you to the user_forgot_password page
+#Request being dealt with: POST
 def user_change_password_request(request):
     if request.method == 'POST':
         post_request = request.POST
@@ -1503,11 +1605,16 @@ def user_change_password_request(request):
 
 ####################################
 
+#Returns the html for the user forgot password page
+#Request being dealt with: GET
 def get_user_forgot_password(request, ldap):
     forgot_password_form = ForgotPasswordForm()
     context = {'forgot_password_form': forgot_password_form, 'ldap': ldap}
     return render(request, 'quest_extension/user_forgot_password.html', context)
 
+
+#Saves a new password for the user to the backend if all details are correctly inputted
+#Request being dealt with: POST
 def new_password_sent(request, ldap):
     current_user = User.objects.get(user_ldap = ldap)
     if request.method == 'POST':
@@ -1534,8 +1641,11 @@ def new_password_sent(request, ldap):
 
     return HttpResponseRedirect('/quest/user_forgot_password/' + ldap)
 
+#Returns a user back to the login page
+#Request being dealt with: POST
 def go_back_to_login(request, ldap):
     if request.method == 'POST':
+        # We set the user_reset_password_pin to None here so that there is a small chance of someone taking advantage of the opening again
         current_user = User.objects.get(user_ldap = ldap)
         current_user.user_reset_password_pin = None
         current_user.save()
@@ -1544,6 +1654,8 @@ def go_back_to_login(request, ldap):
 
 ####################################
 
+#Returns the html for the user's settings page
+#Request being dealt with: GET
 def get_user_settings_info(request, ldap):
     
     if not validate_user_access(request, ldap):
@@ -1553,6 +1665,8 @@ def get_user_settings_info(request, ldap):
     context = {'current_user': current_user}
     return render(request, 'quest_extension/user_settings_info.html', context)
 
+#Updates the user's ldap in the backend
+#Request being dealt with: POST
 def update_user_ldap(request, ldap):
     
     if not validate_user_access(request, ldap):
@@ -1573,6 +1687,8 @@ def update_user_ldap(request, ldap):
              messages.error(request, 'There is already an account associated with this LDAP')
     return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
 
+#Updates the user's first name in the backend
+#Request being dealt with: POST
 def update_user_first_name(request, ldap):
     if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
@@ -1588,6 +1704,8 @@ def update_user_first_name(request, ldap):
 
     return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
 
+#Updates the user's last name in the backend
+#Request being dealt with: POST
 def update_user_last_name(request, ldap):
     if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
@@ -1602,6 +1720,8 @@ def update_user_last_name(request, ldap):
 
     return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
 
+#Updates the user's email in the backend
+#Request being dealt with: POST
 def update_user_email(request, ldap):
     if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
@@ -1619,7 +1739,8 @@ def update_user_email(request, ldap):
             messages.error(request, 'This is an invalid email')
     return HttpResponseRedirect('/quest/user_settings_info/' + current_user.user_ldap)
 
-
+#Updates the user's password in the backend
+#Request being dealt with: POST
 def update_user_password(request, ldap):
     if not validate_user_access(request, ldap):
         return HttpResponseRedirect('/quest/user_login')
@@ -1644,6 +1765,9 @@ def update_user_password(request, ldap):
 
     
 #######################################
+
+#Returns the html for the admin login page
+#Request being dealt with: GET
 def get_admin_login(request):
 
     if 'current_admin_ldap' in request.session:
@@ -1658,6 +1782,8 @@ def get_admin_login(request):
     context = {'login_form': login_form}
     return render(request, 'quest_extension/admin_login.html', context)
 
+#Logs an admin into his/her account
+#Request being dealt with: POST
 def admin_login_to_account(request):
     if request.method == 'POST':
         post_request = request.POST
@@ -1678,6 +1804,9 @@ def admin_login_to_account(request):
     
     return HttpResponseRedirect('/quest/admin_login')
 
+#Sends an email from localhosts mail server to the admins's email regarding resetting password details, sets up the backend for resetting an admin's password
+#and redirects you to the admin_forgot_password page
+#Request being dealt with: POST
 def admin_change_password_request(request):
     if request.method == 'POST':
         post_request = request.POST
@@ -1711,12 +1840,17 @@ def admin_change_password_request(request):
 
 ####################################
 
+#Returns HTML template for the admin sign up page
+#Request being dealt with: GET
 def get_new_admin_page(request):
 
     admin_form = AdminForm()
     context = {'admin_form': admin_form}
     return render(request, 'quest_extension/new_admin.html', context)
 
+
+#Saves a new admin account to the backend database
+#Request being dealt with: POST
 def add_new_admin(request):
     if request.method == 'POST':
         post_request = request.POST
@@ -1752,12 +1886,15 @@ def add_new_admin(request):
 
 ####################################
 
+#Returns the html for the admin forgot password page
+#Request being dealt with: GET
 def get_admin_forgot_password(request, ldap):
     forgot_password_form = ForgotPasswordForm()
     context = {'forgot_password_form': forgot_password_form, 'ldap': ldap}
     return render(request, 'quest_extension/admin_forgot_password.html', context)
 
-
+#Saves a new password for the user to the backend if all details are correctly inputted
+#Request being dealt with: POST
 def admin_new_password_sent(request, ldap):
     current_admin = Admin.objects.get(admin_ldap = ldap)
     if request.method == 'POST':
@@ -1784,7 +1921,8 @@ def admin_new_password_sent(request, ldap):
 
     return HttpResponseRedirect('/quest/admin_forgot_password/' + ldap)
 
-
+#Returns an admin back to the login page
+#Request being dealt with: POST
 def admin_go_back_to_login(request, ldap):
     if request.method == 'POST':
         current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -1796,7 +1934,8 @@ def admin_go_back_to_login(request, ldap):
 
 #########################
 
-
+#Returns the HTML template for the admin's project settings page in the editable view
+#Request being dealt with: GET
 def get_admin_project_settings_editable(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -1833,7 +1972,8 @@ def get_admin_project_settings_editable(request, ldap, project_id):
     }
     return render(request, 'quest_extension/admin_project_settings_editable.html', context)
 
-
+#Updates a project's random phrase in the backend
+#Request being dealt with: POST
 def update_random_phrase(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -1857,7 +1997,8 @@ def update_random_phrase(request, ldap, project_id):
     return redirect_to_correct_project_settings_page(request.session['view_or_editable'], ldap, project_id)
 
     
-
+#Updates a project's admin pin in the backend
+#Request being dealt with: POST
 def update_admin_pin(request, ldap, project_id):
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
@@ -1879,7 +2020,8 @@ def update_admin_pin(request, ldap, project_id):
     
     return redirect_to_correct_project_settings_page(request.session['view_or_editable'], ldap, project_id)
 
-
+#Removes the current admin as an admin for this project
+#Request being dealt with: POST
 def remove_as_admin(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -1895,6 +2037,9 @@ def remove_as_admin(request, ldap, project_id):
 
     
 #Should only be available in the view_only mode, since there's no use in editable
+
+#Removes all users that are currently in a project, thereby making the project 'editable' again
+#Request being dealt with: POST
 def remove_all_users(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -1909,7 +2054,8 @@ def remove_all_users(request, ldap, project_id):
     messages.success(request, 'All users from "' + current_project.project_name + '" were removed, and the project is now editable!')
     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
-
+#Completely deletes a project from the backend
+#Request being dealt with: POST
 def delete_project(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -1926,6 +2072,9 @@ def delete_project(request, ldap, project_id):
     return HttpResponseRedirect('/quest/admin_project_page/' + ldap)
 
 #Only allowable in editable mode
+
+#Adds a valid team to the project in the backend
+#Request being dealt with: POST
 def add_team(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -1952,6 +2101,8 @@ def add_team(request, ldap, project_id):
     messages.success(request, 'New team successfully added!')
     return redirect_to_correct_project_settings_page(request.session['view_or_editable'], ldap, project_id)
     
+#Deletes a team from the project in the backend
+#Request being dealt with: POST
 def delete_team(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -1977,7 +2128,8 @@ def delete_team(request, ldap, project_id):
             messages.success(request, 'Team successfully deleted!')
     return redirect_to_correct_project_settings_page(request.session['view_or_editable'], ldap, project_id)
 
-
+#Arhives the current project for the admin
+#Request being dealt with: POST
 def admin_archive_project(request, ldap, project_id):
 
     a = admin_validation(request, ldap) 
@@ -2001,7 +2153,8 @@ def admin_archive_project(request, ldap, project_id):
 
 #########################
 
-
+#Returns the HTML for the admin's project settings page in the view_only format
+#Request being dealt with: GET
 def get_admin_project_settings_view_only(request, ldap, project_id):
 
     a = admin_validation(request, ldap) 
@@ -2037,6 +2190,8 @@ def get_admin_project_settings_view_only(request, ldap, project_id):
 
 #########################
 
+#Returns the HTML template for the admin's settings page
+#Request being dealt with: GET
 def get_admin_settings_info(request, ldap):
     
     a = admin_validation(request, ldap) 
@@ -2048,6 +2203,8 @@ def get_admin_settings_info(request, ldap):
     context = {'current_admin': current_admin}
     return render(request, 'quest_extension/admin_settings_info.html', context)
 
+#Updates the admin's ldap in the backend
+#Request being dealt with: POST
 def update_admin_ldap(request, ldap):
     
     a = admin_validation(request, ldap) 
@@ -2070,6 +2227,8 @@ def update_admin_ldap(request, ldap):
              messages.error(request, 'There is already an account associated with this LDAP')
     return HttpResponseRedirect('/quest/admin_settings_info/' + current_admin.admin_ldap)
 
+#Updates the admin's first name in the backend
+#Request being dealt with: POST
 def update_admin_first_name(request, ldap):
 
     a = admin_validation(request, ldap) 
@@ -2088,6 +2247,8 @@ def update_admin_first_name(request, ldap):
 
     return HttpResponseRedirect('/quest/admin_settings_info/' + current_admin.admin_ldap)
 
+#Updates the admin's last name in the backend
+#Request being dealt with: POST
 def update_admin_last_name(request, ldap):
     
     a = admin_validation(request, ldap) 
@@ -2105,6 +2266,8 @@ def update_admin_last_name(request, ldap):
 
     return HttpResponseRedirect('/quest/admin_settings_info/' + current_admin.admin_ldap)
 
+#Updates the admin's email in the backend
+#Request being dealt with: POST
 def update_admin_email(request, ldap):
     
     a = admin_validation(request, ldap) 
@@ -2125,7 +2288,8 @@ def update_admin_email(request, ldap):
             messages.error(request, 'This is an invalid email')
     return HttpResponseRedirect('/quest/admin_settings_info/' + current_admin.admin_ldap)
 
-
+#Updates the admin's password in the backend
+#Request being dealt with: POST
 def update_admin_password(request, ldap):
     
     a = admin_validation(request, ldap) 
@@ -2153,14 +2317,15 @@ def update_admin_password(request, ldap):
 
 ##################################################
 
+
+#Returns the HTML for the admin_project_info_page -> this is the page that allows queries
+#Request being dealt with: GET
 def get_admin_project_info_page(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
     if a != None:
         messages.warning(request, a[1])
         return a[0]
-    
-    
     
     current_project = Project.objects.get(id = project_id)
     current_admin = Admin.objects.get(admin_ldap = ldap)
@@ -2178,7 +2343,8 @@ def get_admin_project_info_page(request, ldap, project_id):
      }
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
-
+#Searches for all information regarding user's with this ldap
+#Request being dealt with: POST
 def search_by_user_ldap(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -2208,11 +2374,12 @@ def search_by_user_ldap(request, ldap, project_id):
 
 
     query = 'LDAP = ' + post_request['user']
-    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+    context = get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
     
-
+#Searches for all information regarding user's with this name
+#Request being dealt with: POST
 def search_by_user_name(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -2243,11 +2410,12 @@ def search_by_user_name(request, ldap, project_id):
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
     query = 'Name  = ' + user_first_name +  ' ' + user_last_name
-    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+    context = get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable)
 
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
-
+#Searches for all information regarding user's who are above a certain quest path number
+#Request being dealt with: POST
 def search_above(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -2275,11 +2443,12 @@ def search_above(request, ldap, project_id):
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
     query = 'Quest Path Number >= ' + str(above)
-    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+    context = get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable)
 
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
-
+#Searches for all information regarding user's below a certain quest path number
+#Request being dealt with: POST
 def search_below(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -2308,9 +2477,11 @@ def search_below(request, ldap, project_id):
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
     query = 'Quest Path Number <= ' + str(below)
-    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+    context = get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
+#Searches for all information regarding user's at a certain quest path number
+#Request being dealt with: POST
 def search_at(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -2338,10 +2509,11 @@ def search_at(request, ldap, project_id):
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
 
     query = 'Quest Path Number = ' + str(at)
-    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+    context = get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
-
+#Searches for all information regarding all user's
+#Request being dealt with: POST
 def search_all_users(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -2368,11 +2540,12 @@ def search_all_users(request, ldap, project_id):
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
     
     query = 'All Users'
-    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+    context = get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
-
+#Searches for all information regarding user's that have completed the current project
+#Request being dealt with: POST
 def search_completed_users(request, ldap, project_id):
 
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -2400,11 +2573,12 @@ def search_completed_users(request, ldap, project_id):
 
     
     query = 'All Users that completed the project'
-    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+    context = get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
-
+#Searches for all information regarding user's who have not completed the current project
+#Request being dealt with: POST
 def search_not_completed_users(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -2432,13 +2606,16 @@ def search_not_completed_users(request, ldap, project_id):
 
     
     query = 'All Users that have not completed the project'
-    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+    context = get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
 
 
-#Team based querying
+#*Team based querying*
+
+#Searches for all information regarding user's with a certain ldap who are on a certain team
+#Request being dealt with: POST
 def search_team_by_user_ldap(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -2462,7 +2639,7 @@ def search_team_by_user_ldap(request, ldap, project_id):
         team_requested_for = Team.objects.get(team_name = team_name, project = current_project)
         user_project_info = search_by_ldap_helper(request, user_requested_for, current_project).order_by('current_quest__quest_path_number')
 
-        # Verifies that the given ldap if valid and has a record corresponding to his team
+        # Verifies that the given ldap is valid and has a record corresponding to his team
         if (user_project_info != None) and user_project_info.filter(team = team_requested_for):
             user_project_info = user_project_info.filter(team = team_requested_for)
             messages.success(request, 'User information found!')
@@ -2475,11 +2652,12 @@ def search_team_by_user_ldap(request, ldap, project_id):
 
     
     query = 'LDAP = ' + post_request['user']
-    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+    context = get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
-
+#Searches for all information regarding user's with a certain name who are on a certain team
+#Request being dealt with: POST
 def search_team_by_user_name(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -2517,10 +2695,11 @@ def search_team_by_user_name(request, ldap, project_id):
     
     
     query = 'Name  = ' + user_first_name +  ' ' + user_last_name
-    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+    context = get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
-    
+#Searches for all information regarding user's above a certain quest path number who are on a certain team
+#Request being dealt with: POST
 def search_team_above(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -2556,10 +2735,11 @@ def search_team_above(request, ldap, project_id):
     
     
     query = 'Quest Path Number >= ' + str(above)
-    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+    context = get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
-
+#Searches for all information regarding user's below a certain quest path number who are on a certain team
+#Request being dealt with: POST
 def search_team_below(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -2596,10 +2776,11 @@ def search_team_below(request, ldap, project_id):
     
    
     query = 'Quest Path Number <= ' + str(below)
-    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+    context = get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
-
+#Searches for all information regarding user's at a certain quest path number who are on a certain team
+#Request being dealt with: POST
 def search_team_at(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -2635,10 +2816,11 @@ def search_team_at(request, ldap, project_id):
     
     
     query = 'Quest Path Number = ' + at
-    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+    context = get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
-
+#Searches for all information regarding user's who are on a certain team
+#Request being dealt with: POST
 def search_team_all_users(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -2672,10 +2854,11 @@ def search_team_all_users(request, ldap, project_id):
         return HttpResponseRedirect('/quest/admin_project_info_page/' + ldap + '/' + project_id)
     
     query = 'All Users'
-    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+    context = get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
-
+#Searches for all information regarding user's who have completed the project and who are on a certain team
+#Request being dealt with: POST
 def search_team_completed_users(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -2710,10 +2893,11 @@ def search_team_completed_users(request, ldap, project_id):
     
    
     query = 'All Users that completed the project'
-    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+    context = get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
-
+#Searches for all information regarding user's who have not completed the current proejct who are on a certain team
+#Request being dealt with: POST
 def search_team_not_completed_users(request, ldap, project_id):
     
     a = admin_validation(request, ldap, project_id = project_id) 
@@ -2748,12 +2932,13 @@ def search_team_not_completed_users(request, ldap, project_id):
     
     
     query = 'All Users that have not completed the project'
-    context = get_project_settings_context(current_project, user_project_info, query, current_admin, view_or_editable)
+    context = get_project_info_context(current_project, user_project_info, query, current_admin, view_or_editable)
     return render(request, 'quest_extension/admin_project_info_page.html', context)
 
 
 ######################### PHP TESTS
 
+# These were all just php tests that proved that API validation was possible
 def php_tests(request, ldap):
 
     # php -S localhost:4000 to start the php

@@ -134,9 +134,9 @@ STATIC_URL = '/static/'
 # #do port 465
 # EMAIL_USE_TLS = True
 # EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_HOST_USER = 'qextension@gmail.com'
+# EMAIL_HOST_USER = 'example@gmail.com'
 # EMAIL_PORT = 465
-# EMAIL_HOST_PASSWORD = 'AkamaiQuestExtension0$'
+# EMAIL_HOST_PASSWORD = 'examplepassword'
 #Allows you to read in values from the file password.py and save them as EMAIL_HOST_PASSWORD
 # with open('/Users/tdesai/Documents/all_things_code/django_projects/password.py') as f:
     # EMAIL_HOST_PASSWORD = f.read().strip()

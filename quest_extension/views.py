@@ -2963,6 +2963,11 @@ def php_tests(request, ldap):
     context = {'php_value': php_value}
     return render(request, 'quest_extension/php_tests.html', context)
 
+# Returns the health of the project
+
+def get_health(request):
+    return HttpResponse('Everything is working fine :)')
+
 
 
 

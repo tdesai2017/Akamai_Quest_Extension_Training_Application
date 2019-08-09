@@ -15,9 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from quest_extension import views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('quest/', include('quest_extension.urls', namespace="quest")),
-    path('', include('quest_extension.urls', namespace="quest"))
+    path('', include('quest_extension.urls', namespace="quest")),
+    path ('health/', views.get_health),
 ]

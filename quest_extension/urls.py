@@ -240,3 +240,4 @@ path('search_team_not_completed_users/<ldap>/<project_id>', views.search_team_no
 path ('php_tests/<ldap>', views.php_tests),
 
 ]
+

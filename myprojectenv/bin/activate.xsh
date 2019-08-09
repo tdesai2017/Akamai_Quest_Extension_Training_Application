@@ -28,7 +28,7 @@ def _deactivate(args):
 _deactivate(["nondestructive"])
 aliases["deactivate"] = _deactivate
 
-$VIRTUAL_ENV = r"/u0/apache/htdocs/kbint/tdesai/quest-extension/Akamai-Qi-Stuff/myprojectenv"
+$VIRTUAL_ENV = r"/Users/tdesai/Documents/Akamai_Quest_Extension_Training_Application/myprojectenv"
 
 $_OLD_VIRTUAL_PATH = $PATH
 $PATH = $PATH[:]

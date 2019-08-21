@@ -46,7 +46,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/Users/tdesai/Documents/Akamai_Quest_Extension_Training_Application/myprojectenv"
+VIRTUAL_ENV="/Users/tdesai/Documents/Akamai_Quest_Extension_Training_Application/Akamai_Quest_Extension_Training_Application/myprojectenv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

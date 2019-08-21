@@ -1,4 +1,4 @@
-#!/Users/tdesai/Documents/Akamai_Quest_Extension_Training_Application/myprojectenv/bin/python
+#!/Users/tdesai/Documents/Akamai_Quest_Extension_Training_Application/Akamai_Quest_Extension_Training_Application/myprojectenv/bin/python
 
 import sys
 import getopt

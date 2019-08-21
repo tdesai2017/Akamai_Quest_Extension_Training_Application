@@ -10,7 +10,7 @@ alias deactivate 'test $?_OLD_VIRTUAL_PATH != 0 && setenv PATH "$_OLD_VIRTUAL_PA
 # Unset irrelevant variables.
 deactivate nondestructive
 
-setenv VIRTUAL_ENV "/Users/tdesai/Documents/Akamai_Quest_Extension_Training_Application/myprojectenv"
+setenv VIRTUAL_ENV "/Users/tdesai/Documents/Akamai_Quest_Extension_Training_Application/Akamai_Quest_Extension_Training_Application/myprojectenv"
 
 set _OLD_VIRTUAL_PATH="$PATH:q"
 setenv PATH "$VIRTUAL_ENV:q/bin:$PATH:q"

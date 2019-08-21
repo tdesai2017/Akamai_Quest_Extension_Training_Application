@@ -199,7 +199,7 @@ path('remove_as_admin/<ldap>/<project_id>', views.remove_as_admin),
 path('add_team/<ldap>/<project_id>', views.add_team),
 path('remove_all_users/<ldap>/<project_id>', views.remove_all_users),
 path('delete_team/<ldap>/<project_id>', views.delete_team),
-path ('admin_archive_project/<ldap>/<project_id>', views.admin_archive_project),
+path('admin_archive_project/<ldap>/<project_id>', views.admin_archive_project),
 
 
 ##############################

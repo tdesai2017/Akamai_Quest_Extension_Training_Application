@@ -1,6 +1,6 @@
 The Akamai Quest Extension Training Application offers the ability to completely transform training here at Akamai. By basing it off of the hugely successful 
-Project Qui system, and allowing any employee to be an admin or a user/create or partake in trainings that they desire, trainings can be created and completed
-at an extremely effective page.
+Project Qi system, and allowing any employee to be an admin or a user and create or partake in trainings that they desire, trainings can be created and completed
+at an extremely effective pace.
 
 Basic Workflow:
 
@@ -21,4 +21,6 @@ User
 
 
 
-Full "Application Manual, Future Improvments, How to use" is located at "https://docs.google.com/document/d/188hHKYoJUuCwc2mI5LRXOX_B0SiYnuRZWm2HuOfMo6w/edit?usp=sharing"
+Full "High-Level Application Manual, Future Improvments, How to use, Security Threats, etc." is located at "https://docs.google.com/document/d/188hHKYoJUuCwc2mI5LRXOX_B0SiYnuRZWm2HuOfMo6w/edit?usp=sharing"
+Full "Back-End/Low level Appliaction Manual" is located at "https://docs.google.com/document/d/18EpukbrG9_9Xgju7yRBZMeDH1t8eu6Rrl0cRVkgoI98/edit?usp=sharing"
+Full UI Workflow is located at "https://drive.google.com/open?id=1UHixUSQKauqefNidwUq2cpfyOzRrWjsd"

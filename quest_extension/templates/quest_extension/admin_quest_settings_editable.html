@@ -12,8 +12,8 @@
     <button class = 'btn' style = 'background-color: #42bcf4; color:white;margin-bottom:15px; margin-left: 40px' id = 'update_path_number_button' onclick="update('path_number')"> Update Quest Path Number </button>
     <form id = 'update_path_number_form' method='POST' action= '/quest/update_quest_path_number/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
         {% csrf_token %}
-        <input type='text' name = 'quest_path_number' value = '{{current_quest.quest_path_number}}'>
-        <button type = 'submit'> Confirm Update </button>
+        <input class = 'form-control' type='text' name = 'quest_path_number' value = '{{current_quest.quest_path_number}}'>
+        <button class = 'btn btn-success' style = 'margin-top: 15px; margin-bottom: 15px;'  type = 'submit'> Confirm Update </button>
     </form>
     {% endblock %}
     
@@ -21,8 +21,8 @@
     <button id = 'update_points_earned_button' class='btn' style = 'background-color: #42bcf4; color:white;margin-bottom:15px; margin-left: 40px' onclick="update('points_earned')"> Update Points Earned On Completion</button>
     <form id = 'update_points_earned_form' method='POST' action= '/quest/update_quest_points_earned/{{current_admin.admin_ldap}}/{{current_quest.id}}'>
         {% csrf_token %}
-        <input type='text' name = 'quest_points_earned' value = '{{current_quest.quest_points_earned}}'>
-        <button type = 'submit'> Confirm Update </button>
+        <input class = 'form-control' type='text' name = quest_points_earned value = '{{current_quest.quest_points_earned}}'>
+        <button class = 'btn btn-success' style = 'margin-top: 15px; margin-bottom: 15px;'  type = 'submit'> Confirm Update </button>
     </form>
     {% endblock %}
     

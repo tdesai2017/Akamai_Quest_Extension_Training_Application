@@ -207,11 +207,21 @@ def save_new_quest(request, ldap, project_id):
         #Two quests cannot have the same path and paths must be greater than 0
         all_quests_in_current_project = Quest.objects.filter(project = current_project)
         all_paths_in_current_project = [quest.quest_path_number for quest in all_quests_in_current_project]
+
         if int(post_request['quest_path_number']) > 0 and int(post_request['quest_path_number']) not in all_paths_in_current_project:
             if quest_form.is_valid():
                 temp = quest_form.save(commit=False)
                 temp.quest_description = post_request['quest_description']
                 temp.project = current_project
+
+                try:
+                    val = int(temp.quest_points_earned)
+                    print ('I AM HEREREREREREREREE')
+                except ValueError:
+                    messages.error(request, 'Invalid points input!')
+                    return HttpResponseRedirect('/quest/admin_home_editable/' + ldap + '/' + str(project_id))
+
+
                 temp.save()
                 messages.success(request, 'New quest added successfully!')
 
@@ -592,6 +602,14 @@ def update_quest_points_earned(request, ldap, quest_id):
     if request.method == 'POST':
         post_request = request.POST
         quest_points_earned_input = post_request['quest_points_earned']
+
+        try:
+            val = int(quest_points_earned_input)
+        except ValueError:
+            messages.error(request, 'Invalid points input!')
+            return HttpResponseRedirect('/quest/admin_quest_settings_editable/' + current_admin.admin_ldap + '/' + str(quest_id))
+
+
         current_quest.quest_points_earned = quest_points_earned_input
         current_quest.save()
         messages.success(request, 'Quest points successfully updated!')
@@ -621,6 +639,15 @@ def update_quest_path_number(request, ldap, quest_id):
     if request.method == 'POST':
         post_request = request.POST
         quest_path_number_input = post_request['quest_path_number']
+
+        try:
+            val = int(quest_path_number_input)
+        except ValueError:
+            messages.error(request, 'Please Input a valid path number (greater than 0 and no duplicate path numbers)')
+            return HttpResponseRedirect('/quest/admin_quest_settings_editable/' + current_admin.admin_ldap + '/' + str(quest_id))
+
+
+
         if int(quest_path_number_input) not in all_quest_path_numbers_in_project and int(quest_path_number_input) > 0:
             current_quest.quest_path_number = quest_path_number_input
             current_quest.save()

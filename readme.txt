@@ -21,7 +21,7 @@ User
 
 
 
-Full "High-Level Application Manual, Future Improvments, How to use, Security Threats, etc." is located at "https://docs.google.com/document/d/188hHKYoJUuCwc2mI5LRXOX_B0SiYnuRZWm2HuOfMo6w/edit?usp=sharing"
+Full "High-Level Application Manual, Future Improvements, How to use, Security Threats, etc." is located at "https://docs.google.com/document/d/188hHKYoJUuCwc2mI5LRXOX_B0SiYnuRZWm2HuOfMo6w/edit?usp=sharing"
 
 Full "Back-End/Low level Application Manual" is located at "https://docs.google.com/document/d/18EpukbrG9_9Xgju7yRBZMeDH1t8eu6Rrl0cRVkgoI98/edit?usp=sharing"
 

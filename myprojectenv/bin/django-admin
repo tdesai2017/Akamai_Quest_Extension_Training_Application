@@ -1,4 +1,6 @@
-#!/Users/tdesai/Documents/Akamai_Quest_Extension_Training_Application/Akamai_Quest_Extension_Training_Application/myprojectenv/bin/python3.7
+#!/bin/sh
+'''exec' /mnt/c/Users/icett/OneDrive/Documents/all_things_code/projects/Quest_2.0/Akamai_Quest_Extension_Training_Application/myprojectenv/bin/python3 "$0" "$@"
+' '''
 # -*- coding: utf-8 -*-
 import re
 import sys
